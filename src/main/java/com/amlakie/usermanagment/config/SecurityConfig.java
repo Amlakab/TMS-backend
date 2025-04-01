@@ -29,10 +29,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/auth/**", "/public/**").permitAll()
+
+                        // Make all travel request endpoints public
+                        .requestMatchers("/travel-requests/**").permitAll()
+
+                        // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+
+                        // User endpoints
                         .requestMatchers("/user/**").hasAnyAuthority("USER")
+
+                        // Admin or User endpoints
                         .requestMatchers("/adminuser/**").hasAnyAuthority("ADMIN", "USER")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
