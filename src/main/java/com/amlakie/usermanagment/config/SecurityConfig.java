@@ -35,6 +35,9 @@ public class SecurityConfig {
                         // Make all travel request endpoints public
                         .requestMatchers("/travel-requests/**").permitAll()
 
+                        // Car inspection endpoints - adjust permissions as needed
+                        .requestMatchers("/api/inspections/**").permitAll() // or .authenticated()
+
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
 
