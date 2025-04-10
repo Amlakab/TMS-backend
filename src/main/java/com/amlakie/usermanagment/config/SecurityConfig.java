@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/public/**").permitAll()
 
                         // Make all travel request endpoints public
-                        .requestMatchers("/travel-requests/**").permitAll()
+                        .requestMatchers("/api/travel-requests/**").permitAll()
 
                         // Car inspection endpoints - adjust permissions as needed
                         .requestMatchers("/api/inspections/**").permitAll() // or .authenticated()

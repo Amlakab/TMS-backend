@@ -1,175 +1,180 @@
 package com.amlakie.usermanagment.service;
 
-import com.amlakie.usermanagment.dto.TravelRequestReqRes;
+import com.amlakie.usermanagment.dto.TravelRequestDTO;
 import com.amlakie.usermanagment.entity.TravelRequest;
+import com.amlakie.usermanagment.exception.InvalidRequestException;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.TravelRequestRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TravelRequestService {
 
+    private final TravelRequestRepository travelRequestRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
-    private TravelRequestRepository travelRequestRepository;
-
-    public TravelRequestReqRes createTravelRequest(TravelRequestReqRes request) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            TravelRequest travelRequest = new TravelRequest();
-            travelRequest.setStartingPlace(request.getStartingPlace());
-            travelRequest.setTravelerName(request.getTravelerName());
-            travelRequest.setCarType(request.getCarType());
-            travelRequest.setStartingDate(request.getStartingDate());
-            travelRequest.setDepartment(request.getDepartment());
-            travelRequest.setDestinationPlace(request.getDestinationPlace());
-            travelRequest.setTravelReason(request.getTravelReason());
-            travelRequest.setTravelDistance(request.getTravelDistance());
-            travelRequest.setReturnDate(request.getReturnDate());
-            travelRequest.setJobStatus(request.getJobStatus());
-            travelRequest.setClaimantName(request.getClaimantName());
-            travelRequest.setApprovement(request.getApprovement());
-            travelRequest.setTeamLeaderName(request.getTeamLeaderName());
-
-            TravelRequest savedRequest = travelRequestRepository.save(travelRequest);
-            response.setTravelRequest(savedRequest);
-            response.setMessage("Travel request created successfully");
-            response.setCodStatus(200);
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    public TravelRequestService(TravelRequestRepository travelRequestRepository) {
+        this.travelRequestRepository = travelRequestRepository;
     }
 
-    public TravelRequestReqRes getAllTravelRequests() {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            List<TravelRequest> requests = travelRequestRepository.findAll();
-            response.setTravelRequestList(requests);
-            response.setCodStatus(200);
-            response.setMessage("All travel requests retrieved successfully");
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    @Transactional
+    public TravelRequest createRequest(TravelRequestDTO requestDTO) throws InvalidRequestException {
+        validateRequest(requestDTO);
+        TravelRequest request = mapToEntity(requestDTO);
+        request.setCreatedAt(LocalDateTime.now());
+        request.setCreatedBy("admin"); // TODO: Replace with authenticated username from security context
+        return travelRequestRepository.save(request);
     }
 
-    public TravelRequestReqRes getTravelRequestById(Long id) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            Optional<TravelRequest> request = travelRequestRepository.findById(id);
-            if (request.isPresent()) {
-                response.setTravelRequest(request.get());
-                response.setCodStatus(200);
-                response.setMessage("Travel request retrieved successfully");
-            } else {
-                response.setCodStatus(404);
-                response.setMessage("Travel request not found");
-            }
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    public List<TravelRequest> getRequestsForUser() {
+        return travelRequestRepository.findAll(); // Filter by user if needed
     }
 
-    public TravelRequestReqRes updateTravelRequest(Long id, TravelRequestReqRes updateRequest) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            Optional<TravelRequest> requestOptional = travelRequestRepository.findById(id);
-            if (requestOptional.isPresent()) {
-                TravelRequest existingRequest = requestOptional.get();
-                existingRequest.setStartingPlace(updateRequest.getStartingPlace());
-                existingRequest.setTravelerName(updateRequest.getTravelerName());
-                existingRequest.setCarType(updateRequest.getCarType());
-                existingRequest.setStartingDate(updateRequest.getStartingDate());
-                existingRequest.setDepartment(updateRequest.getDepartment());
-                existingRequest.setDestinationPlace(updateRequest.getDestinationPlace());
-                existingRequest.setTravelReason(updateRequest.getTravelReason());
-                existingRequest.setTravelDistance(updateRequest.getTravelDistance());
-                existingRequest.setReturnDate(updateRequest.getReturnDate());
-                existingRequest.setJobStatus(updateRequest.getJobStatus());
-                existingRequest.setClaimantName(updateRequest.getClaimantName());
-                existingRequest.setApprovement(updateRequest.getApprovement());
-                existingRequest.setTeamLeaderName(updateRequest.getTeamLeaderName());
-
-                TravelRequest updatedRequest = travelRequestRepository.save(existingRequest);
-                response.setTravelRequest(updatedRequest);
-                response.setCodStatus(200);
-                response.setMessage("Travel request updated successfully");
-            } else {
-                response.setCodStatus(404);
-                response.setMessage("Travel request not found");
-            }
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    public List<TravelRequest> getRequestsForManager() {
+        // Fetch only the requests with "APPROVED" status for manager
+        return travelRequestRepository.findByStatus(TravelRequest.RequestStatus.APPROVED);
     }
 
-    public TravelRequestReqRes deleteTravelRequest(Long id) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            if (travelRequestRepository.existsById(id)) {
-                travelRequestRepository.deleteById(id);
-                response.setCodStatus(200);
-                response.setMessage("Travel request deleted successfully");
-            } else {
-                response.setCodStatus(404);
-                response.setMessage("Travel request not found");
-            }
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    public List<TravelRequest> getRequestsForCorporator() {
+        return travelRequestRepository.findAll(); // Could apply role-based filtering here
     }
 
-    public TravelRequestReqRes searchTravelRequests(String query) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            List<TravelRequest> requests = travelRequestRepository
-                    .findByTravelerNameContainingOrTravelReasonContaining(query, query);
-            response.setTravelRequestList(requests);
-            response.setCodStatus(200);
-            response.setMessage("Search results retrieved successfully");
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
-        }
-        return response;
+    public TravelRequest getRequestById(Long id) throws ResourceNotFoundException {
+        return travelRequestRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Travel request not found with id: " + id));
     }
 
-    public TravelRequestReqRes getRequestsByDepartment(String department) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            List<TravelRequest> requests = travelRequestRepository.findByDepartment(department);
-            response.setTravelRequestList(requests);
-            response.setCodStatus(200);
-            response.setMessage("Department requests retrieved successfully");
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+    @Transactional
+    public TravelRequest updateRequestStatus(Long id, TravelRequest.RequestStatus status)
+            throws ResourceNotFoundException, InvalidRequestException {
+        TravelRequest request = getRequestById(id);
+
+        if (request.getStatus() == TravelRequest.RequestStatus.COMPLETED) {
+            throw new InvalidRequestException("Cannot change status of a completed request");
         }
-        return response;
+
+        request.setStatus(status);
+        return travelRequestRepository.save(request);
     }
 
-    public TravelRequestReqRes getRequestsByStatus(String status) {
-        TravelRequestReqRes response = new TravelRequestReqRes();
-        try {
-            List<TravelRequest> requests = travelRequestRepository.findByJobStatus(status);
-            response.setTravelRequestList(requests);
-            response.setCodStatus(200);
-            response.setMessage("Status-based requests retrieved successfully");
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+    @Transactional
+    public TravelRequest completeRequest(Long id, TravelRequestDTO serviceData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        TravelRequest request = getRequestById(id);
+
+        if (request.getStatus() != TravelRequest.RequestStatus.APPROVED) {
+            throw new InvalidRequestException("Only approved requests can be completed");
         }
-        return response;
+
+        validateServiceData(serviceData);
+        updateRequestWithServiceData(request, serviceData);
+        request.setStatus(TravelRequest.RequestStatus.COMPLETED);
+
+        return travelRequestRepository.save(request);
+    }
+
+    // ===================== PRIVATE HELPERS ===========================
+
+    private void validateRequest(TravelRequestDTO dto) throws InvalidRequestException {
+        if (isBlank(dto.getStartingPlace())) {
+            throw new InvalidRequestException("Starting place is required");
+        }
+
+        if (isBlank(dto.getDestinationPlace())) {
+            throw new InvalidRequestException("Destination place is required");
+        }
+
+        if (dto.getTravelers() == null || dto.getTravelers().isEmpty()) {
+            throw new InvalidRequestException("At least one traveler is required");
+        }
+
+        if (dto.getStartingDate() == null) {
+            throw new InvalidRequestException("Starting date is required");
+        }
+
+        if (dto.getStartingDate().isBefore(LocalDateTime.now())) {
+            throw new InvalidRequestException("Starting date cannot be in the past");
+        }
+
+        if (dto.getReturnDate() != null && dto.getReturnDate().isBefore(dto.getStartingDate())) {
+            throw new InvalidRequestException("Return date cannot be before starting date");
+        }
+    }
+
+    private void validateServiceData(TravelRequestDTO dto) throws InvalidRequestException {
+        if (isBlank(dto.getServiceProviderName())) {
+            throw new InvalidRequestException("Service provider name is required");
+        }
+
+        if (dto.getActualStartingDate() == null) {
+            throw new InvalidRequestException("Actual starting date is required");
+        }
+
+        if (dto.getStartingKilometers() == null || dto.getStartingKilometers() < 0) {
+            throw new InvalidRequestException("Starting kilometers must be a positive number");
+        }
+
+        if (dto.getEndingKilometers() == null || dto.getEndingKilometers() < 0) {
+            throw new InvalidRequestException("Ending kilometers must be a positive number");
+        }
+
+        if (dto.getEndingKilometers() < dto.getStartingKilometers()) {
+            throw new InvalidRequestException("Ending kilometers cannot be less than starting kilometers");
+        }
+    }
+
+    private TravelRequest mapToEntity(TravelRequestDTO dto) {
+        TravelRequest entity = new TravelRequest();
+        entity.setStartingPlace(dto.getStartingPlace());
+        entity.setDestinationPlace(dto.getDestinationPlace());
+        entity.setTravelReason(dto.getTravelReason());
+        entity.setCarType(dto.getCarType());
+        entity.setTravelDistance(dto.getTravelDistance());
+        entity.setStartingDate(dto.getStartingDate());
+        entity.setReturnDate(dto.getReturnDate());
+        entity.setDepartment(dto.getDepartment());
+        entity.setJobStatus(dto.getJobStatus());
+        entity.setClaimantName(dto.getClaimantName());
+        entity.setTeamLeaderName(dto.getTeamLeaderName());
+        entity.setApprovement(dto.getApprovement());
+
+        if (dto.getTravelers() != null) {
+            dto.getTravelers().forEach(entity::addTraveler); // Adds travelers to entity
+        }
+
+        return entity;
+    }
+
+    private void updateRequestWithServiceData(TravelRequest request, TravelRequestDTO dto) {
+        request.setServiceProviderName(dto.getServiceProviderName());
+        request.setAssignedCarType(dto.getAssignedCarType());
+        request.setAssignedDriver(dto.getAssignedDriver());
+        request.setVehicleDetails(dto.getVehicleDetails());
+        request.setActualStartingDate(dto.getActualStartingDate());
+        request.setActualReturnDate(dto.getActualReturnDate());
+        request.setStartingKilometers(dto.getStartingKilometers());
+        request.setEndingKilometers(dto.getEndingKilometers());
+
+        if (dto.getStartingKilometers() != null && dto.getEndingKilometers() != null) {
+            request.setKmDifference(dto.getEndingKilometers() - dto.getStartingKilometers());
+        }
+
+        request.setCargoType(dto.getCargoType());
+        request.setCargoWeight(dto.getCargoWeight());
+        request.setNumberOfPassengers(dto.getNumberOfPassengers());
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
