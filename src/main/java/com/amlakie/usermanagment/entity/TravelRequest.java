@@ -3,6 +3,7 @@ package com.amlakie.usermanagment.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,16 @@ public class TravelRequest {
     @Column(nullable = false)
     private String createdBy;
 
+    private String authorizerName;
+
+    private String assemblerName;
+
+    @Column(length = 500)
+    private String tripExplanation;
+
+    @Column
+    private Double accountNumber;
+
     public void addTraveler(String travelerName) {
         Traveler traveler = new Traveler();
         traveler.setName(travelerName);
@@ -109,6 +120,6 @@ public class TravelRequest {
     }
 
     public enum RequestStatus {
-        PENDING, APPROVED, REJECTED, COMPLETED
+        PENDING, APPROVED, REJECTED,ASSIGNED,COMPLETED, SUCCESED, FINISHED
     }
 }

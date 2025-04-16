@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,4 +50,9 @@ public class TravelRequestDTO {
     private String cargoType;
     private Double cargoWeight;
     private Integer numberOfPassengers;
+
+    private String authorizerName;
+    private String assemblerName;
+    private String tripExplanation;
+    private Double accountNumber;
 }

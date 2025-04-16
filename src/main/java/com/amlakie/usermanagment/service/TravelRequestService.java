@@ -72,18 +72,75 @@ public class TravelRequestService {
             throws ResourceNotFoundException, InvalidRequestException {
         TravelRequest request = getRequestById(id);
 
-        if (request.getStatus() != TravelRequest.RequestStatus.APPROVED) {
-            throw new InvalidRequestException("Only approved requests can be completed");
+        // Change this validation to check for COMPLETED status
+        if (request.getStatus() != TravelRequest.RequestStatus.COMPLETED) {
+            throw new InvalidRequestException("Only COMPLETED requests can be finished");
         }
 
         validateServiceData(serviceData);
         updateRequestWithServiceData(request, serviceData);
+        request.setStatus(TravelRequest.RequestStatus.FINISHED);
+
+        return travelRequestRepository.save(request);
+    }
+
+    @Transactional
+    public TravelRequest fuelRequest(Long id, TravelRequestDTO serviceData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        TravelRequest request = getRequestById(id);
+
+        // Change this validation to check for COMPLETED status
+        if (request.getStatus() != TravelRequest.RequestStatus.ASSIGNED) {
+            throw new InvalidRequestException("Only ASSIGNED requests can be finished");
+        }
+
+        validateFuelData(serviceData);
+        updateFuelWithServiceData(request, serviceData);
         request.setStatus(TravelRequest.RequestStatus.COMPLETED);
 
         return travelRequestRepository.save(request);
     }
 
+    @Transactional
+    public TravelRequest fuelReturn(Long id, TravelRequestDTO serviceData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        TravelRequest request = getRequestById(id);
+
+        // Change this validation to check for COMPLETED status
+        if (request.getStatus() != TravelRequest.RequestStatus.FINISHED) {
+            throw new InvalidRequestException("Only FINISHED requests can be ended");
+        }
+
+        validateFuelReturnData(serviceData);
+        updateFuelReturnWithServiceData(request, serviceData);
+        request.setStatus(TravelRequest.RequestStatus.SUCCESED);
+
+        return travelRequestRepository.save(request);
+    }
+
     // ===================== PRIVATE HELPERS ===========================
+
+    private void validateFuelData(TravelRequestDTO dto) throws InvalidRequestException {
+
+        if (isBlank(dto.getAuthorizerName())) {
+            throw new InvalidRequestException("Authorizer name is required");
+        }
+
+        if (dto.getAccountNumber() == null) {
+            throw new InvalidRequestException("Account date is required");
+        }
+    }
+
+    private void validateFuelReturnData(TravelRequestDTO dto) throws InvalidRequestException {
+
+        if (isBlank(dto.getAssemblerName())) {
+            throw new InvalidRequestException("Assembler name is required");
+        }
+
+        if (dto.getTripExplanation() == null) {
+            throw new InvalidRequestException("somethind legend is required");
+        }
+    }
 
     private void validateRequest(TravelRequestDTO dto) throws InvalidRequestException {
         if (isBlank(dto.getStartingPlace())) {
@@ -111,25 +168,83 @@ public class TravelRequestService {
         }
     }
 
+    @Transactional
+    public TravelRequest updateServiceProviderInfo(Long id, TravelRequestDTO serviceData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        TravelRequest request = getRequestById(id);
+
+        if (request.getStatus() != TravelRequest.RequestStatus.PENDING) {
+            throw new InvalidRequestException("Only pending requests can be updated with service info");
+        }
+
+        request.setServiceProviderName(serviceData.getServiceProviderName());
+        request.setAssignedCarType(serviceData.getAssignedCarType());
+        request.setAssignedDriver(serviceData.getAssignedDriver());
+        request.setVehicleDetails(serviceData.getVehicleDetails());
+        request.setStatus(TravelRequest.RequestStatus.APPROVED);
+
+        return travelRequestRepository.save(request);
+    }
+
+    public List<TravelRequest> getRequestsForDriver(String driverName) {
+        if (driverName != null && !driverName.isEmpty()) {
+            return travelRequestRepository.findByAssignedDriverAndStatus(
+                    driverName,
+                    TravelRequest.RequestStatus.COMPLETED
+            );
+        }
+        return travelRequestRepository.findByStatus(TravelRequest.RequestStatus.COMPLETED);
+    }
+
+    private void validateTripCompletionData(TravelRequestDTO dto) throws InvalidRequestException {
+        if (dto.getActualStartingDate() == null) {
+            throw new InvalidRequestException("Actual starting date is required");
+        }
+
+        if (dto.getActualReturnDate() == null) {
+            throw new InvalidRequestException("Actual return date is required");
+        }
+
+        if (dto.getStartingKilometers() == null || dto.getStartingKilometers() < 0) {
+            throw new InvalidRequestException("Valid starting kilometers required");
+        }
+
+        if (dto.getEndingKilometers() == null || dto.getEndingKilometers() < 0) {
+            throw new InvalidRequestException("Valid ending kilometers required");
+        }
+
+        if (dto.getEndingKilometers() < dto.getStartingKilometers()) {
+            throw new InvalidRequestException("Ending km cannot be less than starting km");
+        }
+    }
+
     private void validateServiceData(TravelRequestDTO dto) throws InvalidRequestException {
         if (isBlank(dto.getServiceProviderName())) {
             throw new InvalidRequestException("Service provider name is required");
+        }
+
+        if (isBlank(dto.getAssignedDriver())) {
+            throw new InvalidRequestException("Driver name is required");
         }
 
         if (dto.getActualStartingDate() == null) {
             throw new InvalidRequestException("Actual starting date is required");
         }
 
+        if (dto.getActualReturnDate() == null) {
+            throw new InvalidRequestException("Actual return date is required");
+        }
+
         if (dto.getStartingKilometers() == null || dto.getStartingKilometers() < 0) {
-            throw new InvalidRequestException("Starting kilometers must be a positive number");
+            throw new InvalidRequestException("Valid starting kilometers required");
         }
 
         if (dto.getEndingKilometers() == null || dto.getEndingKilometers() < 0) {
-            throw new InvalidRequestException("Ending kilometers must be a positive number");
+            throw new InvalidRequestException("Valid ending kilometers required");
         }
 
         if (dto.getEndingKilometers() < dto.getStartingKilometers()) {
-            throw new InvalidRequestException("Ending kilometers cannot be less than starting kilometers");
+            throw new InvalidRequestException("Ending km cannot be less than starting km");
         }
     }
 
@@ -153,6 +268,16 @@ public class TravelRequestService {
         }
 
         return entity;
+    }
+
+    private void updateFuelWithServiceData(TravelRequest request, TravelRequestDTO dto) {
+        request.setAuthorizerName(dto.getAuthorizerName());
+        request.setAccountNumber(dto.getAccountNumber());
+    }
+
+    private void updateFuelReturnWithServiceData(TravelRequest request, TravelRequestDTO dto) {
+        request.setAssemblerName(dto.getAssemblerName());
+        request.setTripExplanation(dto.getTripExplanation());
     }
 
     private void updateRequestWithServiceData(TravelRequest request, TravelRequestDTO dto) {

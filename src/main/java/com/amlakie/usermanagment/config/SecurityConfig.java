@@ -48,6 +48,7 @@ public class SecurityConfig {
                         // Car inspection endpoints - Currently public, change if needed
                         // If you want to secure them, change to .authenticated()
                         .requestMatchers("/api/inspections/**").permitAll()
+                        .requestMatchers("/api/daily-requests/**").permitAll()
 
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
