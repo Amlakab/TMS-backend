@@ -1,0 +1,5 @@
+<root>
+    <item name='org.springframework.security.web.DefaultSecurityFilterChain void setBeanName(java.lang.String) 0'>
+        <annotation name='java.lang.Deprecated'/>
+    </item>
+</root>
