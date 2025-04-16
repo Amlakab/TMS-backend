@@ -1,7 +1,7 @@
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.CarReqRes;
-import com.amlakie.usermanagment.dto.ReqRes;
+import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.service.CarManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +46,9 @@ public class CarManagementController {
     @GetMapping("/auth/car/search")
     public ResponseEntity<CarReqRes> searchCars(@RequestParam String query) {
         return ResponseEntity.ok(carManagementService.searchCars(query));
+    }
+    @PutMapping("/auth/car/status/{plateNumber}")
+    public ResponseEntity<CarReqRes> updateStatus(@PathVariable String plateNumber, @RequestBody CarReqRes updateRequest) {
+        return ResponseEntity.ok(carManagementService.updateStatus(plateNumber, updateRequest));
     }
 }

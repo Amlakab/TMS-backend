@@ -1,58 +1,70 @@
 package com.amlakie.usermanagment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CarInspectionReqRes {
-    private int codStatus;
+    private Integer codStatus; // Use Integer for nullability
     private String message;
     private String error;
-
     private Long id;
+
+    @NotBlank(message = "Plate number is required")
     private String plateNumber;
+
+    @NotNull(message = "Inspection date is required")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime inspectionDate;
 
-    // Mechanical attributes
-    private boolean engineCondition;
-    private boolean fullInsurance;
-    private boolean enginePower;
-    private boolean suspension;
-    private boolean brakes;
-    private boolean steering;
-    private boolean gearbox;
-    private boolean mileage;
-    private boolean fuelGauge;
-    private boolean tempGauge;
-    private boolean oilGauge;
+    @NotBlank(message = "Inspector name is required")
+    @Size(min = 2, message = "Inspector name must be at least 2 characters")
+    private String inspectorName;
 
-    // Body attributes
-    private BodyConditionDTO bodyCondition;
+    @NotNull(message = "Inspection status is required")
+    private InspectionStatus inspectionStatus;
 
-    // Interior attributes
-    private boolean engineExhaust;
-    private boolean seatComfort;
-    private boolean seatFabric;
-    private boolean floorMat;
-    private boolean rearViewMirror;
-    private boolean carTab;
-    private boolean mirrorAdjustment;
-    private boolean doorLock;
-    private boolean ventilationSystem;
-    private boolean dashboardDecoration;
-    private boolean seatBelt;
-    private boolean sunshade;
-    private boolean windowCurtain;
-    private boolean interiorRoof;
-    private boolean carIgnition;
-    private boolean fuelConsumption;
-    private boolean headlights;
-    private boolean rainWiper;
-    private boolean turnSignalLight;
-    private boolean brakeLight;
-    private boolean licensePlateLight;
-    private boolean clock;
-    private boolean rpm;
-    private boolean batteryStatus;
-    private boolean chargingIndicator;
+    @NotNull(message = "Service status is required")
+    private ServiceStatus serviceStatus;
+
+    @NotNull(message = "Body score is required")
+    @Min(value = 0, message = "Body score cannot be negative")
+    @Max(value = 100, message = "Body score cannot exceed 100")
+    private Integer bodyScore;
+
+    @NotNull(message = "Interior score is required")
+    @Min(value = 0, message = "Interior score cannot be negative")
+    @Max(value = 100, message = "Interior score cannot exceed 100")
+    private Integer interiorScore;
+
+    @Size(max = 500, message = "Notes cannot exceed 500 characters")
+    private String notes;
+
+    @NotNull(message = "Mechanical inspection details are required")
+    @Valid
+    private MechanicalInspectionDTO mechanical;
+
+    @NotNull(message = "Body inspection details are required")
+    @Valid
+    private BodyInspectionDTO body;
+
+    @NotNull(message = "Interior inspection details are required")
+    @Valid
+    private InteriorInspectionDTO interior;
+
+    public enum InspectionStatus {
+        Approved, Rejected, ConditionallyApproved
+    }
+
+    public enum ServiceStatus {
+        Ready, Pending, InProgress
+    }
 }

@@ -12,6 +12,7 @@ public class OrganizationCarReqRes {
     private String error;
     private String token;
     private String refreshedToken;
+
     private String expirationTime;
     private OrganizationCar organizationCar;
     private List<OrganizationCar> organizationCarList;

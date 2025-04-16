@@ -1,15 +1,16 @@
 package com.amlakie.usermanagment.service;
 
 import com.amlakie.usermanagment.dto.*;
-import com.amlakie.usermanagment.entity.BodyCondition;
-import com.amlakie.usermanagment.entity.BodyProblem;
-import com.amlakie.usermanagment.entity.Car;
-import com.amlakie.usermanagment.entity.CarInspection;
+import com.amlakie.usermanagment.entity.*;
 import com.amlakie.usermanagment.repository.CarInspectionRepository;
 import com.amlakie.usermanagment.repository.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,111 +23,142 @@ public class CarInspectionService {
     private CarRepository carRepository;
 
     public CarInspectionReqRes createInspection(CarInspectionReqRes request) {
-        CarInspectionReqRes response = new CarInspectionReqRes();
-        try {
-            // Check if car exists, if not create it
-            if (!carRepository.existsByPlateNumber(request.getPlateNumber())) {
-                Car newCar = new Car();
-                newCar.setPlateNumber(request.getPlateNumber());
-                // Set default values or get from request if available
-                newCar.setOwnerName("Unknown");
-                newCar.setOwnerPhone("0000000000");
-                // ... set other required fields ...
-                carRepository.save(newCar);
-            }
-
-            CarInspection inspection = mapRequestToEntity(request);
-            CarInspection savedInspection = inspectionRepository.save(inspection);
-
-            response = mapEntityToResponse(savedInspection);
-            response.setCodStatus(201);
-            response.setMessage("Inspection created successfully");
-
-        } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+        // Error checking before saving the inspection
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Car inspection request is null");
         }
+
+        // Check if car exists, if not create it
+        Car car = carRepository.findByPlateNumber(request.getPlateNumber())
+                .orElseGet(() -> {
+                    Car newCar = new Car();
+                    newCar.setPlateNumber(request.getPlateNumber());
+                    newCar.setOwnerName("Unknown"); // Set default value
+                    newCar.setCarType("Unknown"); // Set default values
+                    newCar.setOwnerPhone("0000000000");
+                    newCar.setModel("UNKNOWN");
+                    newCar.setFuelType("UNKNOWN");
+                    newCar.setCreatedBy("SYSTEM_AUTO_CREATE");
+                    newCar.setFuelType("UNKNOWN");
+                    newCar.setParkingLocation("UNKNOWN");
+                    newCar.setMotorCapacity("UNKNOWN");
+                    newCar.setTotalKm("UNKNOWN");
+                    newCar.setRegisteredDate(null);
+                    newCar.setStatus("UNKNOWN");
+                    newCar.setManufactureYear(0);
+                    newCar.setKmPerLiter(0.0f);
+                     newCar.setManufactureYear(0); // Or another appropriate default
+                    return carRepository.save(newCar);
+                });
+
+        CarInspection inspection = mapRequestToEntity(request);
+        inspection.setCar(car); // Add relationship to car
+
+        CarInspection savedInspection;
+        try {
+            savedInspection = inspectionRepository.save(inspection);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error saving car inspection", e);
+        }
+
+        CarInspectionReqRes response = mapEntityToResponse(savedInspection);
+        response.setCodStatus(201);
+        response.setMessage("Inspection created successfully");
         return response;
     }
 
     public CarInspectionListResponse getAllInspections() {
-        CarInspectionListResponse response = new CarInspectionListResponse();
+        List<CarInspection> inspections;
         try {
-            List<CarInspection> inspections = inspectionRepository.findAll();
-            response.setInspections(inspections.stream()
-                    .map(this::mapEntityToResponse)
-                    .collect(Collectors.toList()));
-            response.setCodStatus(200);
-            response.setMessage("Inspections retrieved successfully");
+            inspections = inspectionRepository.findAll();
         } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving all car inspections", e);
         }
+
+        List<CarInspectionReqRes> inspectionDTOs = inspections.stream()
+                .map(this::mapEntityToResponse)
+                .collect(Collectors.toList());
+
+        CarInspectionListResponse response = new CarInspectionListResponse();
+        response.setInspections(inspectionDTOs);
+        response.setCodStatus(200);
+        response.setMessage("Inspections retrieved successfully");
         return response;
     }
 
     public CarInspectionReqRes getInspectionById(Long id) {
-        CarInspectionReqRes response = new CarInspectionReqRes();
+        Optional<CarInspection> inspectionOptional;
         try {
-            CarInspection inspection = inspectionRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Inspection not found"));
-            response = mapEntityToResponse(inspection);
-            response.setCodStatus(200);
-            response.setMessage("Inspection retrieved successfully");
+            inspectionOptional = inspectionRepository.findById(id);
         } catch (Exception e) {
-            response.setCodStatus(404);
-            response.setError(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving car inspection with id: " + id, e);
         }
+
+        CarInspection inspection = inspectionOptional.orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Inspection with id " + id + " not found"));
+
+        CarInspectionReqRes response = mapEntityToResponse(inspection);
+        response.setCodStatus(200);
+        response.setMessage("Inspection retrieved successfully");
         return response;
     }
 
     public CarInspectionReqRes updateInspection(Long id, CarInspectionReqRes request) {
-        CarInspectionReqRes response = new CarInspectionReqRes();
+        Optional<CarInspection> existingInspectionOptional;
         try {
-            CarInspection existingInspection = inspectionRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Inspection not found"));
-
-            CarInspection updatedInspection = mapRequestToEntity(request);
-            updatedInspection.setId(existingInspection.getId());
-
-            CarInspection savedInspection = inspectionRepository.save(updatedInspection);
-            response = mapEntityToResponse(savedInspection);
-            response.setCodStatus(200);
-            response.setMessage("Inspection updated successfully");
-
+            existingInspectionOptional = inspectionRepository.findById(id);
         } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error finding car inspection with id: " + id, e);
         }
+
+        CarInspection existingInspection = existingInspectionOptional.orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Inspection with id " + id + " not found"));
+
+        CarInspection updatedInspection = mapRequestToEntity(request);
+        updatedInspection.setId(existingInspection.getId());
+
+        CarInspection savedInspection;
+        try {
+            savedInspection = inspectionRepository.save(updatedInspection);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating car inspection with id: " + id, e);
+        }
+
+        CarInspectionReqRes response = mapEntityToResponse(savedInspection);
+        response.setCodStatus(200);
+        response.setMessage("Inspection updated successfully");
         return response;
     }
 
     public CarInspectionReqRes deleteInspection(Long id) {
-        CarInspectionReqRes response = new CarInspectionReqRes();
         try {
             inspectionRepository.deleteById(id);
-            response.setCodStatus(200);
-            response.setMessage("Inspection deleted successfully");
         } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting car inspection with id: " + id, e);
         }
+
+        CarInspectionReqRes response = new CarInspectionReqRes();
+        response.setCodStatus(200);
+        response.setMessage("Inspection deleted successfully");
         return response;
     }
 
     public CarInspectionListResponse getInspectionsByPlateNumber(String plateNumber) {
-        CarInspectionListResponse response = new CarInspectionListResponse();
+        List<CarInspection> inspections;
         try {
-            List<CarInspection> inspections = inspectionRepository.findByPlateNumber(plateNumber);
-            response.setInspections(inspections.stream()
-                    .map(this::mapEntityToResponse)
-                    .collect(Collectors.toList()));
-            response.setCodStatus(200);
-            response.setMessage("Inspections retrieved successfully");
+            inspections = inspectionRepository.findByPlateNumber(plateNumber);
         } catch (Exception e) {
-            response.setCodStatus(500);
-            response.setError(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving car inspections by plate number: " + plateNumber, e);
         }
+
+        List<CarInspectionReqRes> inspectionDTOs = inspections.stream()
+                .map(this::mapEntityToResponse)
+                .collect(Collectors.toList());
+
+        CarInspectionListResponse response = new CarInspectionListResponse();
+        response.setInspections(inspectionDTOs);
+        response.setCodStatus(200);
+        response.setMessage("Inspections retrieved successfully");
         return response;
     }
 
@@ -134,66 +166,85 @@ public class CarInspectionService {
     private CarInspection mapRequestToEntity(CarInspectionReqRes request) {
         CarInspection inspection = new CarInspection();
         inspection.setPlateNumber(request.getPlateNumber());
+        inspection.setInspectionDate(request.getInspectionDate());
+        inspection.setInspectorName(request.getInspectorName());
+        inspection.setInspectionStatus(request.getInspectionStatus().toString());
+        inspection.setServiceStatus(request.getServiceStatus().toString());
+        inspection.setBodyScore(request.getBodyScore());
+        inspection.setInteriorScore(request.getInteriorScore());
+        inspection.setNotes(request.getNotes());
+        // Map Mechanical
+        inspection.setMechanical(mapMechanicalDTOtoEntity(request.getMechanical()));
 
-        // Map body condition
-        BodyCondition bodyCondition = new BodyCondition();
-        bodyCondition.setBodyCollision(mapBodyProblemDTO(request.getBodyCondition().getBodyCollision()));
-        bodyCondition.setBodyScratches(mapBodyProblemDTO(request.getBodyCondition().getBodyScratches()));
-        bodyCondition.setPaintCondition(mapBodyProblemDTO(request.getBodyCondition().getPaintCondition()));
-        bodyCondition.setBreakages(mapBodyProblemDTO(request.getBodyCondition().getBreakages()));
-        bodyCondition.setCracks(mapBodyProblemDTO(request.getBodyCondition().getCracks()));
+        // Map Body
+        inspection.setBody(mapBodyDTOtoEntity(request.getBody()));
 
-        inspection.setBodyCondition(bodyCondition);
-
-        // Map mechanical attributes
-        inspection.setEngineCondition(request.isEngineCondition());
-        inspection.setFullInsurance(request.isFullInsurance());
-        inspection.setEnginePower(request.isEnginePower());
-        inspection.setSuspension(request.isSuspension());
-        inspection.setBrakes(request.isBrakes());
-        inspection.setSteering(request.isSteering());
-        inspection.setGearbox(request.isGearbox());
-        inspection.setMileage(request.isMileage());
-        inspection.setFuelGauge(request.isFuelGauge());
-        inspection.setTempGauge(request.isTempGauge());
-        inspection.setOilGauge(request.isOilGauge());
-
-        // Map interior attributes
-        inspection.setEngineExhaust(request.isEngineExhaust());
-        inspection.setSeatComfort(request.isSeatComfort());
-        inspection.setSeatFabric(request.isSeatFabric());
-        inspection.setFloorMat(request.isFloorMat());
-        inspection.setRearViewMirror(request.isRearViewMirror());
-        inspection.setCarTab(request.isCarTab());
-        inspection.setMirrorAdjustment(request.isMirrorAdjustment());
-        inspection.setDoorLock(request.isDoorLock());
-        inspection.setVentilationSystem(request.isVentilationSystem());
-        inspection.setDashboardDecoration(request.isDashboardDecoration());
-        inspection.setSeatBelt(request.isSeatBelt());
-        inspection.setSunshade(request.isSunshade());
-        inspection.setWindowCurtain(request.isWindowCurtain());
-        inspection.setInteriorRoof(request.isInteriorRoof());
-        inspection.setCarIgnition(request.isCarIgnition());
-        inspection.setFuelConsumption(request.isFuelConsumption());
-        inspection.setHeadlights(request.isHeadlights());
-        inspection.setRainWiper(request.isRainWiper());
-        inspection.setTurnSignalLight(request.isTurnSignalLight());
-        inspection.setBrakeLight(request.isBrakeLight());
-        inspection.setLicensePlateLight(request.isLicensePlateLight());
-        inspection.setClock(request.isClock());
-        inspection.setRpm(request.isRpm());
-        inspection.setBatteryStatus(request.isBatteryStatus());
-        inspection.setChargingIndicator(request.isChargingIndicator());
-
+        // Map Interior
+        inspection.setInterior(mapInteriorDTOtoEntity(request.getInterior()));
         return inspection;
     }
 
-    private BodyProblem mapBodyProblemDTO(BodyProblemDTO dto) {
-        BodyProblem problem = new BodyProblem();
-        problem.setProblem(dto.isProblem());
-        problem.setSeverity(dto.getSeverity());
-        problem.setNotes(dto.getNotes());
-        return problem;
+    private MechanicalInspection mapMechanicalDTOtoEntity(MechanicalInspectionDTO mechanicalDTO) {
+        MechanicalInspection mechanical = new MechanicalInspection();
+        mechanical.setEngineCondition(mechanicalDTO.isEngineCondition());
+        mechanical.setEnginePower(mechanicalDTO.isEnginePower());
+        mechanical.setSuspension(mechanicalDTO.isSuspension());
+        mechanical.setBrakes(mechanicalDTO.isBrakes());
+        mechanical.setSteering(mechanicalDTO.isSteering());
+        mechanical.setGearbox(mechanicalDTO.isGearbox());
+        mechanical.setMileage(mechanicalDTO.isMileage());
+        mechanical.setFuelGauge(mechanicalDTO.isFuelGauge());
+        mechanical.setTempGauge(mechanicalDTO.isTempGauge());
+        mechanical.setOilGauge(mechanicalDTO.isOilGauge());
+        return mechanical;
+    }
+
+    private BodyInspection mapBodyDTOtoEntity(BodyInspectionDTO bodyDTO) {
+        BodyInspection body = new BodyInspection();
+        body.setBodyCollision(mapItemConditionDTO(bodyDTO.getBodyCollision()));
+        body.setBodyScratches(mapItemConditionDTO(bodyDTO.getBodyScratches()));
+        body.setPaintCondition(mapItemConditionDTO(bodyDTO.getPaintCondition()));
+        body.setBreakages(mapItemConditionDTO(bodyDTO.getBreakages()));
+        body.setCracks(mapItemConditionDTO(bodyDTO.getCracks()));
+        return body;
+    }
+
+    private InteriorInspection mapInteriorDTOtoEntity(InteriorInspectionDTO interiorDTO) {
+        InteriorInspection interior = new InteriorInspection();
+        interior.setEngineExhaust(mapItemConditionDTO(interiorDTO.getEngineExhaust()));
+        interior.setSeatComfort(mapItemConditionDTO(interiorDTO.getSeatComfort()));
+        interior.setSeatFabric(mapItemConditionDTO(interiorDTO.getSeatFabric()));
+        interior.setFloorMat(mapItemConditionDTO(interiorDTO.getFloorMat()));
+        interior.setRearViewMirror(mapItemConditionDTO(interiorDTO.getRearViewMirror()));
+        interior.setCarTab(mapItemConditionDTO(interiorDTO.getCarTab()));
+        interior.setMirrorAdjustment(mapItemConditionDTO(interiorDTO.getMirrorAdjustment()));
+        interior.setDoorLock(mapItemConditionDTO(interiorDTO.getDoorLock()));
+        interior.setVentilationSystem(mapItemConditionDTO(interiorDTO.getVentilationSystem()));
+        interior.setDashboardDecoration(mapItemConditionDTO(interiorDTO.getDashboardDecoration()));
+        interior.setSeatBelt(mapItemConditionDTO(interiorDTO.getSeatBelt()));
+        interior.setSunshade(mapItemConditionDTO(interiorDTO.getSunshade()));
+        interior.setWindowCurtain(mapItemConditionDTO(interiorDTO.getWindowCurtain()));
+        interior.setInteriorRoof(mapItemConditionDTO(interiorDTO.getInteriorRoof()));
+        interior.setCarIgnition(mapItemConditionDTO(interiorDTO.getCarIgnition()));
+        interior.setFuelConsumption(mapItemConditionDTO(interiorDTO.getFuelConsumption()));
+        interior.setHeadlights(mapItemConditionDTO(interiorDTO.getHeadlights()));
+        interior.setRainWiper(mapItemConditionDTO(interiorDTO.getRainWiper()));
+        interior.setTurnSignalLight(mapItemConditionDTO(interiorDTO.getTurnSignalLight()));
+        interior.setBrakeLight(mapItemConditionDTO(interiorDTO.getBrakeLight()));
+        interior.setLicensePlateLight(mapItemConditionDTO(interiorDTO.getLicensePlateLight()));
+        interior.setClock(mapItemConditionDTO(interiorDTO.getClock()));
+        interior.setRpm(mapItemConditionDTO(interiorDTO.getRpm()));
+        interior.setBatteryStatus(mapItemConditionDTO(interiorDTO.getBatteryStatus()));
+        interior.setChargingIndicator(mapItemConditionDTO(interiorDTO.getChargingIndicator()));
+        return interior;
+    }
+
+    private ItemCondition mapItemConditionDTO(ItemConditionDTO itemConditionDTO) {
+        ItemCondition itemCondition = new ItemCondition();
+        itemCondition.setProblem(itemConditionDTO.getProblem());
+        itemCondition.setSeverity(itemConditionDTO.getSeverity().toString());
+        itemCondition.setNotes(itemConditionDTO.getNotes());
+        return itemCondition;
     }
 
     private CarInspectionReqRes mapEntityToResponse(CarInspection inspection) {
@@ -201,65 +252,84 @@ public class CarInspectionService {
         response.setId(inspection.getId());
         response.setPlateNumber(inspection.getPlateNumber());
         response.setInspectionDate(inspection.getInspectionDate());
+        response.setInspectorName(inspection.getInspectorName());
+        response.setInspectionStatus(CarInspectionReqRes.InspectionStatus.valueOf(inspection.getInspectionStatus()));
+        response.setServiceStatus(CarInspectionReqRes.ServiceStatus.valueOf(inspection.getServiceStatus()));
+        response.setBodyScore(inspection.getBodyScore());
+        response.setInteriorScore(inspection.getInteriorScore());
+        response.setNotes(inspection.getNotes());
 
-        // Map body condition
-        BodyConditionDTO bodyConditionDTO = new BodyConditionDTO();
-        bodyConditionDTO.setBodyCollision(mapBodyProblemEntity(inspection.getBodyCondition().getBodyCollision()));
-        bodyConditionDTO.setBodyScratches(mapBodyProblemEntity(inspection.getBodyCondition().getBodyScratches()));
-        bodyConditionDTO.setPaintCondition(mapBodyProblemEntity(inspection.getBodyCondition().getPaintCondition()));
-        bodyConditionDTO.setBreakages(mapBodyProblemEntity(inspection.getBodyCondition().getBreakages()));
-        bodyConditionDTO.setCracks(mapBodyProblemEntity(inspection.getBodyCondition().getCracks()));
+        // Map Mechanical
+        response.setMechanical(mapMechanicalEntityToDTO(inspection.getMechanical()));
 
-        response.setBodyCondition(bodyConditionDTO);
+        // Map Body
+        response.setBody(mapBodyEntityToDTO(inspection.getBody()));
 
-        // Map mechanical attributes
-        response.setEngineCondition(inspection.isEngineCondition());
-        response.setFullInsurance(inspection.isFullInsurance());
-        response.setEnginePower(inspection.isEnginePower());
-        response.setSuspension(inspection.isSuspension());
-        response.setBrakes(inspection.isBrakes());
-        response.setSteering(inspection.isSteering());
-        response.setGearbox(inspection.isGearbox());
-        response.setMileage(inspection.isMileage());
-        response.setFuelGauge(inspection.isFuelGauge());
-        response.setTempGauge(inspection.isTempGauge());
-        response.setOilGauge(inspection.isOilGauge());
-
-        // Map interior attributes
-        response.setEngineExhaust(inspection.isEngineExhaust());
-        response.setSeatComfort(inspection.isSeatComfort());
-        response.setSeatFabric(inspection.isSeatFabric());
-        response.setFloorMat(inspection.isFloorMat());
-        response.setRearViewMirror(inspection.isRearViewMirror());
-        response.setCarTab(inspection.isCarTab());
-        response.setMirrorAdjustment(inspection.isMirrorAdjustment());
-        response.setDoorLock(inspection.isDoorLock());
-        response.setVentilationSystem(inspection.isVentilationSystem());
-        response.setDashboardDecoration(inspection.isDashboardDecoration());
-        response.setSeatBelt(inspection.isSeatBelt());
-        response.setSunshade(inspection.isSunshade());
-        response.setWindowCurtain(inspection.isWindowCurtain());
-        response.setInteriorRoof(inspection.isInteriorRoof());
-        response.setCarIgnition(inspection.isCarIgnition());
-        response.setFuelConsumption(inspection.isFuelConsumption());
-        response.setHeadlights(inspection.isHeadlights());
-        response.setRainWiper(inspection.isRainWiper());
-        response.setTurnSignalLight(inspection.isTurnSignalLight());
-        response.setBrakeLight(inspection.isBrakeLight());
-        response.setLicensePlateLight(inspection.isLicensePlateLight());
-        response.setClock(inspection.isClock());
-        response.setRpm(inspection.isRpm());
-        response.setBatteryStatus(inspection.isBatteryStatus());
-        response.setChargingIndicator(inspection.isChargingIndicator());
-
+        // Map Interior
+        response.setInterior(mapInteriorEntityToDTO(inspection.getInterior()));
         return response;
     }
 
-    private BodyProblemDTO mapBodyProblemEntity(BodyProblem problem) {
-        BodyProblemDTO dto = new BodyProblemDTO();
-        dto.setProblem(problem.isProblem());
-        dto.setSeverity(problem.getSeverity());
-        dto.setNotes(problem.getNotes());
-        return dto;
+    private MechanicalInspectionDTO mapMechanicalEntityToDTO(MechanicalInspection mechanical) {
+        MechanicalInspectionDTO mechanicalDTO = new MechanicalInspectionDTO();
+        mechanicalDTO.setEngineCondition(mechanical.isEngineCondition());
+        mechanicalDTO.setEnginePower(mechanical.isEnginePower());
+        mechanicalDTO.setSuspension(mechanical.isSuspension());
+        mechanicalDTO.setBrakes(mechanical.isBrakes());
+        mechanicalDTO.setSteering(mechanical.isSteering());
+        mechanicalDTO.setGearbox(mechanical.isGearbox());
+        mechanicalDTO.setMileage(mechanical.isMileage());
+        mechanicalDTO.setFuelGauge(mechanical.isFuelGauge());
+        mechanicalDTO.setTempGauge(mechanical.isTempGauge());
+        mechanicalDTO.setOilGauge(mechanical.isOilGauge());
+        return mechanicalDTO;
+    }
+
+    private BodyInspectionDTO mapBodyEntityToDTO(BodyInspection body) {
+        BodyInspectionDTO bodyDTO = new BodyInspectionDTO();
+        bodyDTO.setBodyCollision(mapItemConditionEntity(body.getBodyCollision()));
+        bodyDTO.setBodyScratches(mapItemConditionEntity(body.getBodyScratches()));
+        bodyDTO.setPaintCondition(mapItemConditionEntity(body.getPaintCondition()));
+        bodyDTO.setBreakages(mapItemConditionEntity(body.getBreakages()));
+        bodyDTO.setCracks(mapItemConditionEntity(body.getCracks()));
+        return bodyDTO;
+    }
+
+    private InteriorInspectionDTO mapInteriorEntityToDTO(InteriorInspection interior) {
+        InteriorInspectionDTO interiorDTO = new InteriorInspectionDTO();
+        interiorDTO.setEngineExhaust(mapItemConditionEntity(interior.getEngineExhaust()));
+        interiorDTO.setSeatComfort(mapItemConditionEntity(interior.getSeatComfort()));
+        interiorDTO.setSeatFabric(mapItemConditionEntity(interior.getSeatFabric()));
+        interiorDTO.setFloorMat(mapItemConditionEntity(interior.getFloorMat()));
+        interiorDTO.setRearViewMirror(mapItemConditionEntity(interior.getRearViewMirror()));
+        interiorDTO.setCarTab(mapItemConditionEntity(interior.getCarTab()));
+        interiorDTO.setMirrorAdjustment(mapItemConditionEntity(interior.getMirrorAdjustment()));
+        interiorDTO.setDoorLock(mapItemConditionEntity(interior.getDoorLock()));
+        interiorDTO.setVentilationSystem(mapItemConditionEntity(interior.getVentilationSystem()));
+        interiorDTO.setDashboardDecoration(mapItemConditionEntity(interior.getDashboardDecoration()));
+        interiorDTO.setSeatBelt(mapItemConditionEntity(interior.getSeatBelt()));
+        interiorDTO.setSunshade(mapItemConditionEntity(interior.getSunshade()));
+        interiorDTO.setWindowCurtain(mapItemConditionEntity(interior.getWindowCurtain()));
+        interiorDTO.setInteriorRoof(mapItemConditionEntity(interior.getInteriorRoof()));
+        interiorDTO.setCarIgnition(mapItemConditionEntity(interior.getCarIgnition()));
+        interiorDTO.setFuelConsumption(mapItemConditionEntity(interior.getFuelConsumption()));
+        interiorDTO.setHeadlights(mapItemConditionEntity(interior.getHeadlights()));
+        interiorDTO.setRainWiper(mapItemConditionEntity(interior.getRainWiper()));
+        interiorDTO.setTurnSignalLight(mapItemConditionEntity(interior.getTurnSignalLight()));
+        interiorDTO.setBrakeLight(mapItemConditionEntity(interior.getBrakeLight()));
+        interiorDTO.setLicensePlateLight(mapItemConditionEntity(interior.getLicensePlateLight()));
+        interiorDTO.setClock(mapItemConditionEntity(interior.getClock()));
+        interiorDTO.setRpm(mapItemConditionEntity(interior.getRpm()));
+        interiorDTO.setBatteryStatus(mapItemConditionEntity(interior.getBatteryStatus()));
+        interiorDTO.setChargingIndicator(mapItemConditionEntity(interior.getChargingIndicator()));
+        return interiorDTO;
+    }
+
+    private ItemConditionDTO mapItemConditionEntity(ItemCondition itemCondition) {
+        ItemConditionDTO itemConditionDTO = new ItemConditionDTO();
+        itemConditionDTO.setProblem(itemCondition.isProblem());
+        itemConditionDTO.setSeverity(ItemConditionDTO.Severity.valueOf(itemCondition.getSeverity()));
+        itemConditionDTO.setNotes(itemCondition.getNotes());
+        return itemConditionDTO;
     }
 }

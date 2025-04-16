@@ -15,6 +15,7 @@ public class OrganizationCar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(unique = true, nullable = false)
     private String plateNumber;
 
@@ -68,4 +69,5 @@ public class OrganizationCar {
 
     @Column(nullable = false)
     private String createdBy;
+
 }

@@ -207,4 +207,66 @@ public class RentCarManagementService {
         }
         return response;
     }
+    public RentCarReqRes updateStatus(String plateNumber, RentCarReqRes updateRequest) {
+        RentCarReqRes response = new RentCarReqRes();
+        try {
+            Optional<RentCar> carOptional = rentCarRepository.findByPlateNumber(plateNumber);
+            if (carOptional.isPresent()) {
+                RentCar existingCar = carOptional.get();
+                // Update all fields from updateRequest to existingCar
+                existingCar.setFrameNo(updateRequest.getFrameNo());
+                existingCar.setCompanyName(updateRequest.getCompanyName());
+                existingCar.setVehiclesUsed(updateRequest.getVehiclesUsed());
+                existingCar.setBodyType(updateRequest.getBodyType());
+                existingCar.setModel(updateRequest.getModel());
+                existingCar.setMotorNumber(updateRequest.getMotorNumber());
+                existingCar.setProYear(updateRequest.getProYear());
+                existingCar.setCc(updateRequest.getCc());
+                existingCar.setDepartment(updateRequest.getDepartment());
+                existingCar.setVehiclesType(updateRequest.getVehiclesType());
+                existingCar.setPlateNumber(updateRequest.getPlateNumber());
+                existingCar.setColor(updateRequest.getColor());
+                existingCar.setDoor(updateRequest.getDoor());
+                existingCar.setCylinder(updateRequest.getCylinder());
+                existingCar.setFuelType(updateRequest.getFuelType());
+                existingCar.setVehiclesStatus(updateRequest.getVehiclesStatus());
+                existingCar.setOtherDescription(updateRequest.getOtherDescription());
+                existingCar.setRadio(updateRequest.getRadio());
+                existingCar.setAntena(updateRequest.getAntena());
+                existingCar.setKrik(updateRequest.getKrik());
+                existingCar.setKrikManesha(updateRequest.getKrikManesha());
+                existingCar.setTyerStatus(updateRequest.getTyerStatus());
+                existingCar.setGomaMaficha(updateRequest.getGomaMaficha());
+                existingCar.setMefcha(updateRequest.getMefcha());
+                existingCar.setReserveTayer(updateRequest.getReserveTayer());
+                existingCar.setGomaGet(updateRequest.getGomaGet());
+                existingCar.setPinsa(updateRequest.getPinsa());
+                existingCar.setKacavite(updateRequest.getKacavite());
+                existingCar.setFireProtection(updateRequest.getFireProtection());
+                existingCar.setSource(updateRequest.getSource());
+                existingCar.setVehiclesDonorName(updateRequest.getVehiclesDonorName());
+                existingCar.setDateOfIn(updateRequest.getDateOfIn());
+                existingCar.setDateOfOut(updateRequest.getDateOfOut());
+                existingCar.setVehiclesPhoto(updateRequest.getVehiclesPhoto());
+                existingCar.setVehiclesUserName(updateRequest.getVehiclesUserName());
+                existingCar.setPosition(updateRequest.getPosition());
+                existingCar.setLibre(updateRequest.getLibre());
+                existingCar.setTransmission(updateRequest.getTransmission());
+                existingCar.setDataAntollerNatue(updateRequest.getDataAntollerNatue());
+                existingCar.setKm(updateRequest.getKm());
+
+                RentCar updatedCar = rentCarRepository.save(existingCar);
+                response.setRentCar(updatedCar);
+                response.setCodStatus(200);
+                response.setMessage("Rent car updated successfully");
+            } else {
+                response.setCodStatus(404);
+                response.setMessage("Rent car not found");
+            }
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
 }

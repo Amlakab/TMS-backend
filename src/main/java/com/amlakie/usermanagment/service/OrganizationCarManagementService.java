@@ -45,6 +45,7 @@ public class OrganizationCarManagementService {
             response.setOrganizationCar(savedCar);
             response.setMessage("Organization Car Registered Successfully");
             response.setCodStatus(200);
+
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
@@ -150,6 +151,28 @@ public class OrganizationCarManagementService {
             response.setOrganizationCarList(cars);
             response.setCodStatus(200);
             response.setMessage("Search results retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public OrganizationCarReqRes updateStatus(String plateNumber, OrganizationCarReqRes updateRequest) {
+        OrganizationCarReqRes response = new OrganizationCarReqRes();
+        try {
+            Optional<OrganizationCar> carOptional = organizationCarRepository.findByPlateNumber(plateNumber);
+            if (carOptional.isPresent()) {
+                OrganizationCar existingCar = carOptional.get();
+                existingCar.setStatus(updateRequest.getStatus());
+                OrganizationCar updatedCar = organizationCarRepository.save(existingCar);
+                response.setOrganizationCar(updatedCar);
+                response.setCodStatus(200);
+                response.setMessage("Organization car Status Updated successfully");
+            } else {
+                response.setCodStatus(404);
+                response.setMessage("Organization car not found");
+            }
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

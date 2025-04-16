@@ -31,13 +31,13 @@ public class Car {
     private String carType;
 
     @Column(nullable = false)
-    private String manufactureYear;
+    private int manufactureYear;
 
     @Column(nullable = false)
     private String motorCapacity;
 
     @Column(nullable = false)
-    private String kmPerLiter;
+    private float kmPerLiter;
 
     @Column(nullable = false)
     private String totalKm;

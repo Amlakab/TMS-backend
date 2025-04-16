@@ -12,6 +12,7 @@ public class CarInspection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String inspectorName;
 
     @Column(nullable = false)
     private String plateNumber;
@@ -19,51 +20,21 @@ public class CarInspection {
     @Column(nullable = false)
     private LocalDateTime inspectionDate = LocalDateTime.now();
 
-    // Mechanical attributes
-    private boolean engineCondition;
-    private boolean fullInsurance;
-    private boolean enginePower;
-    private boolean suspension;
-    private boolean brakes;
-    private boolean steering;
-    private boolean gearbox;
-    private boolean mileage;
-    private boolean fuelGauge;
-    private boolean tempGauge;
-    private boolean oilGauge;
+    // Add the following lines
+    private String inspectionStatus;
+    private String serviceStatus;
+    private Integer bodyScore;
+    private Integer interiorScore;
+    private String notes;
 
-    // Body attributes
-    @Embedded
-    private BodyCondition bodyCondition = new BodyCondition();
-    @Embedded
-    private BodyProblem bodyProblem = new BodyProblem();
+    @OneToOne(cascade = CascadeType.ALL)
+    private MechanicalInspection mechanical;
 
-    // Interior attributes
-    private boolean engineExhaust;
-    private boolean seatComfort;
-    private boolean seatFabric;
-    private boolean floorMat;
-    private boolean rearViewMirror;
-    private boolean carTab;
-    private boolean mirrorAdjustment;
-    private boolean doorLock;
-    private boolean ventilationSystem;
-    private boolean dashboardDecoration;
-    private boolean seatBelt;
-    private boolean sunshade;
-    private boolean windowCurtain;
-    private boolean interiorRoof;
-    private boolean carIgnition;
-    private boolean fuelConsumption;
-    private boolean headlights;
-    private boolean rainWiper;
-    private boolean turnSignalLight;
-    private boolean brakeLight;
-    private boolean licensePlateLight;
-    private boolean clock;
-    private boolean rpm;
-    private boolean batteryStatus;
-    private boolean chargingIndicator;
+    @OneToOne(cascade = CascadeType.ALL)
+    private BodyInspection body;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private InteriorInspection interior;
 
     @ManyToOne
     @JoinColumn(name = "plateNumber", referencedColumnName = "plateNumber", insertable = false, updatable = false)

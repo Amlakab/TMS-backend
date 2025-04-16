@@ -26,9 +26,9 @@ public class CarManagementService {
             car.setOwnerPhone(registrationRequest.getOwnerPhone());
             car.setModel(registrationRequest.getModel());
             car.setCarType(registrationRequest.getCarType());
-            car.setManufactureYear(registrationRequest.getManufactureYear());
+            car.setManufactureYear(Integer.parseInt(registrationRequest.getManufactureYear()));
             car.setMotorCapacity(registrationRequest.getMotorCapacity());
-            car.setKmPerLiter(registrationRequest.getKmPerLiter());
+            car.setKmPerLiter(Float.parseFloat(registrationRequest.getKmPerLiter()));
             car.setTotalKm(registrationRequest.getTotalKm());
             car.setFuelType(registrationRequest.getFuelType());
             car.setStatus(registrationRequest.getStatus());
@@ -92,9 +92,9 @@ public class CarManagementService {
                 existingCar.setOwnerPhone(updateRequest.getOwnerPhone());
                 existingCar.setModel(updateRequest.getModel());
                 existingCar.setCarType(updateRequest.getCarType());
-                existingCar.setManufactureYear(updateRequest.getManufactureYear());
+                existingCar.setManufactureYear(Integer.parseInt(updateRequest.getManufactureYear()));
                 existingCar.setMotorCapacity(updateRequest.getMotorCapacity());
-                existingCar.setKmPerLiter(updateRequest.getKmPerLiter());
+                existingCar.setKmPerLiter(Float.parseFloat(updateRequest.getKmPerLiter()));
                 existingCar.setTotalKm(updateRequest.getTotalKm());
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getStatus());
@@ -141,6 +141,29 @@ public class CarManagementService {
             response.setCarList(cars);
             response.setCodStatus(200);
             response.setMessage("Search results retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+    public CarReqRes updateStatus(String plateNumber, CarReqRes updateRequest) {
+        CarReqRes response = new CarReqRes();
+        try {
+            Optional<Car> carOptional = carRepository.findByPlateNumber(plateNumber);
+            if (carOptional.isPresent()) {
+                Car existingCar = carOptional.get();
+                existingCar.setStatus(updateRequest.getStatus());
+
+
+                Car updatedCar = carRepository.save(existingCar);
+                response.setCar(updatedCar);
+                response.setCodStatus(200);
+                response.setMessage("Car status updated successfully");
+            } else {
+                response.setCodStatus(404);
+                response.setMessage("Car not found");
+            }
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

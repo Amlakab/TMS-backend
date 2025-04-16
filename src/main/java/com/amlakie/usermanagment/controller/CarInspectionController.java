@@ -2,6 +2,7 @@ package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.CarInspectionReqRes;
 import com.amlakie.usermanagment.dto.CarInspectionListResponse;
+import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.service.CarInspectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
