@@ -1,7 +1,11 @@
 package com.amlakie.usermanagment.service;
 
+import com.amlakie.usermanagment.dto.AssignmentRequest;
 import com.amlakie.usermanagment.dto.CarReqRes;
+import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
+import com.amlakie.usermanagment.entity.TravelRequest;
+import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.repository.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -164,6 +168,61 @@ public class CarManagementService {
                 response.setCodStatus(404);
                 response.setMessage("Car not found");
             }
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    // Add these methods to CarManagementService
+    @Autowired
+    private AssignmentHistoryRepository assignmentHistoryRepository;
+
+    public CarReqRes getApprovedCars() {
+        CarReqRes response = new CarReqRes();
+        try {
+            List<Car> cars = carRepository.findByStatus("Approved");
+            response.setCarList(cars);
+            response.setCodStatus(200);
+            response.setMessage("Approved cars retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public CarReqRes createAssignment(AssignmentRequest request) {
+        CarReqRes response = new CarReqRes();
+        try {
+            // Create assignment history
+            AssignmentHistory history = new AssignmentHistory();
+            history.setRequestLetterNo(request.getRequestLetterNo());
+            history.setRequestDate(request.getRequestDate());
+            history.setRequesterName(request.getRequesterName());
+            history.setRentalType(request.getRentalType());
+            history.setPosition(request.getPosition());
+            history.setDepartment(request.getDepartment());
+            history.setPhoneNumber(request.getPhoneNumber());
+            history.setTravelWorkPercentage(request.getTravelWorkPercentage());
+            history.setShortNoticePercentage(request.getShortNoticePercentage());
+            history.setMobilityIssue(request.getMobilityIssue());
+            history.setGender(request.getGender());
+            history.setTotalPercentage(request.getTotalPercentage());
+
+            Car car = carRepository.findById(request.getCarId())
+                    .orElseThrow(() -> new RuntimeException("Car not found"));
+            history.setCar(car);
+
+            assignmentHistoryRepository.save(history);
+
+            // Update car status
+            car.setStatus("Assigned");
+            carRepository.save(car);
+
+            response.setCodStatus(200);
+            response.setMessage("Assignment created successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

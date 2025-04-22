@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.controller;
 
+import com.amlakie.usermanagment.dto.AssignmentRequest;
 import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.service.CarManagementService;
@@ -28,6 +29,8 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getAllCars());
     }
 
+
+
     @GetMapping("/auth/car/{id}")
     public ResponseEntity<CarReqRes> getCarById(@PathVariable Long id) {
         return ResponseEntity.ok(carManagementService.getCarById(id));
@@ -50,5 +53,16 @@ public class CarManagementController {
     @PutMapping("/auth/car/status/{plateNumber}")
     public ResponseEntity<CarReqRes> updateStatus(@PathVariable String plateNumber, @RequestBody CarReqRes updateRequest) {
         return ResponseEntity.ok(carManagementService.updateStatus(plateNumber, updateRequest));
+    }
+
+    // Add these new endpoints to CarManagementController
+    @PostMapping("/auth/car/assign")
+    public ResponseEntity<CarReqRes> createAssignment(@RequestBody AssignmentRequest assignmentRequest) {
+        return ResponseEntity.ok(carManagementService.createAssignment(assignmentRequest));
+    }
+
+    @GetMapping("/auth/car/approved")
+    public ResponseEntity<CarReqRes> getApprovedCars() {
+        return ResponseEntity.ok(carManagementService.getApprovedCars());
     }
 }

@@ -4,6 +4,7 @@ import com.amlakie.usermanagment.dto.AssignmentDTO;
 import com.amlakie.usermanagment.dto.CompletionDTO;
 import com.amlakie.usermanagment.dto.DailyServiceRequestDTO;
 import com.amlakie.usermanagment.entity.DailyServiceRequest;
+import com.amlakie.usermanagment.entity.TravelRequest;
 import com.amlakie.usermanagment.service.DailyServiceRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,11 @@ public class DailyServiceRequestController {
         return ResponseEntity.ok(service.completeRequest(id, dto));
     }
 
+
     @GetMapping("/driver")
     public ResponseEntity<List<DailyServiceRequest>> getDriverRequests(
-            @RequestParam String driverName) {
-        return ResponseEntity.ok(service.getDriverRequests(driverName));
+            @RequestParam(required = false) String driverName) {
+        List<DailyServiceRequest> requests = service.getRequestsForDriver(driverName);
+        return ResponseEntity.ok(requests);
     }
 }

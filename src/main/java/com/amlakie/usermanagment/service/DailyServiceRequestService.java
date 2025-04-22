@@ -4,6 +4,7 @@ import com.amlakie.usermanagment.dto.AssignmentDTO;
 import com.amlakie.usermanagment.dto.CompletionDTO;
 import com.amlakie.usermanagment.dto.DailyServiceRequestDTO;
 import com.amlakie.usermanagment.entity.DailyServiceRequest;
+import com.amlakie.usermanagment.entity.TravelRequest;
 import com.amlakie.usermanagment.exception.InvalidRequestException;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.DailyServiceRequestRepository;
@@ -66,7 +67,14 @@ public class DailyServiceRequestService {
         return repository.save(request);
     }
 
-    public List<DailyServiceRequest> getDriverRequests(String driverName) {
-        return repository.findByDriverNameAndStatus(driverName, DailyServiceRequest.RequestStatus.ASSIGNED);
+
+    public List<DailyServiceRequest> getRequestsForDriver(String driverName) {
+        if (driverName != null && !driverName.isEmpty()) {
+            return repository.findByDriverNameAndStatus(
+                    driverName,
+                    DailyServiceRequest.RequestStatus.ASSIGNED
+            );
+        }
+        return repository.findByStatus(DailyServiceRequest.RequestStatus.ASSIGNED);
     }
 }

@@ -262,6 +262,7 @@ public class TravelRequestService {
         entity.setClaimantName(dto.getClaimantName());
         entity.setTeamLeaderName(dto.getTeamLeaderName());
         entity.setApprovement(dto.getApprovement());
+        entity.setAccountNumber(dto.getAccountNumber());
 
         if (dto.getTravelers() != null) {
             dto.getTravelers().forEach(entity::addTraveler); // Adds travelers to entity

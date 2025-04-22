@@ -8,6 +8,5 @@ import java.util.List;
 // DailyServiceRequestRepository.java
 public interface DailyServiceRequestRepository extends JpaRepository<DailyServiceRequest, Long> {
     List<DailyServiceRequest> findByStatus(DailyServiceRequest.RequestStatus status);
-    List<DailyServiceRequest> findByDriverName(String driverName);
     List<DailyServiceRequest> findByDriverNameAndStatus(String driverName, DailyServiceRequest.RequestStatus status);
 }
