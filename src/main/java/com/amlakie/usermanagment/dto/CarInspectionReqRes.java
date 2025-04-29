@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +16,6 @@ public class CarInspectionReqRes {
     private String message;
     private String error;
     private Long id;
-
     @NotBlank(message = "Plate number is required")
     private String plateNumber;
 
@@ -63,8 +61,7 @@ public class CarInspectionReqRes {
     public enum InspectionStatus {
         Approved, Rejected, ConditionallyApproved
     }
-
     public enum ServiceStatus {
-        Ready, Pending, InProgress
+        Ready, Pending, ReadyWithWarning,NotReady
     }
 }

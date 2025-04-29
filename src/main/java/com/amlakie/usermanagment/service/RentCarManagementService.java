@@ -38,7 +38,7 @@ public class RentCarManagementService {
             rentCar.setDoor(registrationRequest.getDoor());
             rentCar.setCylinder(registrationRequest.getCylinder());
             rentCar.setFuelType(registrationRequest.getFuelType());
-            rentCar.setVehiclesStatus(registrationRequest.getVehiclesStatus());
+            rentCar.setStatus(registrationRequest.getVehiclesStatus());
             rentCar.setOtherDescription(registrationRequest.getOtherDescription());
             rentCar.setRadio(registrationRequest.getRadio());
             rentCar.setAntena(registrationRequest.getAntena());
@@ -133,7 +133,7 @@ public class RentCarManagementService {
                 existingCar.setDoor(updateRequest.getDoor());
                 existingCar.setCylinder(updateRequest.getCylinder());
                 existingCar.setFuelType(updateRequest.getFuelType());
-                existingCar.setVehiclesStatus(updateRequest.getVehiclesStatus());
+                existingCar.setStatus(updateRequest.getVehiclesStatus());
                 existingCar.setOtherDescription(updateRequest.getOtherDescription());
                 existingCar.setRadio(updateRequest.getRadio());
                 existingCar.setAntena(updateRequest.getAntena());
@@ -229,7 +229,7 @@ public class RentCarManagementService {
                 existingCar.setDoor(updateRequest.getDoor());
                 existingCar.setCylinder(updateRequest.getCylinder());
                 existingCar.setFuelType(updateRequest.getFuelType());
-                existingCar.setVehiclesStatus(updateRequest.getVehiclesStatus());
+                existingCar.setStatus(updateRequest.getVehiclesStatus());
                 existingCar.setOtherDescription(updateRequest.getOtherDescription());
                 existingCar.setRadio(updateRequest.getRadio());
                 existingCar.setAntena(updateRequest.getAntena());

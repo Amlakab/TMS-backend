@@ -1,11 +1,6 @@
 package com.amlakie.usermanagment.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +27,7 @@ public class BodyInspection {
 
     @OneToOne(cascade = CascadeType.ALL)
     private ItemCondition cracks;
+
+    @OneToOne(mappedBy = "body", fetch = FetchType.LAZY) // 'mappedBy' refers to the field name in CarInspection
+    private CarInspection carInspection;
 }

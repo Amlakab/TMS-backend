@@ -1,9 +1,6 @@
 package com.amlakie.usermanagment.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +23,6 @@ public class MechanicalInspection {
     private boolean fuelGauge;
     private boolean tempGauge;
     private boolean oilGauge;
+    @OneToOne(mappedBy = "mechanical", fetch = FetchType.LAZY) // 'mappedBy' refers to the field name in CarInspection
+    private CarInspection carInspection;
 }

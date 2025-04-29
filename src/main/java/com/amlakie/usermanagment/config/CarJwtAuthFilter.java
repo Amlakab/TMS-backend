@@ -124,7 +124,8 @@ public class CarJwtAuthFilter extends OncePerRequestFilter {
         } catch (Exception e) { // Catch unexpected errors (e.g., UserDetailsService issues)
             log.error("[CarJwtAuthFilter] An error occurred during filter processing: {}", e.getMessage(), e);
         }
-
+// In your CarJwtAuthFilter or TravelRequestJWTAuthFilter
+        log.debug("Received Authorization header: {}", request.getHeader("Authorization"));
         // Continue the filter chain
         filterChain.doFilter(request, response);
     }
