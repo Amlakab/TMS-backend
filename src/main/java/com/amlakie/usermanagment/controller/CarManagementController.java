@@ -42,8 +42,23 @@ public class CarManagementController {
     }
 
     @DeleteMapping("/auth/car/delete/{id}")
-    public ResponseEntity<CarReqRes> deleteCar(@PathVariable Long id) {
-        return ResponseEntity.ok(carManagementService.deleteCar(id));
+    public ResponseEntity<CarReqRes> deleteCar(@PathVariable Long id) { // Return ResponseEntity<CarReqRes>
+        CarReqRes serviceResponse = carManagementService.deleteCar(id);
+
+        if (serviceResponse.getCodStatus() == 200) {
+            // For successful DELETE, 204 No Content is standard, but if frontend
+            // needs the message, return 200 OK with the body. Choose one.
+            // Option A: Standard 204 No Content (frontend might not get body)
+            // return ResponseEntity.noContent().build();
+
+            // Option B: 200 OK with body (if frontend needs the message)
+            return ResponseEntity.ok(serviceResponse);
+
+        } else {
+            // For errors (404, 409, 500), return the CarReqRes object
+            // Spring Boot will serialize this to JSON with the appropriate status code
+            return ResponseEntity.status(serviceResponse.getCodStatus()).body(serviceResponse);
+        }
     }
 
     @GetMapping("/auth/car/search")

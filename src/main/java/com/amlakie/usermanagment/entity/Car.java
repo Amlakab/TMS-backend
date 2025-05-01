@@ -2,6 +2,8 @@ package com.amlakie.usermanagment.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -14,6 +16,10 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // Standard boolean getter convention
+    @Setter
+    @Getter
+    private boolean inspected = false;
 
     @Column(unique = true, nullable = false)
     private String plateNumber;
@@ -56,4 +62,5 @@ public class Car {
 
     @Column(nullable = false)
     private String createdBy;
+
 }

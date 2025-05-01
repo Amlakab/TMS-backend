@@ -15,6 +15,7 @@ public class RentCar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String make;
 
     @Column(nullable = false)
     private String frameNo;
@@ -141,4 +142,46 @@ public class RentCar {
 
     @Column(nullable = false)
     private String createdBy;
+    private boolean inspected = false; // Default to false
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    // --- GETTER/SETTER FOR THE NEW FIELD ---
+    public boolean isInspected() { // Standard boolean getter convention
+        return inspected;
+    }
+
+    public void setInspected(boolean inspected) {
+
+    }
 }

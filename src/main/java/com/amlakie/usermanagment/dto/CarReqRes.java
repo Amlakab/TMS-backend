@@ -14,8 +14,8 @@ public class CarReqRes {
     private String token;
     private String refreshedToken;
     private String expirationTime;
-    private Car car;
-    private List<Car> carList;
+    private CarDto car; // For single car responses
+    private List<CarDto> carList;
 
     // Car fields
     private String plateNumber;
