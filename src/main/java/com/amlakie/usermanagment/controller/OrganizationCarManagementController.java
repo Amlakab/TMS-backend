@@ -32,12 +32,10 @@ public class OrganizationCarManagementController {
     public ResponseEntity<OrganizationCarReqRes> updateOrganizationCar(@PathVariable Long id, @RequestBody OrganizationCarReqRes updateRequest) {
         return ResponseEntity.ok(organizationCarManagementService.updateOrganizationCar(id, updateRequest));
     }
-    // In OrganizationCarManagementController
-    @PutMapping("/status/{plateNumber}") // Changed path
+    @PutMapping("/update/{platenumber}")
     public ResponseEntity<OrganizationCarReqRes> changeStatus(@PathVariable String plateNumber, @RequestBody OrganizationCarReqRes updateRequest) {
         return ResponseEntity.ok(organizationCarManagementService.updateStatus(plateNumber, updateRequest));
     }
-
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<OrganizationCarReqRes> deleteOrganizationCar(@PathVariable Long id) {
@@ -48,5 +46,6 @@ public class OrganizationCarManagementController {
     public ResponseEntity<OrganizationCarReqRes> searchOrganizationCars(@RequestParam String query) {
         return ResponseEntity.ok(organizationCarManagementService.searchOrganizationCars(query));
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.repository;
 
+import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.RentCar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,6 @@ public interface RentCarRepository extends JpaRepository<RentCar, Long> {
             String plateNumber, String companyName, String model, String vehiclesUserName);
     boolean existsByPlateNumber(String plateNumber);
     boolean existsByFrameNo(String frameNo);
+    List<RentCar> findByStatus(String requestStatus);
+
 }

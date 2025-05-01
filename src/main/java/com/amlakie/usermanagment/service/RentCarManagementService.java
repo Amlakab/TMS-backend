@@ -1,7 +1,12 @@
 package com.amlakie.usermanagment.service;
 
+import com.amlakie.usermanagment.dto.AssignmentRequest;
+import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.RentCarReqRes;
+import com.amlakie.usermanagment.entity.AssignmentHistory;
+import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.RentCar;
+import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.repository.RentCarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -9,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -263,6 +269,61 @@ public class RentCarManagementService {
                 response.setCodStatus(404);
                 response.setMessage("Rent car not found");
             }
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    // Add these methods to CarManagementService
+    @Autowired
+    private AssignmentHistoryRepository assignmentHistoryRepository;
+
+    public RentCarReqRes getApprovedCars() {
+        RentCarReqRes response = new RentCarReqRes();
+        try {
+            List<RentCar> cars = rentCarRepository.findByStatus("Approved");
+            response.setRentCarList(cars);
+            response.setCodStatus(200);
+            response.setMessage("Approved cars retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public RentCarReqRes createAssignment(AssignmentRequest request) {
+        RentCarReqRes response = new RentCarReqRes();
+        try {
+            // Create assignment history
+            AssignmentHistory history = new AssignmentHistory();
+            history.setRequestLetterNo(request.getRequestLetterNo());
+            history.setRequestDate(LocalDateTime.parse(request.getRequestDate()));
+            history.setRequesterName(request.getRequesterName());
+            history.setRentalType(request.getRentalType());
+            history.setPosition(request.getPosition());
+            history.setDepartment(request.getDepartment());
+            history.setPhoneNumber(request.getPhoneNumber());
+            history.setTravelWorkPercentage(request.getTravelWorkPercentage());
+            history.setShortNoticePercentage(request.getShortNoticePercentage());
+            history.setMobilityIssue(request.getMobilityIssue());
+            history.setGender(request.getGender());
+            history.setTotalPercentage(request.getTotalPercentage());
+
+            RentCar cars = rentCarRepository.findById(request.getCarId())
+                    .orElseThrow(() -> new RuntimeException("Car not found"));
+            history.setCars(cars);
+
+            assignmentHistoryRepository.save(history);
+
+            // Update car status
+            cars.setStatus("Assigned");
+            rentCarRepository.save(cars);
+
+            response.setCodStatus(200);
+            response.setMessage("Assignment created successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

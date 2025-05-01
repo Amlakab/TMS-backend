@@ -4,6 +4,7 @@ import com.amlakie.usermanagment.dto.AssignmentRequest;
 import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.service.CarManagementService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,23 +43,8 @@ public class CarManagementController {
     }
 
     @DeleteMapping("/auth/car/delete/{id}")
-    public ResponseEntity<CarReqRes> deleteCar(@PathVariable Long id) { // Return ResponseEntity<CarReqRes>
-        CarReqRes serviceResponse = carManagementService.deleteCar(id);
-
-        if (serviceResponse.getCodStatus() == 200) {
-            // For successful DELETE, 204 No Content is standard, but if frontend
-            // needs the message, return 200 OK with the body. Choose one.
-            // Option A: Standard 204 No Content (frontend might not get body)
-            // return ResponseEntity.noContent().build();
-
-            // Option B: 200 OK with body (if frontend needs the message)
-            return ResponseEntity.ok(serviceResponse);
-
-        } else {
-            // For errors (404, 409, 500), return the CarReqRes object
-            // Spring Boot will serialize this to JSON with the appropriate status code
-            return ResponseEntity.status(serviceResponse.getCodStatus()).body(serviceResponse);
-        }
+    public ResponseEntity<CarReqRes> deleteCar(@PathVariable Long id) {
+        return ResponseEntity.ok(carManagementService.deleteCar(id));
     }
 
     @GetMapping("/auth/car/search")
@@ -72,12 +58,41 @@ public class CarManagementController {
 
     // Add these new endpoints to CarManagementController
     @PostMapping("/auth/car/assign")
-    public ResponseEntity<CarReqRes> createAssignment(@RequestBody AssignmentRequest assignmentRequest) {
-        return ResponseEntity.ok(carManagementService.createAssignment(assignmentRequest));
+    public ResponseEntity<CarReqRes> createAssignment(@Valid @RequestBody AssignmentRequest request) {
+        return ResponseEntity.ok(carManagementService.createAssignment(request));
     }
 
     @GetMapping("/auth/car/approved")
     public ResponseEntity<CarReqRes> getApprovedCars() {
         return ResponseEntity.ok(carManagementService.getApprovedCars());
+    }
+
+
+    // Assignment History Endpoints
+    @GetMapping("/auth/assignment/all")
+    public ResponseEntity<CarReqRes> getAllAssignmentHistories() {
+        return ResponseEntity.ok(carManagementService.getAllAssignmentHistories());
+    }
+
+    @GetMapping("/auth/assignments/not-assigned")
+    public ResponseEntity<CarReqRes> getPendingCars() {
+        return ResponseEntity.ok(carManagementService.getPendingCars());
+    }
+
+    @GetMapping("/auth/assignment/{id}")
+    public ResponseEntity<CarReqRes> getAssignmentHistoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(carManagementService.getAssignmentHistoryById(id));
+    }
+
+    @PutMapping("/auth/assignment/update/{id}")
+    public ResponseEntity<CarReqRes> updateAssignmentHistory(
+            @PathVariable Long id,
+            @RequestBody AssignmentRequest updateRequest) {
+        return ResponseEntity.ok(carManagementService.updateAssignmentHistory(id, updateRequest));
+    }
+
+    @DeleteMapping("/auth/assignment/delete/{id}")
+    public ResponseEntity<CarReqRes> deleteAssignmentHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(carManagementService.deleteAssignmentHistory(id));
     }
 }

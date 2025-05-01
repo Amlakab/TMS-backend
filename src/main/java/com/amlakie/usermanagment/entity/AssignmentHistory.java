@@ -50,9 +50,16 @@ public class AssignmentHistory {
     @Column(nullable = false)
     private int totalPercentage;
 
+    @Column(nullable = false)
+    private String status;
+
     @ManyToOne
-    @JoinColumn(name = "car_id", nullable = false)
+    @JoinColumn(name = "car_id", nullable = true)
     private Car car;
+
+    @ManyToOne
+    @JoinColumn(name = "rent_car_id", nullable = true)
+    private RentCar cars;
 
     @Column(nullable = false)
     private LocalDateTime assignedDate = LocalDateTime.now();

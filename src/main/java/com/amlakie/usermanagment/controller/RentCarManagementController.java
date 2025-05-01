@@ -1,5 +1,7 @@
 package com.amlakie.usermanagment.controller;
 
+import com.amlakie.usermanagment.dto.AssignmentRequest;
+import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.dto.RentCarReqRes;
 import com.amlakie.usermanagment.service.RentCarManagementService;
@@ -43,6 +45,21 @@ public class RentCarManagementController {
     public ResponseEntity<RentCarReqRes> searchRentCars(@RequestParam String query) {
         return ResponseEntity.ok(rentCarManagementService.searchRentCars(query));
     }
+
+    @PutMapping("/status/{plateNumber}")
+    public ResponseEntity<RentCarReqRes> updateStatus(@PathVariable String plateNumber, @RequestBody RentCarReqRes updateRequest) {
+        return ResponseEntity.ok(rentCarManagementService.updateStatus(plateNumber, updateRequest));
+    }
+    // Add these new endpoints to CarManagementController
+    @PostMapping("/assign")
+    public ResponseEntity<RentCarReqRes> createAssignment(@RequestBody AssignmentRequest assignmentRequest) {
+        return ResponseEntity.ok(rentCarManagementService.createAssignment(assignmentRequest));
+    }
+    @GetMapping("/approved")
+    public ResponseEntity<RentCarReqRes> getApprovedCars() {
+        return ResponseEntity.ok(rentCarManagementService.getApprovedCars());
+    }
+
     @PutMapping("/update/{platenumber}")
     public ResponseEntity<RentCarReqRes> updateStatus(@PathVariable Long id, @RequestBody RentCarReqRes updateRequest) {
         return ResponseEntity.ok(rentCarManagementService.updateRentCar(id, updateRequest));

@@ -1,6 +1,7 @@
 package com.amlakie.usermanagment.dto;
 
 
+import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
 import lombok.Data;
 
@@ -14,8 +15,8 @@ public class CarReqRes {
     private String token;
     private String refreshedToken;
     private String expirationTime;
-    private CarDto car; // For single car responses
-    private List<CarDto> carList;
+    private Car car;
+    private List<Car> carList;
 
     // Car fields
     private String plateNumber;
@@ -30,4 +31,7 @@ public class CarReqRes {
     private String fuelType;
     private String status;
     private String parkingLocation;
+
+    private AssignmentHistory assignmentHistory;
+    private List<AssignmentHistory> assignmentHistoryList;
 }
