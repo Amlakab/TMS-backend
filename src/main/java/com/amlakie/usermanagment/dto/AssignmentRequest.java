@@ -15,6 +15,7 @@ public class AssignmentRequest {
     private String position;
     private String department;
     private String phoneNumber;
+    private String plateNumber;
     private String travelWorkPercentage;
     private String shortNoticePercentage;
     private String mobilityIssue;
@@ -23,6 +24,6 @@ public class AssignmentRequest {
     private String status;
     private Long carId; // Only ID instead of full object
     private Long rentCarId;
-
+    private LocalDateTime assignedDate;
     // Getters and setters
 }

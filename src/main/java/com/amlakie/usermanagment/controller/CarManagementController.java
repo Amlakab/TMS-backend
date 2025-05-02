@@ -79,17 +79,17 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getPendingCars());
     }
 
+    @PutMapping("/auth/assignments/update/{id}")
+    public ResponseEntity<CarReqRes> updateAssignmentHistory(@PathVariable Long id, @RequestBody AssignmentRequest updateRequest) {
+        return ResponseEntity.ok(carManagementService.updateAssignmentHistory(id, updateRequest));
+    }
+
     @GetMapping("/auth/assignment/{id}")
     public ResponseEntity<CarReqRes> getAssignmentHistoryById(@PathVariable Long id) {
         return ResponseEntity.ok(carManagementService.getAssignmentHistoryById(id));
     }
 
-    @PutMapping("/auth/assignment/update/{id}")
-    public ResponseEntity<CarReqRes> updateAssignmentHistory(
-            @PathVariable Long id,
-            @RequestBody AssignmentRequest updateRequest) {
-        return ResponseEntity.ok(carManagementService.updateAssignmentHistory(id, updateRequest));
-    }
+
 
     @DeleteMapping("/auth/assignment/delete/{id}")
     public ResponseEntity<CarReqRes> deleteAssignmentHistory(@PathVariable Long id) {

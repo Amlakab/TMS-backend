@@ -301,19 +301,11 @@ public class CarManagementService {
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
 
             // Update history fields
-            history.setRequestLetterNo(updateRequest.getRequestLetterNo());
-            history.setRequestDate(LocalDateTime.parse(updateRequest.getRequestDate()));
-            history.setRequesterName(updateRequest.getRequesterName());
+            history.setAssignedDate( LocalDateTime.now());
             history.setRentalType(updateRequest.getRentalType());
-            history.setPosition(updateRequest.getPosition());
-            history.setDepartment(updateRequest.getDepartment());
-            history.setPhoneNumber(updateRequest.getPhoneNumber());
-            history.setTravelWorkPercentage(updateRequest.getTravelWorkPercentage());
-            history.setShortNoticePercentage(updateRequest.getShortNoticePercentage());
-            history.setMobilityIssue(updateRequest.getMobilityIssue());
-            history.setGender(updateRequest.getGender());
-            history.setTotalPercentage(updateRequest.getTotalPercentage());
+            history.setPlateNumber(updateRequest.getPlateNumber());
             history.setStatus(updateRequest.getStatus());
+
 
             // Update car if changed
             if (!history.getCar().getId().equals(updateRequest.getCarId())) {
@@ -364,4 +356,6 @@ public class CarManagementService {
         }
         return response;
     }
+
+
 }

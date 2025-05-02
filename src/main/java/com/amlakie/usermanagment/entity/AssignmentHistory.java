@@ -53,6 +53,9 @@ public class AssignmentHistory {
     @Column(nullable = false)
     private String status;
 
+    @Column(nullable = false)
+    private String plateNumber;
+
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = true)
     private Car car;
