@@ -58,4 +58,5 @@ public class RentCarReqRes {
     private String transmission;
     private String dataAntollerNatue;
     private String km;
+    private String status;
 }

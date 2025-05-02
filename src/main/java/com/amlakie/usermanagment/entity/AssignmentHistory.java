@@ -53,7 +53,7 @@ public class AssignmentHistory {
     @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String plateNumber;
 
     @ManyToOne
@@ -65,5 +65,5 @@ public class AssignmentHistory {
     private RentCar cars;
 
     @Column(nullable = false)
-    private LocalDateTime assignedDate = LocalDateTime.now();
+    private LocalDateTime assignedDate ;
 }

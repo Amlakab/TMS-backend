@@ -79,7 +79,7 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getPendingCars());
     }
 
-    @PutMapping("/auth/assignments/update/{id}")
+    @PutMapping("/auth/car/assignments/update/{id}")
     public ResponseEntity<CarReqRes> updateAssignmentHistory(@PathVariable Long id, @RequestBody AssignmentRequest updateRequest) {
         return ResponseEntity.ok(carManagementService.updateAssignmentHistory(id, updateRequest));
     }

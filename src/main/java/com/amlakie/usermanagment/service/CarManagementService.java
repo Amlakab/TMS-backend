@@ -158,6 +158,7 @@ public class CarManagementService {
         }
         return response;
     }
+
     public CarReqRes updateStatus(String plateNumber, CarReqRes updateRequest) {
         CarReqRes response = new CarReqRes();
         try {
@@ -210,6 +211,7 @@ public class CarManagementService {
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
             history.setRequestDate(requestDateTime);
+            history.setAssignedDate(requestDateTime);
             history.setRequesterName(request.getRequesterName());
             history.setRentalType(request.getRentalType());
             history.setPosition(request.getPosition());
@@ -220,6 +222,7 @@ public class CarManagementService {
             history.setMobilityIssue(request.getMobilityIssue());
             history.setGender(request.getGender());
             history.setTotalPercentage(request.getTotalPercentage());
+            history.setPlateNumber(request.getPlateNumber());
             history.setStatus(request.getStatus());
 
             // Handle car assignment
@@ -296,6 +299,7 @@ public class CarManagementService {
 
     public CarReqRes updateAssignmentHistory(Long id, AssignmentRequest updateRequest) {
         CarReqRes response = new CarReqRes();
+
         try {
             AssignmentHistory history = assignmentHistoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
@@ -307,26 +311,23 @@ public class CarManagementService {
             history.setStatus(updateRequest.getStatus());
 
 
-            // Update car if changed
-            if (!history.getCar().getId().equals(updateRequest.getCarId())) {
-                Car newCar = carRepository.findById(updateRequest.getCarId())
-                        .orElseThrow(() -> new RuntimeException("New car not found"));
-
-                // Release old car
-                Car oldCar = history.getCar();
-                oldCar.setStatus("Approved");
-                carRepository.save(oldCar);
-
-                // Assign new car
-                newCar.setStatus("Assigned");
-                carRepository.save(newCar);
-                history.setCar(newCar);
+            if (updateRequest.getCarId() != null) {
+                Car car = carRepository.findById(updateRequest.getCarId())
+                        .orElseThrow(() -> new RuntimeException("Car not found"));
+                history.setCar(car);
             }
 
-            AssignmentHistory updatedHistory = assignmentHistoryRepository.save(history);
-            response.setAssignmentHistory(updatedHistory);
+            if (updateRequest.getRentCarId() != null) {
+                RentCar rentCar = rentCarRepository
+                        .findById(updateRequest.getRentCarId())
+                        .orElseThrow(() -> new RuntimeException("Rent car not found"));
+                history.setCars(rentCar);
+            }
+
+            assignmentHistoryRepository.save(history);
+
             response.setCodStatus(200);
-            response.setMessage("Assignment history updated successfully");
+            response.setMessage("Assignment created successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

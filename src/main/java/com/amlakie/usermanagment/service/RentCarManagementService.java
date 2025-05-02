@@ -213,61 +213,57 @@ public class RentCarManagementService {
         }
         return response;
     }
+
+    public RentCarReqRes updateAssignmentHistory(Long id, AssignmentRequest updateRequest) {
+        RentCarReqRes response = new RentCarReqRes();
+        try {
+            AssignmentHistory history = assignmentHistoryRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Assignment history not found"));
+
+            // Update history fields
+            history.setAssignedDate( LocalDateTime.now());
+            history.setRentalType(updateRequest.getRentalType());
+            history.setPlateNumber(updateRequest.getPlateNumber());
+            history.setStatus(updateRequest.getStatus());
+
+
+            // Update car if changed
+            RentCar cars = rentCarRepository.findById(updateRequest.getCarId())
+                    .orElseThrow(() -> new RuntimeException("Car not found"));
+            history.setCars(cars);
+
+            assignmentHistoryRepository.save(history);
+
+            // Update car status
+            cars.setStatus("Assigned");
+            rentCarRepository.save(cars);
+
+            response.setCodStatus(200);
+            response.setMessage("Assignment created successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+
     public RentCarReqRes updateStatus(String plateNumber, RentCarReqRes updateRequest) {
         RentCarReqRes response = new RentCarReqRes();
         try {
             Optional<RentCar> carOptional = rentCarRepository.findByPlateNumber(plateNumber);
             if (carOptional.isPresent()) {
                 RentCar existingCar = carOptional.get();
-                // Update all fields from updateRequest to existingCar
-                existingCar.setFrameNo(updateRequest.getFrameNo());
-                existingCar.setCompanyName(updateRequest.getCompanyName());
-                existingCar.setVehiclesUsed(updateRequest.getVehiclesUsed());
-                existingCar.setBodyType(updateRequest.getBodyType());
-                existingCar.setModel(updateRequest.getModel());
-                existingCar.setMotorNumber(updateRequest.getMotorNumber());
-                existingCar.setProYear(updateRequest.getProYear());
-                existingCar.setCc(updateRequest.getCc());
-                existingCar.setDepartment(updateRequest.getDepartment());
-                existingCar.setVehiclesType(updateRequest.getVehiclesType());
-                existingCar.setPlateNumber(updateRequest.getPlateNumber());
-                existingCar.setColor(updateRequest.getColor());
-                existingCar.setDoor(updateRequest.getDoor());
-                existingCar.setCylinder(updateRequest.getCylinder());
-                existingCar.setFuelType(updateRequest.getFuelType());
-                existingCar.setStatus(updateRequest.getVehiclesStatus());
-                existingCar.setOtherDescription(updateRequest.getOtherDescription());
-                existingCar.setRadio(updateRequest.getRadio());
-                existingCar.setAntena(updateRequest.getAntena());
-                existingCar.setKrik(updateRequest.getKrik());
-                existingCar.setKrikManesha(updateRequest.getKrikManesha());
-                existingCar.setTyerStatus(updateRequest.getTyerStatus());
-                existingCar.setGomaMaficha(updateRequest.getGomaMaficha());
-                existingCar.setMefcha(updateRequest.getMefcha());
-                existingCar.setReserveTayer(updateRequest.getReserveTayer());
-                existingCar.setGomaGet(updateRequest.getGomaGet());
-                existingCar.setPinsa(updateRequest.getPinsa());
-                existingCar.setKacavite(updateRequest.getKacavite());
-                existingCar.setFireProtection(updateRequest.getFireProtection());
-                existingCar.setSource(updateRequest.getSource());
-                existingCar.setVehiclesDonorName(updateRequest.getVehiclesDonorName());
-                existingCar.setDateOfIn(updateRequest.getDateOfIn());
-                existingCar.setDateOfOut(updateRequest.getDateOfOut());
-                existingCar.setVehiclesPhoto(updateRequest.getVehiclesPhoto());
-                existingCar.setVehiclesUserName(updateRequest.getVehiclesUserName());
-                existingCar.setPosition(updateRequest.getPosition());
-                existingCar.setLibre(updateRequest.getLibre());
-                existingCar.setTransmission(updateRequest.getTransmission());
-                existingCar.setDataAntollerNatue(updateRequest.getDataAntollerNatue());
-                existingCar.setKm(updateRequest.getKm());
+                existingCar.setStatus(updateRequest.getStatus());
+
 
                 RentCar updatedCar = rentCarRepository.save(existingCar);
                 response.setRentCar(updatedCar);
                 response.setCodStatus(200);
-                response.setMessage("Rent car updated successfully");
+                response.setMessage("Car status updated successfully");
             } else {
                 response.setCodStatus(404);
-                response.setMessage("Rent car not found");
+                response.setMessage("Car not found");
             }
         } catch (Exception e) {
             response.setCodStatus(500);
@@ -301,11 +297,13 @@ public class RentCarManagementService {
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
             history.setRequestDate(LocalDateTime.parse(request.getRequestDate()));
+            history.setAssignedDate(LocalDateTime.parse(request.getAssignedDate()));
             history.setRequesterName(request.getRequesterName());
             history.setRentalType(request.getRentalType());
             history.setPosition(request.getPosition());
             history.setDepartment(request.getDepartment());
             history.setPhoneNumber(request.getPhoneNumber());
+            history.setPlateNumber(request.getPlateNumber());
             history.setTravelWorkPercentage(request.getTravelWorkPercentage());
             history.setShortNoticePercentage(request.getShortNoticePercentage());
             history.setMobilityIssue(request.getMobilityIssue());

@@ -24,6 +24,6 @@ public class AssignmentRequest {
     private String status;
     private Long carId; // Only ID instead of full object
     private Long rentCarId;
-    private LocalDateTime assignedDate;
+    private String assignedDate;
     // Getters and setters
 }

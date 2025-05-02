@@ -50,11 +50,18 @@ public class RentCarManagementController {
     public ResponseEntity<RentCarReqRes> updateStatus(@PathVariable String plateNumber, @RequestBody RentCarReqRes updateRequest) {
         return ResponseEntity.ok(rentCarManagementService.updateStatus(plateNumber, updateRequest));
     }
+
     // Add these new endpoints to CarManagementController
     @PostMapping("/assign")
     public ResponseEntity<RentCarReqRes> createAssignment(@RequestBody AssignmentRequest assignmentRequest) {
         return ResponseEntity.ok(rentCarManagementService.createAssignment(assignmentRequest));
     }
+
+    @PutMapping("/assignments/update/{id}")
+    public ResponseEntity<RentCarReqRes> updateAssignmentHistory(@PathVariable Long id, @RequestBody AssignmentRequest updateRequest) {
+        return ResponseEntity.ok(rentCarManagementService.updateAssignmentHistory(id, updateRequest));
+    }
+
     @GetMapping("/approved")
     public ResponseEntity<RentCarReqRes> getApprovedCars() {
         return ResponseEntity.ok(rentCarManagementService.getApprovedCars());
