@@ -264,10 +264,10 @@ public class CarManagementService {
         return response;
     }
 
-    public CarReqRes getPendingCars() {
+    public CarReqRes getPendingRequest() {
         CarReqRes response = new CarReqRes();
         try {
-            List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatus("Not Assigned");
+            List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatus("Pending");
             response.setAssignmentHistoryList(histories);
             response.setCodStatus(200);
             response.setMessage("Pending histories retrieved successfully");

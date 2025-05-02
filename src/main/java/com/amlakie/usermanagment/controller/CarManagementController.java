@@ -74,9 +74,9 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getAllAssignmentHistories());
     }
 
-    @GetMapping("/auth/assignments/not-assigned")
+    @GetMapping("/auth/assignments/pending")
     public ResponseEntity<CarReqRes> getPendingCars() {
-        return ResponseEntity.ok(carManagementService.getPendingCars());
+        return ResponseEntity.ok(carManagementService.getPendingRequest());
     }
 
     @PutMapping("/auth/car/assignments/update/{id}")
