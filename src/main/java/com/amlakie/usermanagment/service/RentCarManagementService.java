@@ -7,22 +7,27 @@ import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.RentCar;
 import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
+import com.amlakie.usermanagment.repository.CarRepository;
 import com.amlakie.usermanagment.repository.RentCarRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RentCarManagementService {
 
     @Autowired
     private RentCarRepository rentCarRepository;
+
+    @Autowired
+    private CarRepository carRepository;
 
     public RentCarReqRes registerRentCar(RentCarReqRes registrationRequest) {
         RentCarReqRes response = new RentCarReqRes();
@@ -230,7 +235,7 @@ public class RentCarManagementService {
             // Update car if changed
             RentCar cars = rentCarRepository.findById(updateRequest.getCarId())
                     .orElseThrow(() -> new RuntimeException("Car not found"));
-            history.setCars(cars);
+            history.setRentCar(cars);
 
             assignmentHistoryRepository.save(history);
 
@@ -290,38 +295,117 @@ public class RentCarManagementService {
         return response;
     }
 
+    @Transactional
     public RentCarReqRes createAssignment(AssignmentRequest request) {
         RentCarReqRes response = new RentCarReqRes();
         try {
-            // Create assignment history
+            // Validate required fields
+            if (request.getRequestLetterNo() == null || request.getRequestLetterNo().isEmpty()) {
+                throw new IllegalArgumentException("Request letter number is required");
+            }
+
+            // Convert string date to LocalDateTime
+            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate())
+                    .atStartOfDay();
+
+            // Create new assignment history
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
-            history.setRequestDate(LocalDateTime.parse(request.getRequestDate()));
-            history.setAssignedDate(LocalDateTime.parse(request.getAssignedDate()));
+            history.setRequestDate(requestDateTime);
+            history.setAssignedDate(requestDateTime);
             history.setRequesterName(request.getRequesterName());
             history.setRentalType(request.getRentalType());
             history.setPosition(request.getPosition());
             history.setDepartment(request.getDepartment());
             history.setPhoneNumber(request.getPhoneNumber());
-            history.setPlateNumber(request.getPlateNumber());
             history.setTravelWorkPercentage(request.getTravelWorkPercentage());
             history.setShortNoticePercentage(request.getShortNoticePercentage());
             history.setMobilityIssue(request.getMobilityIssue());
             history.setGender(request.getGender());
             history.setTotalPercentage(request.getTotalPercentage());
+            history.setStatus(request.getStatus());
 
-            RentCar cars = rentCarRepository.findById(request.getCarId())
-                    .orElseThrow(() -> new RuntimeException("Car not found"));
-            history.setCars(cars);
 
-            assignmentHistoryRepository.save(history);
+            if ("Level 1".equals(request.getPosition())) {
+                history.setModel(request.getModel());
+                history.setNumberOfCar(request.getNumberOfCar());
+            } else {
+                history.setNumberOfCar("1");
+            }
 
-            // Update car status
-            cars.setStatus("Assigned");
-            rentCarRepository.save(cars);
+            // Process all vehicle assignments
+            List<String> allPlateNumbers = new ArrayList<>();
+            List<String> allCarModels = new ArrayList<>();
 
+            try {
+                // Handle single regular car assignment
+                if (request.getCarId() != null) {
+                    Car car = carRepository.findById(request.getCarId())
+                            .orElseThrow(() -> new RuntimeException("Regular car not found with ID: " + request.getCarId()));
+                    history.setCar(car);
+                    allPlateNumbers.add(car.getPlateNumber());
+                    allCarModels.add(car.getModel());
+                }
+
+                // Handle multiple regular cars
+                if (request.getCarIds() != null && !request.getCarIds().isEmpty()) {
+                    Set<Car> cars = new HashSet<>(carRepository.findAllById(request.getCarIds()));
+                    if (cars.size() != request.getCarIds().size()) {
+                        throw new RuntimeException("One or more regular cars not found");
+                    }
+                    history.setMultipleCars(cars);
+                    cars.forEach(car -> {
+                        allPlateNumbers.add(car.getPlateNumber());
+                        allCarModels.add(car.getModel());
+                    });
+                }
+
+                // Handle single rent car assignment
+                if (request.getRentCarId() != null) {
+                    RentCar rentCar = rentCarRepository.findById(request.getRentCarId())
+                            .orElseThrow(() -> new RuntimeException("Rent car not found with ID: " + request.getRentCarId()));
+                    history.setRentCar(rentCar);
+                    allPlateNumbers.add(rentCar.getPlateNumber());
+                    allCarModels.add(rentCar.getModel());
+                }
+
+                // Handle multiple rent cars
+                if (request.getRentCarIds() != null && !request.getRentCarIds().isEmpty()) {
+                    Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(request.getRentCarIds()));
+                    if (rentCars.size() != request.getRentCarIds().size()) {
+                        throw new RuntimeException("One or more rent cars not found");
+                    }
+                    history.setMultipleRentCars(rentCars);
+                    rentCars.forEach(rentCar -> {
+                        allPlateNumbers.add(rentCar.getPlateNumber());
+                        allCarModels.add(rentCar.getModel());
+                    });
+                }
+
+                // Set combined vehicle information
+                if (!allPlateNumbers.isEmpty()) {
+                    history.setAllPlateNumbers(String.join(", ", allPlateNumbers));
+                    history.setAllCarModels(String.join(", ", allCarModels));
+                }
+
+                // Save the assignment
+                assignmentHistoryRepository.save(history);
+
+            } catch (Exception e) {
+                // Explicitly set rollback-only if needed
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                throw e; // Re-throw the exception
+            }
+
+            // Prepare success response
             response.setCodStatus(200);
             response.setMessage("Assignment created successfully");
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("assignmentId", history.getId());
+            responseData.put("totalVehiclesAssigned", allPlateNumbers.size());
+            responseData.put("plateNumbers", history.getAllPlateNumbers());
+            responseData.put("carModels", history.getAllCarModels());
+
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());

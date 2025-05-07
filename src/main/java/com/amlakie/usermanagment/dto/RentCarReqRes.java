@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.dto;
 
+import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.RentCar;
 import lombok.Data;
 
@@ -59,4 +60,7 @@ public class RentCarReqRes {
     private String dataAntollerNatue;
     private String km;
     private String status;
+
+    private AssignmentHistory assignmentHistory;
+    private List<AssignmentHistory> assignmentHistoryList;
 }

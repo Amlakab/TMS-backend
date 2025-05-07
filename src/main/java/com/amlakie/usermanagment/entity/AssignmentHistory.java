@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 // src/main/java/com/amlakie/usermanagment/entity/AssignmentHistory.java
 @Entity
@@ -56,14 +58,42 @@ public class AssignmentHistory {
     @Column(nullable = true)
     private String plateNumber;
 
+    @Column(nullable = true)
+    private String numberOfCar;
+
+    @Column(nullable = true)
+    private String model;
+
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = true)
     private Car car;
 
     @ManyToOne
     @JoinColumn(name = "rent_car_id", nullable = true)
-    private RentCar cars;
+    private RentCar rentCar;  // Changed from 'cars' to 'rentCar' for clarity
 
     @Column(nullable = false)
-    private LocalDateTime assignedDate ;
+    private LocalDateTime assignedDate;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "assignment_multiple_cars",
+            joinColumns = @JoinColumn(name = "assignment_id"),
+            inverseJoinColumns = @JoinColumn(name = "car_id")
+    )
+    private Set<Car> multipleCars = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "assignment_multiple_rent_cars",
+            joinColumns = @JoinColumn(name = "assignment_id"),
+            inverseJoinColumns = @JoinColumn(name = "rent_car_id")
+    )
+    private Set<RentCar> multipleRentCars = new HashSet<>();
+
+    @Column(nullable = true, length = 1000)
+    private String allPlateNumbers;  // Simple string field, not a collection
+
+    @Column(nullable = true, length = 1000)
+    private String allCarModels;  // Simple string field, not a collection
 }
