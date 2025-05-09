@@ -20,6 +20,7 @@ public class Car {
     @Setter
     @Getter
     private boolean inspected = false;
+    private Long latestInspectionId;
 
     @Column(unique = true, nullable = false)
     private String plateNumber;

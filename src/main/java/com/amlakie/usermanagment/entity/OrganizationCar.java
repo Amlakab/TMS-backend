@@ -1,11 +1,13 @@
 package com.amlakie.usermanagment.entity;
-
+import com.amlakie.usermanagment.entity.organization.OrganizationCarInspection;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "organization_cars")
@@ -21,6 +23,8 @@ public class OrganizationCar {
 
     @Column(nullable = false)
     private String ownerName;
+    @Column(name = "latest_inspection_id") // Optional: Define column name explicitly
+    private Long latestInspectionId;
 
     @Column(nullable = false)
     private String ownerPhone;
@@ -49,6 +53,9 @@ public class OrganizationCar {
     @Column(nullable = false)
     private String status = "Pending";
 
+    @Column(nullable =  false)
+    private Boolean inspected = false;
+
     @Column(nullable = false)
     private LocalDateTime registeredDate = LocalDateTime.now();
 
@@ -69,5 +76,18 @@ public class OrganizationCar {
 
     @Column(nullable = false)
     private String createdBy;
+
+    // In your OrganizationCar.java entity
+    // ... other fields ...
+
+    @OneToMany(mappedBy = "organizationCar") // Assuming 'organizationCar' is the field in OrganizationCarInspection
+    @JsonManagedReference // This side will be serialized
+    private List<OrganizationCarInspection> inspections;
+
+    public Boolean isInspected() {
+        return inspected != null ? inspected : false;
+    }
+    // ...
+
 
 }

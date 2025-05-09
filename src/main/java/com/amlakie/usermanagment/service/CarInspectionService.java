@@ -236,7 +236,15 @@ public class CarInspectionService {
         String currentCarStatus = car.getStatus();
         String newCarStatus = currentCarStatus; // Default to current status
         boolean needsSave = false; // Flag to track if changes occurred
-
+        if (inspection.getId() != null) { // Ensure the inspection has an ID
+            // Check if the latestInspectionId needs updating
+            if (car.getLatestInspectionId() == null || !car.getLatestInspectionId().equals(inspection.getId())) {
+                log.info("Updating latestInspectionId for car plate {} from {} to {}",
+                        car.getPlateNumber(), car.getLatestInspectionId(), inspection.getId());
+                car.setLatestInspectionId(inspection.getId());
+                needsSave = true;
+            }
+        }
         String inspectionStatusStr = inspection.getInspectionStatus(); // Status is stored as String
 
         // --- 1. Update the boolean 'inspected' flag ---
@@ -483,7 +491,6 @@ public class CarInspectionService {
         if (request == null) return null;
 
         CarInspection inspection = new CarInspection();
-        // Don't set plate number here, it's derived from the Car entity relationship
         inspection.setInspectionDate(request.getInspectionDate());
         inspection.setInspectorName(request.getInspectorName());
 
@@ -632,13 +639,19 @@ public class CarInspectionService {
 
 
     private ItemCondition mapItemConditionDTO(ItemConditionDTO dto) {
-        if (dto == null) return null;
         ItemCondition entity = new ItemCondition();
-        entity.setProblem(dto.getProblem()); // Assuming DTO getter is getProblem()
-        entity.setSeverity(dto.getSeverity() != null ? dto.getSeverity().name() : null);
-        entity.setNotes(dto.getNotes());
+        if (dto == null) {
+            entity.setProblem(false);
+            entity.setSeverity("NONE");
+            entity.setNotes("No issue reported");
+        } else {
+            entity.setProblem(dto.getProblem());
+            entity.setSeverity(dto.getSeverity() != null ? dto.getSeverity().name() : "NONE");
+            entity.setNotes(dto.getNotes());
+        }
         return entity;
     }
+
 
     // --- Mapping helpers for nested objects (Entity -> DTO) ---
 

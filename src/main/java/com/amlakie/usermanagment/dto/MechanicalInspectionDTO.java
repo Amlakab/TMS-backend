@@ -1,11 +1,12 @@
 package com.amlakie.usermanagment.dto;
 
+import com.amlakie.usermanagment.dto.organization.OrganizationMechanicalInspectionDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class MechanicalInspectionDTO {
+public class MechanicalInspectionDTO  {
     // Using primitive boolean implies it cannot be null
     private boolean engineCondition;
     private boolean enginePower;

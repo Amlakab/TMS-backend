@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class InteriorInspectionDTO {
+public class InteriorInspectionDTO  {
 
     // Add messages for better error feedback
     @NotNull(message = "Engine exhaust details required") @Valid

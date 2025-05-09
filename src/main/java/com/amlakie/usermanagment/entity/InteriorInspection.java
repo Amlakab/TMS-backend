@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class InteriorInspection {
+public class InteriorInspection  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
