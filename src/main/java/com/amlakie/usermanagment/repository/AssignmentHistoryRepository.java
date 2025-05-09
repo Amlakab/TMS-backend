@@ -10,4 +10,5 @@ import java.util.List;
 public interface AssignmentHistoryRepository extends JpaRepository<AssignmentHistory, Long> {
     List<AssignmentHistory> findByStatus(String requestStatus);
 
+    List<AssignmentHistory> findByCar(Car carToDelete);
 }

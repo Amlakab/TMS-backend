@@ -1,6 +1,5 @@
-package com.amlakie.usermanagment.dto;
+package com.amlakie.usermanagment.dto.organization;
 
-import com.amlakie.usermanagment.dto.organization.OrganizationCarInspectionReqRes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.Valid;
@@ -12,11 +11,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CarInspectionReqRes {
+public class OrganizationCarInspectionReqRes {
     private Integer codStatus; // Use Integer for nullability
     private String message;
     private String error;
     private Long id;
+    // In OrganizationCarInspectionReqRes.java
+    private Long mechanicalId; // Wrapper Long, defaults to null
+    private Long bodyId;
+    private Long interiorId;
+
     @NotBlank(message = "Plate number is required")
     private String plateNumber;
 
@@ -49,15 +53,15 @@ public class CarInspectionReqRes {
 
     @NotNull(message = "Mechanical inspection details are required")
     @Valid
-    private MechanicalInspectionDTO mechanical;
+    private OrganizationMechanicalInspectionDTO mechanicalDetails;
 
     @NotNull(message = "Body inspection details are required")
     @Valid
-    private BodyInspectionDTO body;
+    private BodyInspectionDTO bodyDetails;
 
     @NotNull(message = "Interior inspection details are required")
     @Valid
-    private InteriorInspectionDTO interior;
+    private InteriorInspectionDTO interiorDetails;
 
     public enum InspectionStatus {
         Approved, Rejected, ConditionallyApproved

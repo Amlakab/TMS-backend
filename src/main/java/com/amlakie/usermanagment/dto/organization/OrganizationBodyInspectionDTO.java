@@ -1,4 +1,4 @@
-package com.amlakie.usermanagment.dto; // Adjust package name if needed
+package com.amlakie.usermanagment.dto.organization; // Adjust package name if needed
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BodyInspectionDTO  {
+public class OrganizationBodyInspectionDTO {
     @NotNull(message = "Body collision details are required")
     @Valid // Correct: Enables validation of fields within ItemConditionDTO
     private ItemConditionDTO bodyCollision = new ItemConditionDTO();

@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.entity;
 
+import com.amlakie.usermanagment.entity.organization.OrganizationInteriorInspection;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class InteriorInspection {
+public class InteriorInspection  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

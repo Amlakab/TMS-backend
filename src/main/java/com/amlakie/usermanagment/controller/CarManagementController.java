@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class CarManagementController {
 
     @Autowired
+
     private CarManagementService carManagementService;
 
     /**
@@ -89,8 +90,7 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getAssignmentHistoryById(id));
     }
 
-
-
+    
     @DeleteMapping("/auth/assignment/delete/{id}")
     public ResponseEntity<CarReqRes> deleteAssignmentHistory(@PathVariable Long id) {
         return ResponseEntity.ok(carManagementService.deleteAssignmentHistory(id));

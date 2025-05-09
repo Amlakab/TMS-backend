@@ -236,7 +236,15 @@ public class CarInspectionService {
         String currentCarStatus = car.getStatus();
         String newCarStatus = currentCarStatus; // Default to current status
         boolean needsSave = false; // Flag to track if changes occurred
-
+        if (inspection.getId() != null) { // Ensure the inspection has an ID
+            // Check if the latestInspectionId needs updating
+            if (car.getLatestInspectionId() == null || !car.getLatestInspectionId().equals(inspection.getId())) {
+                log.info("Updating latestInspectionId for car plate {} from {} to {}",
+                        car.getPlateNumber(), car.getLatestInspectionId(), inspection.getId());
+                car.setLatestInspectionId(inspection.getId());
+                needsSave = true;
+            }
+        }
         String inspectionStatusStr = inspection.getInspectionStatus(); // Status is stored as String
 
         // --- 1. Update the boolean 'inspected' flag ---
@@ -483,7 +491,6 @@ public class CarInspectionService {
         if (request == null) return null;
 
         CarInspection inspection = new CarInspection();
-        // Don't set plate number here, it's derived from the Car entity relationship
         inspection.setInspectionDate(request.getInspectionDate());
         inspection.setInspectorName(request.getInspectorName());
 

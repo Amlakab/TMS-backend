@@ -1,10 +1,13 @@
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
+import com.amlakie.usermanagment.entity.OrganizationCar;
 import com.amlakie.usermanagment.service.OrganizationCarManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth/organization-car")
@@ -19,8 +22,8 @@ public class OrganizationCarManagementController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<OrganizationCarReqRes> getAllOrganizationCars() {
-        return ResponseEntity.ok(organizationCarManagementService.getAllOrganizationCars());
+    public ResponseEntity<List<OrganizationCar>> getAllOrganizationCars(){
+         return ResponseEntity.ok(organizationCarManagementService.getAllOrganizationCars().getOrganizationCarList());
     }
 
     @GetMapping("/{id}")
