@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemConditionDTO {
+public class OrganizationItemConditionDTO {
     @NotNull
     private Boolean problem = false; // Use Boolean wrapper class for @NotNull
 

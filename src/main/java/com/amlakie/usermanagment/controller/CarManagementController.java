@@ -15,12 +15,7 @@ public class CarManagementController {
     @Autowired
     private CarManagementService carManagementService;
 
-    /**
-     * Register a new user.
-     *
-     * @param registrationRequest The registration request containing user details.
-     * @return A response indicating the result of the registration.
-     */
+
     @PostMapping("/auth/car/register")
     public CarReqRes registerCar(@RequestBody CarReqRes registrationRequest) {
         return carManagementService.registerCar(registrationRequest);

@@ -160,7 +160,7 @@ public class OrganizationCarInspectionService {
                 mechanical.isGearbox();
     }
 
-    private int calculateBodyScore(@NotNull(message = "Body inspection details are required") @Valid BodyInspectionDTO bodyDetails) {
+    private int calculateBodyScore(@NotNull(message = "Body inspection details are required") @Valid OrganizationBodyInspectionDTO bodyDetails) {
         if (bodyDetails == null) {
             log.warn("calculateBodyScore called with null BodyDetailsDTO.");
             return 100; // Or 0, depending on how null should be treated
@@ -174,7 +174,7 @@ public class OrganizationCarInspectionService {
         return Math.max(0, score);
     }
 
-    private int calculateInteriorScore(@NotNull(message = "Interior inspection details are required") @Valid InteriorInspectionDTO interiorDetails) {
+    private int calculateInteriorScore(@NotNull(message = "Interior inspection details are required") @Valid OrganizationInteriorInspectionDTO interiorDetails) {
         if (interiorDetails == null) {
             log.warn("calculateInteriorScore called with null InteriorDetailsDTO.");
             return 100; // Or 0, depending on how null should be treated
@@ -208,7 +208,7 @@ public class OrganizationCarInspectionService {
         return Math.max(0, score);
     }
 
-    private int calculatePointsDeducted(@NotNull @Valid ItemConditionDTO condition) {
+    private int calculatePointsDeducted(@NotNull @Valid OrganizationItemConditionDTO condition) {
         if (condition == null || !condition.getProblem()) {
             return 0;
         }
@@ -447,7 +447,7 @@ public class OrganizationCarInspectionService {
         if (request.getBodyDetails() != null) {
             inspection.setBodyDetails(mapOrgBodyDTOtoEntity(request.getBodyDetails()));
             if (inspection.getBodyDetails() != null) {
-                inspection.getBodyDetails().setOrgCarInspection(inspection);
+                inspection.getBodyDetails().setOrganizationCarInspection(inspection);
             }
         }
         if (request.getInteriorDetails() != null) {
@@ -458,7 +458,6 @@ public class OrganizationCarInspectionService {
         }
         return inspection;
     }
-
     private void updateExistingEntityFromRequest(OrganizationCarInspection existingInspection, OrganizationCarInspectionReqRes request) {
         if (request == null || existingInspection == null) {
             log.warn("Attempted to update inspection with null request or entity.");
@@ -482,7 +481,7 @@ public class OrganizationCarInspectionService {
         if (request.getBodyDetails() != null) {
             if (existingInspection.getBodyDetails() == null) {
                 existingInspection.setBodyDetails(new OrganizationBodyInspection());
-                existingInspection.getBodyDetails().setOrgCarInspection(existingInspection);
+                existingInspection.getBodyDetails().setOrganizationCarInspection(existingInspection);
             }
             updateOrgBodyFromDTO(existingInspection.getBodyDetails(), request.getBodyDetails());
         }
@@ -515,7 +514,7 @@ public class OrganizationCarInspectionService {
         log.debug("Finished updating OrganizationMechanicalInspection entity.");
     }
 
-    private void updateOrgBodyFromDTO(OrganizationBodyInspection entity, @NotNull @Valid BodyInspectionDTO dto) {
+    private void updateOrgBodyFromDTO(OrganizationBodyInspection entity, @NotNull @Valid OrganizationBodyInspectionDTO dto) {
         if (dto == null || entity == null) {
             log.warn("Attempted to update body details with null entity or DTO.");
             return;
@@ -529,7 +528,7 @@ public class OrganizationCarInspectionService {
         log.debug("Finished updating OrganizationBodyInspection entity.");
     }
 
-    private void updateOrgInteriorFromDTO(OrganizationInteriorInspection entity, @NotNull @Valid InteriorInspectionDTO dto) {
+    private void updateOrgInteriorFromDTO(OrganizationInteriorInspection entity, @NotNull @Valid OrganizationInteriorInspectionDTO dto) {
         if (dto == null || entity == null) {
             log.warn("Attempted to update interior details with null entity or DTO.");
             return;
@@ -575,7 +574,7 @@ public class OrganizationCarInspectionService {
         return entity;
     }
 
-    private OrganizationBodyInspection mapOrgBodyDTOtoEntity(@NotNull(message = "Body inspection details are required") @Valid BodyInspectionDTO dto) {
+    private OrganizationBodyInspection mapOrgBodyDTOtoEntity(@NotNull(message = "Body inspection details are required") @Valid OrganizationBodyInspectionDTO dto) {
         if (dto == null) {
             log.debug("BodyDetailsDTO is null, returning null OrganizationBodyInspection entity.");
             return null;
@@ -586,7 +585,7 @@ public class OrganizationCarInspectionService {
         return entity;
     }
 
-    private OrganizationInteriorInspection mapOrgInteriorDTOtoEntity(@NotNull(message = "Interior inspection details are required") @Valid InteriorInspectionDTO dto) {
+    private OrganizationInteriorInspection mapOrgInteriorDTOtoEntity(@NotNull(message = "Interior inspection details are required") @Valid OrganizationInteriorInspectionDTO dto) {
         if (dto == null) {
             log.debug("InteriorDetailsDTO is null, returning null OrganizationInteriorInspection entity.");
             return null;
@@ -597,7 +596,7 @@ public class OrganizationCarInspectionService {
         return entity;
     }
 
-    private OrganizationItemCondition mapProblemDetailDTO_To_OrganizationItemConditionEntity(@NotNull @Valid ItemConditionDTO dto) {
+    private OrganizationItemCondition mapProblemDetailDTO_To_OrganizationItemConditionEntity(@NotNull @Valid OrganizationItemConditionDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -673,10 +672,9 @@ public class OrganizationCarInspectionService {
         dto.setOilGauge(entity.isOilGauge());
         return dto;
     }
-
-    private @NotNull(message = "Body inspection details are required") @Valid BodyInspectionDTO mapBodyEntityToDTO(OrganizationBodyInspection entity) {
+    private @NotNull(message = "Body inspection details are required") @Valid OrganizationBodyInspectionDTO mapBodyEntityToDTO(OrganizationBodyInspection entity) {
         if (entity == null) return null;
-        BodyInspectionDTO dto = new BodyInspectionDTO();
+        OrganizationBodyInspectionDTO dto = new OrganizationBodyInspectionDTO();
         dto.setBodyCollision(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getBodyCollision()));
         dto.setBodyScratches(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getBodyScratches()));
         dto.setPaintCondition(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getPaintCondition()));
@@ -685,9 +683,9 @@ public class OrganizationCarInspectionService {
         return dto;
     }
 
-    private @NotNull(message = "Interior inspection details are required") @Valid InteriorInspectionDTO mapInteriorEntityToDTO(OrganizationInteriorInspection entity) {
+    private @NotNull(message = "Interior inspection details are required") @Valid OrganizationInteriorInspectionDTO mapInteriorEntityToDTO(OrganizationInteriorInspection entity) {
         if (entity == null) return null;
-        InteriorInspectionDTO dto = new InteriorInspectionDTO();
+        OrganizationInteriorInspectionDTO dto = new OrganizationInteriorInspectionDTO();
         dto.setEngineExhaust(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getEngineExhaust()));
         dto.setSeatComfort(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getSeatComfort()));
         dto.setSeatFabric(mapOrganizationItemCondition_To_ProblemDetailDTO(entity.getSeatFabric()));
@@ -716,12 +714,12 @@ public class OrganizationCarInspectionService {
         return dto;
     }
 
-    private @NotNull(message = "Body collision details are required") @Valid ItemConditionDTO mapOrganizationItemCondition_To_ProblemDetailDTO(OrganizationItemCondition entity) {
+    private @NotNull(message = "Body collision details are required") @Valid OrganizationItemConditionDTO mapOrganizationItemCondition_To_ProblemDetailDTO(OrganizationItemCondition entity) {
         if (entity == null) return null;
-        ItemConditionDTO dto = new ItemConditionDTO();
+        OrganizationItemConditionDTO dto = new OrganizationItemConditionDTO();
         dto.setProblem(entity.isProblem());
         try {
-            dto.setSeverity(entity.getSeverity() != null ? ItemConditionDTO.Severity.valueOf(entity.getSeverity()) : null);
+            dto.setSeverity(entity.getSeverity() != null ? OrganizationItemConditionDTO.Severity.valueOf(entity.getSeverity()) : null);
         } catch (IllegalArgumentException e) {
             log.warn("Could not map severity value '{}' from OrganizationItemCondition (ID: {}) to DTO enum", entity.getSeverity(), entity.getId() != null ? entity.getId() : "N/A", e);
             dto.setSeverity(null);

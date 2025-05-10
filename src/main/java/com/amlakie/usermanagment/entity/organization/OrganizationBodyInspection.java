@@ -1,6 +1,7 @@
 package com.amlakie.usermanagment.entity.organization;
 
 import com.amlakie.usermanagment.entity.BodyInspection;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,8 @@ public class OrganizationBodyInspection  {
     @OneToOne(cascade = CascadeType.ALL)
     private OrganizationItemCondition cracks;
 
-    @OneToOne(mappedBy = "bodyDetails", fetch = FetchType.LAZY) // 'mappedBy' refers to the field name in CarInspection
-    private OrganizationCarInspection orgCarInspection;
+    @OneToOne(mappedBy = "bodyDetails", fetch = FetchType.LAZY)
+    @JsonIgnore
+    // 'mappedBy' refers to the field name in CarInspection
+    private OrganizationCarInspection OrganizationCarInspection;
 }

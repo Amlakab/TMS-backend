@@ -12,21 +12,21 @@ import lombok.NoArgsConstructor;
 public class OrganizationBodyInspectionDTO {
     @NotNull(message = "Body collision details are required")
     @Valid // Correct: Enables validation of fields within ItemConditionDTO
-    private ItemConditionDTO bodyCollision = new ItemConditionDTO();
+    private OrganizationItemConditionDTO bodyCollision = new OrganizationItemConditionDTO();
 
     @NotNull(message = "Body scratches details are required") // Added message
     @Valid
-    private ItemConditionDTO bodyScratches = new ItemConditionDTO();
+    private OrganizationItemConditionDTO bodyScratches = new OrganizationItemConditionDTO();
 
     @NotNull(message = "Paint condition details are required") // Added message
     @Valid
-    private ItemConditionDTO paintCondition = new ItemConditionDTO();
+    private OrganizationItemConditionDTO paintCondition = new OrganizationItemConditionDTO();
 
     @NotNull(message = "Breakages details are required") // Added message
     @Valid
-    private ItemConditionDTO breakages = new ItemConditionDTO();
+    private OrganizationItemConditionDTO breakages = new OrganizationItemConditionDTO();
 
     @NotNull(message = "Cracks details are required") // Added message
     @Valid
-    private ItemConditionDTO cracks = new ItemConditionDTO(); // Initialized directly
+    private OrganizationItemConditionDTO cracks = new OrganizationItemConditionDTO(); // Initialized directly
 }
