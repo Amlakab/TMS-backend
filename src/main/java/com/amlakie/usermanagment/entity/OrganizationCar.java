@@ -3,8 +3,6 @@ import com.amlakie.usermanagment.entity.organization.OrganizationCarInspection;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,11 +10,12 @@ import java.util.List;
 @Entity
 @Table(name = "organization_cars")
 @Data
-public class OrganizationCar {
+public class OrganizationCar implements Vehicle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
 
     @Column(unique = true, nullable = false)
     private String plateNumber;
@@ -42,7 +41,7 @@ public class OrganizationCar {
     private String motorCapacity;
 
     @Column(nullable = false)
-    private String kmPerLiter;
+    private float kmPerLiter;
 
     @Column(nullable = false)
     private String totalKm;
@@ -87,7 +86,39 @@ public class OrganizationCar {
     public Boolean isInspected() {
         return inspected != null ? inspected : false;
     }
-    // ...
+
+    @Override
+    public Double getCurrentKm() {
+        try {
+            return Double.parseDouble(this.totalKm);
+        } catch (NumberFormatException e) {
+            // Handle cases where totalKm might not be a valid double
+            // Or ensure totalKm is stored as Double in the first place
+            return null;
+        }
+    }
+
+        @Override
+        public void setCurrentKm(Double currentKm) {
+            if (currentKm != null) {
+                this.totalKm = String.valueOf(currentKm);
+            } else {
+                this.totalKm = null; // Or "0.0" or handle as appropriate
+            }
+        }
+    @Override
+    public Long getId(){
+        return this.id;
+    }
+    @Override
+    public String getPlateNumber() {
+        return this.plateNumber;
+    }
+    @Override
+    public Double getKmPerLiter() {
+        return (double) this.kmPerLiter;
+    }
+
 
 
 }

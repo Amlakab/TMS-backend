@@ -101,7 +101,7 @@ public class OrganizationCarInspectionService {
         newCar.setRegisteredDate(LocalDateTime.now());
         newCar.setStatus(CAR_STATUS_PENDING_INSPECTION);
         newCar.setManufactureYear("0");
-        newCar.setKmPerLiter("0.0");
+        newCar.setKmPerLiter(Float.parseFloat("0.0"));
         newCar.setInspected(false);
 
         try {

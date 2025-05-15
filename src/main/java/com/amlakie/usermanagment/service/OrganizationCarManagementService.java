@@ -2,7 +2,11 @@ package com.amlakie.usermanagment.service;
 
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import com.amlakie.usermanagment.entity.Vehicle;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.OrganizationCarRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +21,7 @@ public class OrganizationCarManagementService {
     @Autowired
     private OrganizationCarRepository organizationCarRepository;
 
+
     public OrganizationCarReqRes registerOrganizationCar(OrganizationCarReqRes registrationRequest) {
         OrganizationCarReqRes response = new OrganizationCarReqRes();
         try {
@@ -28,7 +33,7 @@ public class OrganizationCarManagementService {
             organizationCar.setCarType(registrationRequest.getCarType());
             organizationCar.setManufactureYear(registrationRequest.getManufactureYear());
             organizationCar.setMotorCapacity(registrationRequest.getMotorCapacity());
-            organizationCar.setKmPerLiter(registrationRequest.getKmPerLiter());
+            organizationCar.setKmPerLiter(Float.parseFloat(registrationRequest.getKmPerLiter()));
             organizationCar.setTotalKm(registrationRequest.getTotalKm());
             organizationCar.setFuelType(registrationRequest.getFuelType());
             organizationCar.setStatus(registrationRequest.getStatus());
@@ -99,7 +104,7 @@ public class OrganizationCarManagementService {
                 existingCar.setCarType(updateRequest.getCarType());
                 existingCar.setManufactureYear(updateRequest.getManufactureYear());
                 existingCar.setMotorCapacity(updateRequest.getMotorCapacity());
-                existingCar.setKmPerLiter(updateRequest.getKmPerLiter());
+                existingCar.setKmPerLiter(Float.parseFloat(updateRequest.getKmPerLiter()));
                 existingCar.setTotalKm(updateRequest.getTotalKm());
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getStatus());

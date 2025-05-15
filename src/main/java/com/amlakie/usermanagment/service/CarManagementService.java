@@ -42,7 +42,7 @@ public class CarManagementService {
             car.setManufactureYear(Integer.parseInt(registrationRequest.getManufactureYear()));
             car.setMotorCapacity(registrationRequest.getMotorCapacity());
             car.setKmPerLiter(Float.parseFloat(registrationRequest.getKmPerLiter()));
-            car.setTotalKm(registrationRequest.getTotalKm());
+            car.setTotalKm(Double.valueOf(registrationRequest.getTotalKm()));
             car.setFuelType(registrationRequest.getFuelType());
             car.setStatus(registrationRequest.getStatus());
             car.setParkingLocation(registrationRequest.getParkingLocation());
@@ -108,7 +108,7 @@ public class CarManagementService {
                 existingCar.setManufactureYear(Integer.parseInt(updateRequest.getManufactureYear()));
                 existingCar.setMotorCapacity(updateRequest.getMotorCapacity());
                 existingCar.setKmPerLiter(Float.parseFloat(updateRequest.getKmPerLiter()));
-                existingCar.setTotalKm(updateRequest.getTotalKm());
+                existingCar.setTotalKm(Double.valueOf(updateRequest.getTotalKm()));
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getStatus());
                 existingCar.setParkingLocation(updateRequest.getParkingLocation());

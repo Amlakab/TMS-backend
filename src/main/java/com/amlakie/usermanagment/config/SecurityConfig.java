@@ -49,6 +49,8 @@ public class SecurityConfig {
                         // If you want to secure them, change to .authenticated()
                         .requestMatchers("/api/inspections/**").permitAll()
                         .requestMatchers("/api/org-inspections/**").permitAll()
+                        .requestMatchers("/api/car-attendance/**").permitAll()
+                        .requestMatchers("/api/vehicles/**").permitAll()
                         .requestMatchers("/api/daily-requests/**").permitAll()
 
                         // Admin endpoints

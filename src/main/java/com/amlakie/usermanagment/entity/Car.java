@@ -1,21 +1,19 @@
 package com.amlakie.usermanagment.entity;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cars")
 @Data
-public class Car {
+public class Car implements Vehicle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     // Standard boolean getter convention
     @Setter
     @Getter
@@ -47,7 +45,7 @@ public class Car {
     private float kmPerLiter;
 
     @Column(nullable = false)
-    private String totalKm;
+    private Double totalKm;
 
     @Column(nullable = false)
     private String fuelType;
@@ -63,5 +61,33 @@ public class Car {
 
     @Column(nullable = false)
     private String createdBy;
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    @Override
+    public Double getKmPerLiter() {
+        return (double) this.kmPerLiter;
+    }
+
+    @Override
+    public String getPlateNumber() {
+        return this.plateNumber;
+    }
+    @Override
+    public Double getCurrentKm() {
+        return this.totalKm;
+    }
+
+    @Override
+    public void setCurrentKm(Double currentKm) {
+        this.totalKm = currentKm;
+    }
+
+    @Override
+    public String getDriverName() {
+        return "";
+    }
+
 
 }
