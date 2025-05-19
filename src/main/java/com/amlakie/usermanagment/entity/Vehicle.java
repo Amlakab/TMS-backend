@@ -12,7 +12,7 @@ public interface Vehicle {
 
     String getDriverName();
 
-    Double getKmPerLiter();
+    float getKmPerLiter();
 }
 
     

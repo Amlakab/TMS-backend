@@ -251,7 +251,7 @@ public class CarAttendanceService {
             dto.setVehiclePlateNumber(null);
             dto.setVehicleType(null);
             dto.setDriverName(null);
-            dto.setKmPerLiter(null);
+            dto.setKmPerLiter(0.0F);
         }
 
 

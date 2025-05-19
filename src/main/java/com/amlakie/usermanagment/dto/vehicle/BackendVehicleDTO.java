@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class BackendVehicleDTO {
     private String plateNumber;
     // Assuming Vehicle interface has getDriverName()
-    private Double kmPerLiter;   // Assuming Vehicle interface has getKmPerLiter()
+    private float kmPerLiter;   // Assuming Vehicle interface has getKmPerLiter()
     private String vehicleType;  // "CAR" or "ORGANIZATION_CAR"
 
 

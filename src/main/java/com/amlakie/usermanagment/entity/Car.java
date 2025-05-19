@@ -66,8 +66,8 @@ public class Car implements Vehicle{
         return this.id;
     }
     @Override
-    public Double getKmPerLiter() {
-        return (double) this.kmPerLiter;
+    public float getKmPerLiter() {
+        return  this.kmPerLiter;
     }
 
     @Override

@@ -20,5 +20,5 @@ public class CarAttendanceResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String driverName;
-    private Double kmPerLiter;
+    private float kmPerLiter;
 }

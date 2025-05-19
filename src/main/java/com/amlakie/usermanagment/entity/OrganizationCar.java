@@ -115,8 +115,8 @@ public class OrganizationCar implements Vehicle{
         return this.plateNumber;
     }
     @Override
-    public Double getKmPerLiter() {
-        return (double) this.kmPerLiter;
+    public float getKmPerLiter() {
+        return  this.kmPerLiter;
     }
 
 

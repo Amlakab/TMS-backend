@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/vehicles/**").permitAll()
                         .requestMatchers("/api/daily-requests/**").permitAll()
 
+                        .requestMatchers("/api/transfers/**").permitAll()
+
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
 

@@ -114,7 +114,7 @@ public class VehicleDataService {
         // have getDriverName() and getKmPerLiter().
         // Handle potential nulls from these getters if necessary.
         String driverName = vehicle.getDriverName() != null ? vehicle.getDriverName() : "N/A";
-        Double kmPerLiter = vehicle.getKmPerLiter() != null  ? vehicle.getKmPerLiter() : 0.0;
+        float kmPerLiter = vehicle.getKmPerLiter() != 0.0  ? vehicle.getKmPerLiter() : (float) 0.0;
 
 
         return new BackendVehicleDTO(
