@@ -1,19 +1,29 @@
 package com.amlakie.usermanagment.controller;
 
-import com.amlakie.usermanagment.dto.AssignmentRequest;
-import com.amlakie.usermanagment.dto.CarReqRes;
-import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
+import com.amlakie.usermanagment.dto.*;
 import com.amlakie.usermanagment.service.CarManagementService;
+import com.amlakie.usermanagment.service.FileStorageService;
+import com.amlakie.usermanagment.service.VehicleAcceptanceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class CarManagementController {
 
     @Autowired
     private CarManagementService carManagementService;
+
+    @Autowired
+    private VehicleAcceptanceService vehicleAcceptanceService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     /**
      * Register a new user.
@@ -95,4 +105,21 @@ public class CarManagementController {
     public ResponseEntity<CarReqRes> deleteAssignmentHistory(@PathVariable Long id) {
         return ResponseEntity.ok(carManagementService.deleteAssignmentHistory(id));
     }
+
+
+    @PostMapping("/auth/vehicle-acceptance/upload")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String filename = fileStorageService.storeFile(file);
+            return ResponseEntity.ok(filename);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload file: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/auth/assignment/status/{id}")
+    public ResponseEntity<CarReqRes> updateAssinmentStatus(@PathVariable Long id, @RequestBody AssignmentRequest updateRequest) {
+        return ResponseEntity.ok(carManagementService.updateAssignmentStatus(id, updateRequest));
+    }
+
 }
