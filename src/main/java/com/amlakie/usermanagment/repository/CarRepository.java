@@ -15,6 +15,5 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     boolean existsByPlateNumber(String plateNumber);
 
     List<Car> findByStatus(String requestStatus);
-    List<Car> findByStatusIn(List<String> statuses);
-
+    List<Car> findByPlateNumberContainingIgnoreCase(String plateNumber);
 }
