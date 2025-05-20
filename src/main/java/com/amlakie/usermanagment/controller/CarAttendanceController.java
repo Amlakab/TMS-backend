@@ -1,15 +1,14 @@
 package com.amlakie.usermanagment.controller;
 
-import com.amlakie.usermanagment.dto.attendance.CarAttendanceResponseDTO;
-import com.amlakie.usermanagment.dto.attendance.EveningDepartureRequestDTO;
-import com.amlakie.usermanagment.dto.attendance.MorningArrivalRequestDTO;
+import com.amlakie.usermanagment.dto.attendance.*;
 import com.amlakie.usermanagment.service.CarAttendanceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.slf4j.Logger; // Import Logger
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 
@@ -17,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/car-attendance") // Consistent API versioning
 public class CarAttendanceController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CarAttendanceController.class); // Declare and initialize the logger
     private final CarAttendanceService carAttendanceService;
 
     @Autowired
@@ -104,6 +104,11 @@ public class CarAttendanceController {
         }
         return ResponseEntity.ok(records);
     }
-
+    @PostMapping("/fuel-entries") // Matches the frontend URL
+    public ResponseEntity<FuelEntryResponseDTO> recordFuelEntry(@Valid @RequestBody FuelEntryRequestDTO requestDTO) { // Added @Valid
+        logger.info("Received request to record fuel entry: {}", requestDTO);
+        FuelEntryResponseDTO response = carAttendanceService.recordFuelEntry(requestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
 }

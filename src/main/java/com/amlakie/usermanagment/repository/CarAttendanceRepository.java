@@ -44,5 +44,11 @@ public interface CarAttendanceRepository extends JpaRepository<CarAttendance, Lo
                                                                   @Param("vehicleTypeDiscriminator") String vehicleTypeDiscriminator,
                                                                   @Param("beforeDate") LocalDate beforeDate
     );
+    @Query("SELECT ca FROM CarAttendance ca WHERE ca.vehicle.id = :vehicleId AND ca.vehicleTypeDiscriminator = :vehicleTypeDiscriminator AND ca.date = :date")
+    Optional<CarAttendance> findByVehicleDetailsAndDate(
+            @Param("vehicleId") Long vehicleId,
+            @Param("vehicleTypeDiscriminator") String vehicleTypeDiscriminator,
+            @Param("date") LocalDate date
+    );
 }
     
