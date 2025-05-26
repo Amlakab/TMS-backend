@@ -122,7 +122,19 @@ public class CarAttendanceService {
             vehicle.setCurrentKm(dto.getMorningKm());
             saveVehicle(vehicle); // Call method to save or update the vehicle
         }
+// After saving the new attendance record
+LocalDate previousDate = today.minusDays(1);
+Optional<CarAttendance> previousAttendanceOpt = carAttendanceRepository
+    .findByVehicleDetailsAndDate(vehicle.getId(), vehicleTypeDiscriminator, previousDate);
 
+if (previousAttendanceOpt.isPresent()) {
+    CarAttendance previousAttendance = previousAttendanceOpt.get();
+    if (previousAttendance.getEveningKm() != null && attendance.getMorningKm() != null) {
+        double overnightDiff = attendance.getMorningKm() - previousAttendance.getEveningKm();
+        attendance.setOvernightKmDifferenceFromPrevious(overnightDiff);
+        carAttendanceRepository.save(attendance); // Save the updated value
+    }
+}
         return mapToResponseDTO(savedAttendance);
     }
 
@@ -177,10 +189,10 @@ public class CarAttendanceService {
     @Transactional
     public FuelEntryResponseDTO recordFuelEntry(FuelEntryRequestDTO dto) {
         logger.info("Processing fuel entry (update) for plate: {}, type: {}, date: {}, liters: {}, km: {}",
-                dto.getPlateNumber(), dto.getVehicleType(), dto.getFuelingDate(), dto.getLitersAdded(), dto.getKmAtFueling());
+                dto.getVehiclePlateNumber(), dto.getVehicleType(), dto.getFuelingDate(), dto.getLitersAdded(), dto.getKmAtFueling());
 
         // 1. Find the Vehicle
-        Vehicle vehicle = findVehicle(dto.getPlateNumber(), dto.getVehicleType());
+        Vehicle vehicle = findVehicle(dto.getVehiclePlateNumber(), dto.getVehicleType());
         String vehicleTypeDiscriminator = getVehicleTypeDiscriminator(vehicle);
 
         // 2. Parse the date
@@ -198,8 +210,8 @@ public class CarAttendanceService {
 
         if (attendanceOpt.isEmpty()) {
             logger.warn("No attendance record found for plate: {}, type: {}, date: {}. Cannot add fuel.",
-                    dto.getPlateNumber(), dto.getVehicleType(), entryDate);
-            throw new ValidationException("No existing attendance record found for vehicle " + dto.getPlateNumber() +
+                    dto.getVehiclePlateNumber(), dto.getVehicleType(), entryDate);
+            throw new ValidationException("No existing attendance record found for vehicle " + dto.getVehiclePlateNumber() +
                     " on " + entryDate + ". Fuel entry requires a prior check-in.");
         }
 
@@ -211,16 +223,14 @@ public class CarAttendanceService {
         attendanceRecord.setFuelLitersAdded(currentFuel + dto.getLitersAdded());
         logger.debug("Updated fuel liters for record ID {} to {}", attendanceRecord.getId(), attendanceRecord.getFuelLitersAdded());
 
-        // 5. Update KM reading IFF it represents an *evening* reading
-        // Logic: If there's no evening KM yet OR the new KM is greater than the existing evening KM, update it.
-        if (dto.getKmAtFueling() != null
-                && (attendanceRecord.getEveningKm() == null || dto.getKmAtFueling() >= attendanceRecord.getEveningKm())
-                && (attendanceRecord.getMorningKm() == null || dto.getKmAtFueling() >= attendanceRecord.getMorningKm()))
-        {
-            attendanceRecord.setEveningKm(dto.getKmAtFueling()); // Update evening KM
-            vehicle.setCurrentKm(dto.getKmAtFueling()); // Update vehicle's overall KM (reflecting the latest)
-            saveVehicle(vehicle);
-            logger.debug("Updated attendance record ID {} with eveningKm: {}, and vehicle {} current KM to {}",
+        if (dto.getKmAtFueling() != null) {
+            attendanceRecord.setKmAtFueling(dto.getKmAtFueling()); // <-- CORRECT
+            // Optionally update vehicle current KM if needed
+            if (vehicle.getCurrentKm() == null || dto.getKmAtFueling() > vehicle.getCurrentKm()) {
+                vehicle.setCurrentKm(dto.getKmAtFueling());
+                saveVehicle(vehicle);
+            }
+            logger.debug("Updated attendance record ID {} with kmAtFueling: {}, and vehicle {} current KM to {}",
                     attendanceRecord.getId(), dto.getKmAtFueling(), vehicle.getPlateNumber(), vehicle.getCurrentKm());
         }
         // If the new KM is lower than the existing evening KM, it's likely an error or not a proper end-of-day reading.
@@ -317,7 +327,7 @@ public class CarAttendanceService {
             dto.setDriverName(null);
             dto.setKmPerLiter(0.0F);
         }
-
+        dto.setKmAtFueling(entity.getKmAtFueling());
         dto.setMorningKm(entity.getMorningKm());
         dto.setEveningKm(entity.getEveningKm());
         dto.setDailyKmDifference(entity.getDailyKmDifference());

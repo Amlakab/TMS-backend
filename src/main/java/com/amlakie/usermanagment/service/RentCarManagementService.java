@@ -49,7 +49,8 @@ public class RentCarManagementService {
             rentCar.setDoor(registrationRequest.getDoor());
             rentCar.setCylinder(registrationRequest.getCylinder());
             rentCar.setFuelType(registrationRequest.getFuelType());
-            rentCar.setStatus(registrationRequest.getVehiclesStatus());
+            String status = registrationRequest.getVehiclesStatus();
+            rentCar.setStatus(status != null ? status : "Approved");
             rentCar.setOtherDescription(registrationRequest.getOtherDescription());
             rentCar.setRadio(registrationRequest.getRadio());
             rentCar.setAntena(registrationRequest.getAntena());

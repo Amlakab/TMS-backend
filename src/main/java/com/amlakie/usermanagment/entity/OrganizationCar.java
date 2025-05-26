@@ -57,6 +57,10 @@ public class OrganizationCar implements Vehicle{
 
     @Column(nullable = false)
     private LocalDateTime registeredDate = LocalDateTime.now();
+    @Column
+    private Double destinationLat;
+    @Column
+    private Double destinationLng;
 
     @Column(nullable = false)
     private String parkingLocation;

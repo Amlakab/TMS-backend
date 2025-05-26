@@ -7,6 +7,7 @@ public enum ServiceStatusType {
     NOT_READY,
     IN_SERVICE,
     OUT_OF_SERVICE,
-    PENDING_MAINTENANCE
+    PENDING_MAINTENANCE,
+
     // Add any other statuses relevant to the service lifecycle of the car
 }

@@ -11,6 +11,7 @@ public class CarAttendanceResponseDTO {
     private String vehicleType; // The discriminator string ("CAR" or "ORGANIZATION_CAR")
 
     private Double morningKm;
+    private Double kmAtFueling;
     private Double eveningKm;
     private Double dailyKmDifference;
     private Double overnightKmDifferenceFromPrevious;

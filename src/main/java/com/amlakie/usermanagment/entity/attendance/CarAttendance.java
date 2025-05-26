@@ -54,6 +54,8 @@ public class CarAttendance {
     @Column(name = "daily_km_difference") // Renamed from dayKmDiff
     private Double dailyKmDifference;
 
+    @Column(name = "km_at_fueling") // Renamed from dayKmDiff
+    private Double kmAtFueling;
     @Column(name = "overnight_km_difference_from_previous") // More descriptive name
     private Double overnightKmDifferenceFromPrevious; // This would be (current morningKm - previous eveningKm)
 

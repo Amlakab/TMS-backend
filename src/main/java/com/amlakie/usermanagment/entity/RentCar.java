@@ -176,12 +176,5 @@ public class RentCar {
         this.model = model;
     }
 
-    // --- GETTER/SETTER FOR THE NEW FIELD ---
-    public boolean isInspected() { // Standard boolean getter convention
-        return inspected;
-    }
 
-    public void setInspected(boolean inspected) {
-
-    }
 }

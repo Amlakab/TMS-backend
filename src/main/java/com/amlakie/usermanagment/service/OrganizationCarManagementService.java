@@ -1,7 +1,10 @@
 package com.amlakie.usermanagment.service;
 
+import com.amlakie.usermanagment.dto.AssignedRouteDTO;
+import com.amlakie.usermanagment.dto.OrganizationCarListRes;
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import com.amlakie.usermanagment.dto.AssignRouteRequest;
 import com.amlakie.usermanagment.entity.Vehicle;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.OrganizationCarRepository;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationCarManagementService {
@@ -183,5 +187,56 @@ public class OrganizationCarManagementService {
             response.setError(e.getMessage());
         }
         return response;
+    }
+    // Java
+    // In OrganizationCarManagementService.java
+    // In OrganizationCarManagementService.java
+    // Java
+    public OrganizationCarListRes getInspectedAndReadyOrganizationCars() {
+        List<OrganizationCar> all = organizationCarRepository.findAll();
+        if (all == null) {
+            all = List.of();
+        }
+        List<OrganizationCarReqRes> filtered = all.stream()
+                .filter(car ->
+                        car.getStatus() != null &&
+                                car.getStatus().equalsIgnoreCase("InspectedAndReady")
+                )
+                .map(car -> {
+                    OrganizationCarReqRes dto = new OrganizationCarReqRes();
+                    dto.setOrganizationCar(car);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return new OrganizationCarListRes(filtered);
+    }
+
+    public void assignRoute(AssignRouteRequest request) {
+        // Find the car by plate number (or ID)
+        Optional<OrganizationCar> car = organizationCarRepository.findByPlateNumber(request.plateNumber);
+        if (car == null) {
+            throw new RuntimeException("Car not found");
+        }
+        // Save the destination (you may want to create a Route entity or just update fields)
+        Optional<OrganizationCar> carOptional = organizationCarRepository.findByPlateNumber(request.plateNumber);
+        if (carOptional.isEmpty()) {
+            throw new RuntimeException("Car not found");
+        }
+        OrganizationCar Car = carOptional.get();
+        Car.setDestinationLat(request.latitude);
+        Car.setDestinationLng(request.longitude);
+        organizationCarRepository.save(Car);
+    }
+    public List<AssignedRouteDTO> getAssignedRoutes() {
+        return organizationCarRepository.findAll().stream()
+                .filter(car -> car.getDestinationLat() != null && car.getDestinationLng() != null)
+                .map(car -> {
+                    AssignedRouteDTO dto = new AssignedRouteDTO();
+                    dto.plateNumber = car.getPlateNumber();
+                    dto.destinationLat = car.getDestinationLat();
+                    dto.destinationLng = car.getDestinationLng();
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
