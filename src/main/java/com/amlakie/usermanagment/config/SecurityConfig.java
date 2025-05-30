@@ -46,7 +46,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/travel-requests/**").permitAll()
 
                         // Car inspection endpoints - Currently public, change if needed
-                        // If you want to secure them, change to .authenticated()
                         .requestMatchers("/api/inspections/**").permitAll()
                         .requestMatchers("/api/org-inspections/**").permitAll()
                         .requestMatchers("/api/car-attendance/**").permitAll()
@@ -54,8 +53,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/daily-requests/**").permitAll()
 
                         .requestMatchers("/api/transfers/**").permitAll()
-
-                        // Admin endpoints
+                        .requestMatchers("/api/vehicle-acceptance/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/uploads/**").permitAll()
+        // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
 
                         // User endpoints

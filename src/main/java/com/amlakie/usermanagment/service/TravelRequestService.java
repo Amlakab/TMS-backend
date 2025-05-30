@@ -125,10 +125,6 @@ public class TravelRequestService {
         if (isBlank(dto.getAuthorizerName())) {
             throw new InvalidRequestException("Authorizer name is required");
         }
-
-        if (dto.getAccountNumber() == null) {
-            throw new InvalidRequestException("Account date is required");
-        }
     }
 
     private void validateFuelReturnData(TravelRequestDTO dto) throws InvalidRequestException {
