@@ -8,6 +8,6 @@ import java.util.List;
 
 // src/main/java/com/amlakie/usermanagment/repository/AssignmentHistoryRepository.java
 public interface AssignmentHistoryRepository extends JpaRepository<AssignmentHistory, Long> {
-    List<AssignmentHistory> findByStatus(String requestStatus);
+    List<AssignmentHistory> findByStatusIn(List<String> statuses);
 
 }

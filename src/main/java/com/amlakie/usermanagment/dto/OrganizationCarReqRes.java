@@ -2,14 +2,10 @@ package com.amlakie.usermanagment.dto;
 
 import com.amlakie.usermanagment.entity.OrganizationCar;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @Data
-@Getter
-@Setter
 public class OrganizationCarReqRes {
     private int codStatus;
     private String message;
@@ -38,7 +34,4 @@ public class OrganizationCarReqRes {
     private String driverAttributes;
     private String driverAddress;
     private String loadCapacity;
-    public double latitude;
-    public double longitude;
-
 }

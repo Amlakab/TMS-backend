@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class OrganizationBodyInspectionDTO {
+public class BodyInspectionDTO {
     @NotNull(message = "Body collision details are required")
     @Valid // Correct: Enables validation of fields within ItemConditionDTO
     private ItemConditionDTO bodyCollision = new ItemConditionDTO();

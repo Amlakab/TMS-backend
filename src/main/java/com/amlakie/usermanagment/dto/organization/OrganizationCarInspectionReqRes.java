@@ -2,7 +2,6 @@ package com.amlakie.usermanagment.dto.organization;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -13,8 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganizationCarInspectionReqRes {
-
-
     private Integer codStatus; // Use Integer for nullability
     private String message;
     private String error;
@@ -56,18 +53,15 @@ public class OrganizationCarInspectionReqRes {
 
     @NotNull(message = "Mechanical inspection details are required")
     @Valid
-    @JsonProperty("mechanical")
     private OrganizationMechanicalInspectionDTO mechanicalDetails;
 
     @NotNull(message = "Body inspection details are required")
     @Valid
-    @JsonProperty("body")
-    private OrganizationBodyInspectionDTO bodyDetails;
+    private BodyInspectionDTO bodyDetails;
 
     @NotNull(message = "Interior inspection details are required")
     @Valid
-    @JsonProperty("interior")
-    private OrganizationInteriorInspectionDTO interiorDetails;
+    private InteriorInspectionDTO interiorDetails;
 
     public enum InspectionStatus {
         Approved, Rejected, ConditionallyApproved

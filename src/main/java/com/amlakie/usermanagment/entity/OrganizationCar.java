@@ -15,7 +15,7 @@ public class OrganizationCar implements Vehicle{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+
 
     @Column(unique = true, nullable = false)
     private String plateNumber;
@@ -102,14 +102,14 @@ public class OrganizationCar implements Vehicle{
         }
     }
 
-        @Override
-        public void setCurrentKm(Double currentKm) {
-            if (currentKm != null) {
-                this.totalKm = String.valueOf(currentKm);
-            } else {
-                this.totalKm = null; // Or "0.0" or handle as appropriate
-            }
+    @Override
+    public void setCurrentKm(Double currentKm) {
+        if (currentKm != null) {
+            this.totalKm = String.valueOf(currentKm);
+        } else {
+            this.totalKm = null; // Or "0.0" or handle as appropriate
         }
+    }
     @Override
     public Long getId(){
         return this.id;

@@ -28,7 +28,7 @@ import java.io.IOException;
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     // Initialize Logger
-    public static final Logger log = LoggerFactory.getLogger(JWTAuthFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(JWTAuthFilter.class);
 
     @Autowired
     private JWTUtils jwtUtils;

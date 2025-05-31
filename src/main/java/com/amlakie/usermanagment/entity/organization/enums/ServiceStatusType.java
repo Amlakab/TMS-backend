@@ -1,13 +1,12 @@
-package com.amlakie.usermanagment.entity.organization.enums;
+package com.amlakie.usermanagment.entity.organization.enums; // Or your preferred package
 
 public enum ServiceStatusType {
-    PENDING, // Assuming database might store "PENDING"
-    READY,
-    READY_WITH_WARNING,
-    NOT_READY,
-    IN_SERVICE,
+    Pending, // Often an initial or undetermined state
+    Ready,
+    Ready_With_Warning,
+    Not_ready,
+    IN_SERVICE,         // Could be an alternative or synonym for READY
     OUT_OF_SERVICE,
-    PENDING_MAINTENANCE,
-
+    PENDING_MAINTENANCE
     // Add any other statuses relevant to the service lifecycle of the car
 }

@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 // src/main/java/com/amlakie/usermanagment/entity/AssignmentHistory.java
@@ -96,4 +98,6 @@ public class AssignmentHistory {
 
     @Column(nullable = true, length = 1000)
     private String allCarModels;  // Simple string field, not a collection
+
+
 }

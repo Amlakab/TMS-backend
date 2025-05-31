@@ -1,6 +1,5 @@
 package com.amlakie.usermanagment.entity.organization;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter; // Using specific Lombok annotations
 import lombok.Setter;
@@ -126,7 +125,6 @@ public class OrganizationInteriorInspection {
     // This is the inverse side of the @OneToOne relationship
     // 'interiorDetails' should be the field name in the OrganizationCarInspection entity
     @OneToOne(mappedBy = "interiorDetails", fetch = FetchType.LAZY)
-    @JsonIgnore
     private OrganizationCarInspection organizationCarInspection; // Corrected field name
 
 }

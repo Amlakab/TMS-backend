@@ -1,6 +1,5 @@
 package com.amlakie.usermanagment.entity.organization;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,8 +31,7 @@ public class OrganizationMechanicalInspection {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_car_inspection_id") // Explicitly define the foreign key column name
     @ToString.Exclude // Prevent StackOverflowError in toString()
-    @EqualsAndHashCode.Exclude
-    @JsonIgnore // Prevent StackOverflowError in equals/hashCode
+    @EqualsAndHashCode.Exclude // Prevent StackOverflowError in equals/hashCode
     private OrganizationCarInspection organizationCarInspection; // Corrected field name convention
 
     // The 'mappedBy' side belongs on the OrganizationCarInspection entity.

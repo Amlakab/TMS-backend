@@ -4,7 +4,6 @@ import com.amlakie.usermanagment.entity.OrganizationCar;
 import com.amlakie.usermanagment.entity.organization.enums.InspectionStatusType;
 import com.amlakie.usermanagment.entity.organization.enums.ServiceStatusType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,22 +48,17 @@ public class OrganizationCarInspection {
     private String notes;
 
     // Example in OrganizationCarInspection.java
-    // In OrganizationCarInspection.java
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mechanical_details_id", referencedColumnName = "id")
-    @JsonIgnore// FK in this table
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) // Or LAZY if handled carefully
+    @JoinColumn(name = "mechanical_id", referencedColumnName = "id")
     private OrganizationMechanicalInspection mechanicalDetails;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "interior_details_id", referencedColumnName = "id") // FK in this table
-    @JsonIgnore
-    private OrganizationInteriorInspection interiorDetails;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "body_details_id", referencedColumnName = "id")
-    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "body_id", referencedColumnName = "id")
     private OrganizationBodyInspection bodyDetails;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "interior_id", referencedColumnName = "id")
+    private OrganizationInteriorInspection interiorDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference // This side will NOT be serialized, breaking the loop
@@ -78,7 +72,7 @@ public class OrganizationCarInspection {
             mechanicalDetails.setOrganizationCarInspection(this);
         }
         if (bodyDetails != null) {
-            bodyDetails.setOrganizationCarInspection(this);
+            bodyDetails.setOrgCarInspection(this);
         }
         if (interiorDetails != null) {
             interiorDetails.setOrganizationCarInspection(this);

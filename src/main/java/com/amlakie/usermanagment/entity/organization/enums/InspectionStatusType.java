@@ -1,9 +1,9 @@
-package com.amlakie.usermanagment.entity.organization.enums;
+package com.amlakie.usermanagment.entity.organization.enums; // Or your preferred package
 
 public enum InspectionStatusType {
-
-    PENDING,
-    APPROVED,
-    REJECTED,
-    CONDITIONALLY_APPROVED,
+    Pending,
+    Approved,
+    Rejected,
+    Conditionally_Approved
+    // Add any other statuses relevant to your inspection lifecycle
 }
