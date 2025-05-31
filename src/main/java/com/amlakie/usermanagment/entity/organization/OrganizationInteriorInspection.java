@@ -2,7 +2,11 @@ package com.amlakie.usermanagment.entity.organization;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter; // Using specific Lombok annotations
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Getter // Explicitly add Getter

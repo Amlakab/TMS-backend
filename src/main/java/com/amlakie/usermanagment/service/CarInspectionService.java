@@ -103,7 +103,7 @@ public class CarInspectionService {
         newCar.setCreatedBy("SYSTEM_AUTO_CREATE");
         newCar.setParkingLocation("UNKNOWN");
         newCar.setMotorCapacity("UNKNOWN");
-        newCar.setTotalKm("0");
+        newCar.setTotalKm(0.0);
         newCar.setRegisteredDate(LocalDateTime.now());
         newCar.setStatus(CAR_STATUS_PENDING_INSPECTION); // Use constant
         newCar.setManufactureYear(0);

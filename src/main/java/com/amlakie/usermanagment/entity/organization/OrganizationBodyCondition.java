@@ -1,9 +1,6 @@
 package com.amlakie.usermanagment.entity.organization;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Embeddable

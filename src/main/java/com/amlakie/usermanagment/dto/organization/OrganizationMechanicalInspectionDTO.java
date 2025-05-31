@@ -1,8 +1,9 @@
 package com.amlakie.usermanagment.dto.organization;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor; // Often useful with @NotNull fields
 
 @Data
 @NoArgsConstructor

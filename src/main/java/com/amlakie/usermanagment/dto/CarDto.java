@@ -2,6 +2,7 @@
 package com.amlakie.usermanagment.dto;
 
 import lombok.Data;
+import java.time.LocalDateTime; // Import if you include date fields
 
 @Data // Lombok annotation for getters, setters, toString, etc.
 public class CarDto {

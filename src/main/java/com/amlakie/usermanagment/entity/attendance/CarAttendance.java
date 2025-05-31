@@ -2,10 +2,14 @@ package com.amlakie.usermanagment.entity.attendance;
 
 import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.OrganizationCar;
-import com.amlakie.usermanagment.entity.Vehicle;
+import com.amlakie.usermanagment.entity.Vehicle; // Assuming Vehicle is an interface or abstract class
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.Getter; // Using specific Lombok annotations is often preferred for entities
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.*;
 import org.hibernate.type.descriptor.java.LongJavaType;
 

@@ -1,12 +1,12 @@
 package com.amlakie.usermanagment.dto;
 
+import com.amlakie.usermanagment.dto.organization.OrganizationCarInspectionReqRes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data

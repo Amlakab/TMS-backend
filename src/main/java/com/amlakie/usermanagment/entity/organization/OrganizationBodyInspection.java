@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.entity.organization;
 
+import com.amlakie.usermanagment.entity.BodyInspection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;

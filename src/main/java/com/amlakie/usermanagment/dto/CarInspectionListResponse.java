@@ -1,7 +1,6 @@
 package com.amlakie.usermanagment.dto;
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data
