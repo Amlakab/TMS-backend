@@ -1,11 +1,10 @@
 package com.amlakie.usermanagment.dto.organization;
 
-import com.amlakie.usermanagment.dto.CarInspectionReqRes;
-import com.fasterxml.jackson.annotation.JsonInclude; // For controlling JSON output
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import lombok.NoArgsConstructor; // Good practice to include
+import lombok.NoArgsConstructor;
+
 import java.util.List;
-import java.util.ArrayList; // Good for initializing lists
 
 @Data
 @NoArgsConstructor // Useful for deserialization and frameworks

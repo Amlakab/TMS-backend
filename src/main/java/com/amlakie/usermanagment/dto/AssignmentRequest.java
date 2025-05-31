@@ -1,9 +1,8 @@
 package com.amlakie.usermanagment.dto;
 
 import lombok.Data;
-import java.util.List;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 // src/main/java/com/amlakie/usermanagment/dto/AssignmentRequest.java
 @Data

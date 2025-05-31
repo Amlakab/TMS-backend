@@ -1,14 +1,14 @@
 package com.amlakie.usermanagment.dto.organization;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemConditionDTO {
+public class OrganizationItemConditionDTO {
     @NotNull
     private Boolean problem = false; // Use Boolean wrapper class for @NotNull
 

@@ -4,12 +4,9 @@ import com.amlakie.usermanagment.entity.OrganizationCar;
 import com.amlakie.usermanagment.entity.organization.enums.InspectionStatusType;
 import com.amlakie.usermanagment.entity.organization.enums.ServiceStatusType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -48,17 +45,22 @@ public class OrganizationCarInspection {
     private String notes;
 
     // Example in OrganizationCarInspection.java
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) // Or LAZY if handled carefully
-    @JoinColumn(name = "mechanical_id", referencedColumnName = "id")
+    // In OrganizationCarInspection.java
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "mechanical_details_id", referencedColumnName = "id")
+    @JsonIgnore// FK in this table
     private OrganizationMechanicalInspection mechanicalDetails;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "body_id", referencedColumnName = "id")
-    private OrganizationBodyInspection bodyDetails;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "interior_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "interior_details_id", referencedColumnName = "id") // FK in this table
+    @JsonIgnore
     private OrganizationInteriorInspection interiorDetails;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "body_details_id", referencedColumnName = "id")
+    @JsonIgnore
+    private OrganizationBodyInspection bodyDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference // This side will NOT be serialized, breaking the loop
@@ -72,7 +74,7 @@ public class OrganizationCarInspection {
             mechanicalDetails.setOrganizationCarInspection(this);
         }
         if (bodyDetails != null) {
-            bodyDetails.setOrgCarInspection(this);
+            bodyDetails.setOrganizationCarInspection(this);
         }
         if (interiorDetails != null) {
             interiorDetails.setOrganizationCarInspection(this);

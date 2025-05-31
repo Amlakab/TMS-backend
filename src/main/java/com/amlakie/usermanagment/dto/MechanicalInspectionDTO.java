@@ -1,6 +1,5 @@
 package com.amlakie.usermanagment.dto;
 
-import com.amlakie.usermanagment.dto.organization.OrganizationMechanicalInspectionDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
