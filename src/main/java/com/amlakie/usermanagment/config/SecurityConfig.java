@@ -29,6 +29,7 @@ public class SecurityConfig {
     @Autowired
     private JWTAuthFilter jwtAuthFilter;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -45,14 +46,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/travel-requests/**").permitAll()
 
                         // Car inspection endpoints - Currently public, change if needed
-                        // If you want to secure them, change to .authenticated()
                         .requestMatchers("/api/inspections/**").permitAll()
                         .requestMatchers("/api/org-inspections/**").permitAll()
                         .requestMatchers("/api/car-attendance/**").permitAll()
                         .requestMatchers("/api/vehicles/**").permitAll()
                         .requestMatchers("/api/daily-requests/**").permitAll()
-                        .requestMatchers("/api/transfers/**").permitAll()
 
+                        .requestMatchers("/api/transfers/**").permitAll()
+                        .requestMatchers("/api/vehicle-acceptance/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/uploads/**").permitAll()
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
 
@@ -116,3 +119,4 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 }
+

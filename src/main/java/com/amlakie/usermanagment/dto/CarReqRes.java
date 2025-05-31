@@ -27,11 +27,14 @@ public class CarReqRes {
     private String manufactureYear;
     private String motorCapacity;
     private String kmPerLiter;
-    private String totalKm;
+    private Double totalKm;
     private String fuelType;
     private String status;
     private String parkingLocation;
 
     private AssignmentHistory assignmentHistory;
     private List<AssignmentHistory> assignmentHistoryList;
+
 }
+
+

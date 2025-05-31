@@ -42,7 +42,7 @@ public class CarManagementService {
             car.setManufactureYear(Integer.parseInt(registrationRequest.getManufactureYear()));
             car.setMotorCapacity(registrationRequest.getMotorCapacity());
             car.setKmPerLiter(Float.parseFloat(registrationRequest.getKmPerLiter()));
-            car.setTotalKm(Double.valueOf(registrationRequest.getTotalKm()));
+            car.setTotalKm(registrationRequest.getTotalKm());
             car.setFuelType(registrationRequest.getFuelType());
             car.setStatus(registrationRequest.getStatus());
             car.setParkingLocation(registrationRequest.getParkingLocation());
@@ -108,7 +108,7 @@ public class CarManagementService {
                 existingCar.setManufactureYear(Integer.parseInt(updateRequest.getManufactureYear()));
                 existingCar.setMotorCapacity(updateRequest.getMotorCapacity());
                 existingCar.setKmPerLiter(Float.parseFloat(updateRequest.getKmPerLiter()));
-                existingCar.setTotalKm(Double.valueOf(updateRequest.getTotalKm()));
+                existingCar.setTotalKm(updateRequest.getTotalKm());
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getStatus());
                 existingCar.setParkingLocation(updateRequest.getParkingLocation());
@@ -192,16 +192,18 @@ public class CarManagementService {
     public CarReqRes getApprovedCars() {
         CarReqRes response = new CarReqRes();
         try {
-            List<Car> cars = carRepository.findByStatus("Approved");
+            List<String> statuses = Arrays.asList("Approved", "In_transfer");
+            List<Car> cars = carRepository.findByStatusIn(statuses);
             response.setCarList(cars);
             response.setCodStatus(200);
-            response.setMessage("Approved cars retrieved successfully");
+            response.setMessage("Approved and in-transfer cars retrieved successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
         }
         return response;
     }
+
 
 
     @Transactional
@@ -325,6 +327,8 @@ public class CarManagementService {
         return response;
     }
 
+
+
     @Transactional
     public CarReqRes updateAssignmentHistory(Long id, AssignmentRequest updateRequest) {
         CarReqRes response = new CarReqRes();
@@ -440,16 +444,19 @@ public class CarManagementService {
     public CarReqRes getPendingRequests() {
         CarReqRes response = new CarReqRes();
         try {
-            List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatus("Pending");
+            List<String> statuses = Arrays.asList("Pending", "In_transfer");
+            List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatusIn(statuses);
+
             response.setAssignmentHistoryList(histories);
             response.setCodStatus(200);
-            response.setMessage("Pending requests retrieved successfully");
+            response.setMessage("Pending and in-transfer requests retrieved successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
         }
         return response;
     }
+
 
     public CarReqRes getAssignmentHistoryById(Long id) {
         CarReqRes response = new CarReqRes();
@@ -490,5 +497,27 @@ public class CarManagementService {
         return response;
     }
 
+    public CarReqRes updateAssignmentStatus(Long id, AssignmentRequest updateRequest) {
+        CarReqRes response = new CarReqRes();
+        try {
+            Optional<AssignmentHistory> carOptional = assignmentHistoryRepository.findById(id);
+            if (carOptional.isPresent()) {
+                AssignmentHistory existingAssignment = carOptional.get();
+                existingAssignment.setStatus(updateRequest.getStatus());
 
+
+                AssignmentHistory updatedAssignment = assignmentHistoryRepository.save(existingAssignment);
+                response.setAssignmentHistory(updatedAssignment);
+                response.setCodStatus(200);
+                response.setMessage("Assignment status updated successfully");
+            } else {
+                response.setCodStatus(404);
+                response.setMessage("Car not found");
+            }
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
 }
