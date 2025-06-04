@@ -6,6 +6,8 @@ import com.amlakie.usermanagment.service.TransferInfoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/transfers")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -23,4 +25,11 @@ public class TransferInfoController {
         TransferInfoResponseDTO response = transferInfoService.createTransfer(transferInfoDTO);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TransferInfoResponseDTO>> getAllTransfers() {
+        List<TransferInfoResponseDTO> transfers = transferInfoService.getAllTransfers();
+        return ResponseEntity.ok(transfers);
+    }
+
 }

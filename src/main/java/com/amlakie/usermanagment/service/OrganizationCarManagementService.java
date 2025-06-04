@@ -1,11 +1,15 @@
 package com.amlakie.usermanagment.service;
 
-import com.amlakie.usermanagment.dto.AssignRouteRequest;
 import com.amlakie.usermanagment.dto.AssignedRouteDTO;
 import com.amlakie.usermanagment.dto.OrganizationCarListRes;
 import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import com.amlakie.usermanagment.dto.AssignRouteRequest;
+import com.amlakie.usermanagment.entity.Vehicle;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.OrganizationCarRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

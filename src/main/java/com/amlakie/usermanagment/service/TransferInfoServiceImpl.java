@@ -9,6 +9,9 @@ import com.amlakie.usermanagment.repository.TransferInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class TransferInfoServiceImpl implements TransferInfoService {
 
@@ -75,5 +78,13 @@ public class TransferInfoServiceImpl implements TransferInfoService {
         dto.setAuthorizingOfficerName(entity.getAuthorizingOfficerName());
 
         return dto;
+    }
+
+    @Override
+    public List<TransferInfoResponseDTO> getAllTransfers() {
+        List<TransferInfo> transferInfos = transferInfoRepository.findAll();
+        return transferInfos.stream()
+                .map(this::mapEntityToDTO)
+                .collect(Collectors.toList());
     }
 }

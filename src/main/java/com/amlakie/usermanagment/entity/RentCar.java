@@ -63,7 +63,7 @@ public class RentCar {
     private String fuelType;
 
     @Column(nullable = false)
-    private String status = "Approved";
+    private String status = "NOT_INSPECTED";
 
     @Column(nullable = false)
     private String otherDescription;

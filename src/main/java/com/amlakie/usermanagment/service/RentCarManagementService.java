@@ -74,6 +74,7 @@ public class RentCarManagementService {
             rentCar.setTransmission(registrationRequest.getTransmission());
             rentCar.setDataAntollerNatue(registrationRequest.getDataAntollerNatue());
             rentCar.setKm(registrationRequest.getKm());
+            rentCar.setStatus("NOT_INSPECTED");
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             rentCar.setCreatedBy(authentication.getName());
