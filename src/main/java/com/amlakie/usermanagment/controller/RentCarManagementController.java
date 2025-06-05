@@ -67,6 +67,11 @@ public class RentCarManagementController {
         return ResponseEntity.ok(rentCarManagementService.getApprovedCars());
     }
 
+    @GetMapping("/in-transfer")
+    public ResponseEntity<RentCarReqRes> getInTransferCars() {
+        return ResponseEntity.ok(rentCarManagementService.getInTransferCars());
+    }
+
     @PutMapping("/update/{platenumber}")
     public ResponseEntity<RentCarReqRes> updateStatus(@PathVariable Long id, @RequestBody RentCarReqRes updateRequest) {
         return ResponseEntity.ok(rentCarManagementService.updateRentCar(id, updateRequest));

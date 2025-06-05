@@ -77,6 +77,11 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getApprovedCars());
     }
 
+    @GetMapping("/auth/car/in-transfer")
+    public ResponseEntity<CarReqRes> getInTransferCars() {
+        return ResponseEntity.ok(carManagementService.getInTransferCars());
+    }
+
 
     // Assignment History Endpoints
     @GetMapping("/auth/assignment/all")

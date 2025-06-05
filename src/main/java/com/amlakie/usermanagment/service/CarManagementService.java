@@ -192,7 +192,22 @@ public class CarManagementService {
     public CarReqRes getApprovedCars() {
         CarReqRes response = new CarReqRes();
         try {
-            List<String> statuses = Arrays.asList("Approved", "In_transfer");
+            List<String> statuses = Arrays.asList("InspectedAndReady", "In_transfer");
+            List<Car> cars = carRepository.findByStatusIn(statuses);
+            response.setCarList(cars);
+            response.setCodStatus(200);
+            response.setMessage("Approved and in-transfer cars retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public CarReqRes getInTransferCars() {
+        CarReqRes response = new CarReqRes();
+        try {
+            List<String> statuses = Arrays.asList("In_transfer", "In_transfer");
             List<Car> cars = carRepository.findByStatusIn(statuses);
             response.setCarList(cars);
             response.setCodStatus(200);

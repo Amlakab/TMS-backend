@@ -285,10 +285,24 @@ public class RentCarManagementService {
     public RentCarReqRes getApprovedCars() {
         RentCarReqRes response = new RentCarReqRes();
         try {
-            List<RentCar> cars = rentCarRepository.findByStatus("Approved");
+            List<RentCar> cars = rentCarRepository.findByStatus("InspectedAndReady");
             response.setRentCarList(cars);
             response.setCodStatus(200);
             response.setMessage("Approved cars retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public RentCarReqRes getInTransferCars() {
+        RentCarReqRes response = new RentCarReqRes();
+        try {
+            List<RentCar> cars = rentCarRepository.findByStatus("In_transfer");
+            response.setRentCarList(cars);
+            response.setCodStatus(200);
+            response.setMessage("In-Transfer cars retrieved successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
