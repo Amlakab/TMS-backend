@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/transfers/**").permitAll()
                         .requestMatchers("/api/vehicle-acceptance/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/routes/**").permitAll()
+
                         .requestMatchers("/api/uploads/**").permitAll()
         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
