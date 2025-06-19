@@ -127,7 +127,7 @@ public class MaintenanceRequestService {
     }
 
     @Transactional
-    public MaintenanceRequest uploadImages(Long id, MultipartFile[] files)
+    public MaintenanceRequest uploadFiles(Long id, MultipartFile[] files)
             throws ResourceNotFoundException, InvalidRequestException, IOException {
         MaintenanceRequest request = getRequestById(id);
 
@@ -140,27 +140,47 @@ public class MaintenanceRequestService {
             Files.createDirectories(uploadPath);
         }
 
-        List<String> imageUrls = new ArrayList<>();
+        List<String> fileUrls = new ArrayList<>();
         for (MultipartFile file : files) {
+            // Validate file type and size
+            String contentType = file.getContentType();
+            if (contentType == null ||
+                    (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))){
+                throw new InvalidRequestException("Invalid file type. Only images and PDFs are allowed");
+            }
+
+            if (file.getSize() > 5 * 1024 * 1024) { // 5MB limit
+                throw new InvalidRequestException("File size exceeds 5MB limit");
+            }
+
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            imageUrls.add("/uploads/" + filename);
+            fileUrls.add(filename); // Store only filename
         }
 
         if (request.getCarImages() == null) {
-            request.setCarImages(imageUrls);
+            request.setCarImages(fileUrls);
         } else {
-            request.getCarImages().addAll(imageUrls);
+            request.getCarImages().addAll(fileUrls);
         }
 
         request.setUpdatedAt(LocalDateTime.now());
         return maintenanceRequestRepository.save(request);
     }
 
-    public byte[] getImage(String filename) throws IOException {
+    public byte[] getFile(String filename) throws IOException {
         Path filePath = Paths.get(uploadDir).resolve(filename);
+        if (!Files.exists(filePath)) {
+            throw new IOException("File not found");
+        }
         return Files.readAllBytes(filePath);
+    }
+
+    public String getFileContentType(String filename) throws IOException {
+        Path filePath = Paths.get(uploadDir).resolve(filename);
+        String contentType = Files.probeContentType(filePath);
+        return contentType != null ? contentType : "application/octet-stream";
     }
 
     private void validateRequest(MaintenanceRequestDTO dto) throws InvalidRequestException {

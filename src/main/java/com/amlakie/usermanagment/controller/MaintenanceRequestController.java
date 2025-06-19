@@ -6,7 +6,9 @@ import com.amlakie.usermanagment.exception.InvalidRequestException;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.service.MaintenanceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,31 +108,35 @@ public class MaintenanceRequestController {
         }
     }
 
-    @PostMapping("/{id}/upload-images")
-    public ResponseEntity<?> uploadImages(
+    @PostMapping("/{id}/upload-files")
+    public ResponseEntity<?> uploadFiles(
             @PathVariable Long id,
             @RequestParam("files") MultipartFile[] files) {
         try {
-            MaintenanceRequest updatedRequest = maintenanceRequestService.uploadImages(id, files);
+            MaintenanceRequest updatedRequest = maintenanceRequestService.uploadFiles(id, files);
             return ResponseEntity.ok(updatedRequest);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InvalidRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload images");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload files");
         }
     }
 
-    @GetMapping("/images/{filename}")
-    public ResponseEntity<?> getImage(@PathVariable String filename) {
+    @GetMapping("/files/{filename}")
+    public ResponseEntity<?> getFile(@PathVariable String filename) {
         try {
-            byte[] imageBytes = maintenanceRequestService.getImage(filename);
-            return ResponseEntity.ok()
-                    .header("Content-Type", "image/jpeg") // Adjust content type as needed
-                    .body(imageBytes);
+            byte[] fileBytes = maintenanceRequestService.getFile(filename);
+            String contentType = maintenanceRequestService.getFileContentType(filename);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(contentType));
+            headers.setContentDispositionFormData("inline", filename);
+
+            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
         }
     }
 }
