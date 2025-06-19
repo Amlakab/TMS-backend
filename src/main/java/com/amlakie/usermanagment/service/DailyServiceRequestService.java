@@ -11,6 +11,7 @@ import com.amlakie.usermanagment.repository.DailyServiceRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 // DailyServiceRequestService.java
@@ -26,6 +27,7 @@ public class DailyServiceRequestService {
     public DailyServiceRequest createRequest(DailyServiceRequestDTO dto) {
         DailyServiceRequest request = new DailyServiceRequest();
         request.setDateTime(dto.getDateTime());
+        request.setReturnDateTime(dto.getReturnDateTime());
         request.setTravelers(dto.getTravelers());
         request.setStartingPlace(dto.getStartingPlace());
         request.setEndingPlace(dto.getEndingPlace());
@@ -59,10 +61,11 @@ public class DailyServiceRequestService {
         if (request.getStatus() != DailyServiceRequest.RequestStatus.ASSIGNED) {
             throw new InvalidRequestException("Only assigned requests can be completed");
         }
-
+        request.setCompletedAt(LocalDateTime.now());
         request.setStartKm(dto.getStartKm());
         request.setEndKm(dto.getEndKm());
         request.setKmDifference(dto.getEndKm() - dto.getStartKm());
+        request.setReason(dto.getReason());
         request.setStatus(DailyServiceRequest.RequestStatus.COMPLETED);
         return repository.save(request);
     }

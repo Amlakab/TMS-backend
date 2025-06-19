@@ -19,6 +19,9 @@ public class DailyServiceRequest {
     @Column(nullable = false)
     private LocalDateTime dateTime;
 
+    @Column(nullable = false)
+    private LocalDateTime returnDateTime;
+
     @ElementCollection
     @CollectionTable(name = "daily_service_travelers", joinColumns = @JoinColumn(name = "request_id"))
     private List<String> travelers = new ArrayList<>();
@@ -33,6 +36,7 @@ public class DailyServiceRequest {
     private String claimantName;
 
     private String driverName;
+    private String reason;
     private Double startKm;
     private Double endKm;
     private Double kmDifference;

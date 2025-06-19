@@ -8,7 +8,7 @@ import lombok.Data;
 public class CompletionDTO {
     @NotNull(message = "Start KM is required")
     private Double startKm;
-
+    private String reason;
     @NotNull(message = "End KM is required")
     private Double endKm;
 }

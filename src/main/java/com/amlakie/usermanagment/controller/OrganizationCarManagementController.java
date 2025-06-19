@@ -37,7 +37,7 @@ public class OrganizationCarManagementController {
     public ResponseEntity<OrganizationCarReqRes> updateOrganizationCar(@PathVariable Long id, @RequestBody OrganizationCarReqRes updateRequest) {
         return ResponseEntity.ok(organizationCarManagementService.updateOrganizationCar(id, updateRequest));
     }
-    @PutMapping("/update/{platenumber}")
+    @PutMapping("/status/{platenumber}")
     public ResponseEntity<OrganizationCarReqRes> changeStatus(@PathVariable String plateNumber, @RequestBody OrganizationCarReqRes updateRequest) {
         return ResponseEntity.ok(organizationCarManagementService.updateStatus(plateNumber, updateRequest));
     }

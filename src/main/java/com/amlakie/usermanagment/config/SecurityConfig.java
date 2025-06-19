@@ -65,6 +65,7 @@ public class SecurityConfig {
                         // Admin or User endpoints
                         .requestMatchers("/adminuser/**").hasAnyAuthority("ADMIN", "USER")
 
+                                .requestMatchers("/api/maintenance-requests/**").permitAll()
                         // Secure all other requests
                         .anyRequest().authenticated()
                 )

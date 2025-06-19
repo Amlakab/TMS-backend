@@ -13,6 +13,8 @@ public class DailyServiceRequestDTO {
 
     private LocalDateTime dateTime;
 
+    private LocalDateTime returnDateTime;
+
     @NotEmpty(message = "At least one traveler is required")
     private List<@NotBlank String> travelers;
 
@@ -20,6 +22,7 @@ public class DailyServiceRequestDTO {
     private String startingPlace;
 
     private String endingPlace;
+
 
     private String claimantName;
 
