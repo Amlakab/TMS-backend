@@ -57,12 +57,11 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/routes/**").permitAll()
                        .requestMatchers("/api/employees/**").permitAll()
-
-
-                                .requestMatchers("/api/uploads/**").permitAll()
-        // Admin endpoints
+                       .requestMatchers("/api/maintenance/**").permitAll()
+                       .requestMatchers("/api/uploads/**").permitAll()
+                        .requestMatchers("/api/requests/**").permitAll()
+                        // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-
                         // User endpoints
                         .requestMatchers("/user/**").hasAnyAuthority("USER")
 

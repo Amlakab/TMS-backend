@@ -5,6 +5,8 @@ import com.amlakie.usermanagment.entity.MaintenanceRequest;
 import com.amlakie.usermanagment.exception.InvalidRequestException;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.MaintenanceRequestRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class MaintenanceRequestService {
 
     private final MaintenanceRequestRepository maintenanceRequestRepository;
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceService.class);
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -32,7 +35,12 @@ public class MaintenanceRequestService {
     public MaintenanceRequestService(MaintenanceRequestRepository maintenanceRequestRepository) {
         this.maintenanceRequestRepository = maintenanceRequestRepository;
     }
-
+    @Transactional(readOnly = true)
+    public Optional<MaintenanceRequest> getLatestMaintenanceRequestByPlateNumber(String plateNumber) {
+        log.debug("Fetching latest maintenance request for plate number: {}", plateNumber);
+        // This now calls the new, more efficient repository method
+        return maintenanceRequestRepository.findFirstByPlateNumberOrderByCreatedAtDesc(plateNumber);
+    }
     @Transactional
     public MaintenanceRequest createRequest(MaintenanceRequestDTO requestDTO) throws InvalidRequestException {
         validateRequest(requestDTO);
@@ -88,6 +96,12 @@ public class MaintenanceRequestService {
         request.setUpdatedBy("admin");
 
         return maintenanceRequestRepository.save(request);
+    }
+    @Transactional(readOnly = true)
+    public List<MaintenanceRequest> getApprovedRequests() {
+        final Logger log = LoggerFactory.getLogger(MaintenanceRequestService.class); // Added logger
+        log.debug("Fetching all APPROVED maintenance requests");
+        return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.APPROVED);
     }
 
     @Transactional

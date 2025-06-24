@@ -63,7 +63,6 @@ public class MaintenanceRequest {
     @Column
     private String updatedBy;
 
-    // New fields for acceptance form
     @ElementCollection
     @CollectionTable(name = "maintenance_request_attachments", joinColumns = @JoinColumn(name = "request_id"))
     @Column(name = "attachment")
