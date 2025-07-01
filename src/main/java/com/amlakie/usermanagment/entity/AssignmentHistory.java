@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// src/main/java/com/amlakie/usermanagment/entity/AssignmentHistory.java
 @Entity
 @Table(name = "assignment_history")
 @Data

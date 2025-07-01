@@ -2,6 +2,7 @@ package com.amlakie.usermanagment.dto;
 
 import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.RentCar;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -51,6 +52,7 @@ public class RentCarReqRes {
     private String source;
     private String vehiclesDonorName;
     private LocalDate dateOfIn;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDate dateOfOut;
     private String vehiclesPhoto;
     private String vehiclesUserName;

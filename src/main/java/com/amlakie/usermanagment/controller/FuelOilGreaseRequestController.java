@@ -1,23 +1,26 @@
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.fogrequest.FuelOilGreaseRequestDTO;
-import com.amlakie.usermanagment.dto.fogrequest.RequestItemDTO;
 import com.amlakie.usermanagment.service.FuelOilGreaseRequestService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping("/api/fuel-requests")
 @RequiredArgsConstructor
 public class FuelOilGreaseRequestController {
+
     private final FuelOilGreaseRequestService requestService;
 
     @PostMapping
-    public ResponseEntity<FuelOilGreaseRequestDTO> createRequest(@RequestBody FuelOilGreaseRequestDTO requestDTO) {
-        return ResponseEntity.ok(requestService.createRequest(requestDTO));
+    public ResponseEntity<FuelOilGreaseRequestDTO> createRequest(
+            @Valid @RequestBody FuelOilGreaseRequestDTO requestDTO) {
+        return new ResponseEntity<>(requestService.createRequest(requestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/submit")
@@ -25,29 +28,36 @@ public class FuelOilGreaseRequestController {
         return ResponseEntity.ok(requestService.submitRequest(id));
     }
 
+    /**
+     * IMPROVEMENT: This endpoint now handles both editing and approving/rejecting.
+     * The approval decision and reviewer name are expected in the request body.
+     */
     @PutMapping("/{id}/head-mechanic-review")
     public ResponseEntity<FuelOilGreaseRequestDTO> headMechanicReview(
             @PathVariable Long id,
-            @RequestParam String headMechanicName,
-            @RequestParam boolean isApproved) {
-        return ResponseEntity.ok(requestService.headMechanicReview(id, headMechanicName, isApproved));
+            @Valid @RequestBody FuelOilGreaseRequestDTO reviewDTO) { // The DTO contains all edits and the approval
+        return ResponseEntity.ok(requestService.headMechanicReview(id, reviewDTO));
     }
 
+    /**
+     * IMPROVEMENT: This endpoint now handles both editing and approving/rejecting.
+     * The approval decision and reviewer name are expected in the request body.
+     */
     @PutMapping("/{id}/nezek-review")
     public ResponseEntity<FuelOilGreaseRequestDTO> nezekReview(
             @PathVariable Long id,
-            @RequestParam String nezekOfficialName,
-            @RequestParam boolean isApproved) {
-        return ResponseEntity.ok(requestService.nezekReview(id, nezekOfficialName, isApproved));
+            @Valid @RequestBody FuelOilGreaseRequestDTO reviewDTO) { // The DTO contains all edits and the approval
+        return ResponseEntity.ok(requestService.nezekReview(id, reviewDTO));
     }
 
     @PutMapping("/{id}/fulfill")
     public ResponseEntity<FuelOilGreaseRequestDTO> fulfillRequest(
             @PathVariable Long id,
-            @RequestBody List<RequestItemDTO> filledItems) {
-        return ResponseEntity.ok(requestService.fulfillRequest(id, filledItems));
+            @RequestBody FuelOilGreaseRequestDTO requestDTO) {
+        return ResponseEntity.ok(requestService.fulfillRequest(id, requestDTO));
     }
 
+    // --- GET Endpoints ---
     @GetMapping("/pending")
     public ResponseEntity<List<FuelOilGreaseRequestDTO>> getPendingRequests() {
         return ResponseEntity.ok(requestService.getPendingRequests());
@@ -61,6 +71,11 @@ public class FuelOilGreaseRequestController {
     @GetMapping("/approved")
     public ResponseEntity<List<FuelOilGreaseRequestDTO>> getApprovedRequests() {
         return ResponseEntity.ok(requestService.getApprovedRequests());
+    }
+
+    @GetMapping("/draft")
+    public ResponseEntity<List<FuelOilGreaseRequestDTO>> getDraftRequests() {
+        return ResponseEntity.ok(requestService.getDraftRequests());
     }
 
     @GetMapping("/mechanic/{mechanicName}")

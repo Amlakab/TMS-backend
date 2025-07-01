@@ -29,6 +29,14 @@ public class RentCarManagementService {
     @Autowired
     private CarRepository carRepository;
 
+    @Autowired
+    private AssignmentHistoryRepository assignmentHistoryRepository;
+
+    // Helper method to handle null/empty string checks and return "No" if empty
+    private String getValueOrDefault(String value) {
+        return (value != null && !value.trim().isEmpty()) ? value.trim() : "No";
+    }
+
     public RentCarReqRes registerRentCar(RentCarReqRes registrationRequest) {
         RentCarReqRes response = new RentCarReqRes();
         try {
@@ -51,28 +59,30 @@ public class RentCarManagementService {
             rentCar.setFuelType(registrationRequest.getFuelType());
             rentCar.setStatus(registrationRequest.getVehiclesStatus());
             rentCar.setOtherDescription(registrationRequest.getOtherDescription());
-            rentCar.setRadio(registrationRequest.getRadio());
-            rentCar.setAntena(registrationRequest.getAntena());
-            rentCar.setKrik(registrationRequest.getKrik());
-            rentCar.setKrikManesha(registrationRequest.getKrikManesha());
+
+            // Use helper method for fields that should default to "No"
+            rentCar.setRadio(getValueOrDefault(registrationRequest.getRadio()));
+            rentCar.setAntena(getValueOrDefault(registrationRequest.getAntena()));
+            rentCar.setKrik(getValueOrDefault(registrationRequest.getKrik()));
+            rentCar.setKrikManesha(getValueOrDefault(registrationRequest.getKrikManesha()));
             rentCar.setTyerStatus(registrationRequest.getTyerStatus());
-            rentCar.setGomaMaficha(registrationRequest.getGomaMaficha());
-            rentCar.setMefcha(registrationRequest.getMefcha());
-            rentCar.setReserveTayer(registrationRequest.getReserveTayer());
-            rentCar.setGomaGet(registrationRequest.getGomaGet());
-            rentCar.setPinsa(registrationRequest.getPinsa());
-            rentCar.setKacavite(registrationRequest.getKacavite());
-            rentCar.setFireProtection(registrationRequest.getFireProtection());
+            rentCar.setGomaMaficha(getValueOrDefault(registrationRequest.getGomaMaficha()));
+            rentCar.setMefcha(getValueOrDefault(registrationRequest.getMefcha()));
+            rentCar.setReserveTayer(getValueOrDefault(registrationRequest.getReserveTayer()));
+            rentCar.setGomaGet(getValueOrDefault(registrationRequest.getGomaGet()));
+            rentCar.setPinsa(getValueOrDefault(registrationRequest.getPinsa()));
+            rentCar.setKacavite(getValueOrDefault(registrationRequest.getKacavite()));
+            rentCar.setFireProtection(getValueOrDefault(registrationRequest.getFireProtection()));
+
             rentCar.setSource(registrationRequest.getSource());
             rentCar.setVehiclesDonorName(registrationRequest.getVehiclesDonorName());
             rentCar.setDateOfIn(registrationRequest.getDateOfIn());
-            rentCar.setDateOfOut(registrationRequest.getDateOfOut());
+            rentCar.setDateOfOut(registrationRequest.getDateOfOut()); // This can be null
             rentCar.setVehiclesPhoto(registrationRequest.getVehiclesPhoto());
             rentCar.setVehiclesUserName(registrationRequest.getVehiclesUserName());
             rentCar.setPosition(registrationRequest.getPosition());
             rentCar.setLibre(registrationRequest.getLibre());
             rentCar.setTransmission(registrationRequest.getTransmission());
-            rentCar.setDataAntollerNatue(registrationRequest.getDataAntollerNatue());
             rentCar.setKm(registrationRequest.getKm());
             rentCar.setStatus("NOT_INSPECTED");
 
@@ -147,28 +157,30 @@ public class RentCarManagementService {
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getVehiclesStatus());
                 existingCar.setOtherDescription(updateRequest.getOtherDescription());
-                existingCar.setRadio(updateRequest.getRadio());
-                existingCar.setAntena(updateRequest.getAntena());
-                existingCar.setKrik(updateRequest.getKrik());
-                existingCar.setKrikManesha(updateRequest.getKrikManesha());
+
+                // Use helper method for fields that should default to "No"
+                existingCar.setRadio(getValueOrDefault(updateRequest.getRadio()));
+                existingCar.setAntena(getValueOrDefault(updateRequest.getAntena()));
+                existingCar.setKrik(getValueOrDefault(updateRequest.getKrik()));
+                existingCar.setKrikManesha(getValueOrDefault(updateRequest.getKrikManesha()));
                 existingCar.setTyerStatus(updateRequest.getTyerStatus());
-                existingCar.setGomaMaficha(updateRequest.getGomaMaficha());
-                existingCar.setMefcha(updateRequest.getMefcha());
-                existingCar.setReserveTayer(updateRequest.getReserveTayer());
-                existingCar.setGomaGet(updateRequest.getGomaGet());
-                existingCar.setPinsa(updateRequest.getPinsa());
-                existingCar.setKacavite(updateRequest.getKacavite());
-                existingCar.setFireProtection(updateRequest.getFireProtection());
+                existingCar.setGomaMaficha(getValueOrDefault(updateRequest.getGomaMaficha()));
+                existingCar.setMefcha(getValueOrDefault(updateRequest.getMefcha()));
+                existingCar.setReserveTayer(getValueOrDefault(updateRequest.getReserveTayer()));
+                existingCar.setGomaGet(getValueOrDefault(updateRequest.getGomaGet()));
+                existingCar.setPinsa(getValueOrDefault(updateRequest.getPinsa()));
+                existingCar.setKacavite(getValueOrDefault(updateRequest.getKacavite()));
+                existingCar.setFireProtection(getValueOrDefault(updateRequest.getFireProtection()));
+
                 existingCar.setSource(updateRequest.getSource());
                 existingCar.setVehiclesDonorName(updateRequest.getVehiclesDonorName());
                 existingCar.setDateOfIn(updateRequest.getDateOfIn());
-                existingCar.setDateOfOut(updateRequest.getDateOfOut());
+                existingCar.setDateOfOut(updateRequest.getDateOfOut()); // This can be null
                 existingCar.setVehiclesPhoto(updateRequest.getVehiclesPhoto());
                 existingCar.setVehiclesUserName(updateRequest.getVehiclesUserName());
                 existingCar.setPosition(updateRequest.getPosition());
                 existingCar.setLibre(updateRequest.getLibre());
                 existingCar.setTransmission(updateRequest.getTransmission());
-                existingCar.setDataAntollerNatue(updateRequest.getDataAntollerNatue());
                 existingCar.setKm(updateRequest.getKm());
 
                 RentCar updatedCar = rentCarRepository.save(existingCar);
@@ -227,11 +239,10 @@ public class RentCarManagementService {
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
 
             // Update history fields
-            history.setAssignedDate( LocalDateTime.now());
+            history.setAssignedDate(LocalDateTime.now());
             history.setRentalType(updateRequest.getRentalType());
             history.setPlateNumber(updateRequest.getPlateNumber());
             history.setStatus(updateRequest.getStatus());
-
 
             // Update car if changed
             RentCar cars = rentCarRepository.findById(updateRequest.getCarId())
@@ -253,7 +264,6 @@ public class RentCarManagementService {
         return response;
     }
 
-
     public RentCarReqRes updateStatus(String plateNumber, RentCarReqRes updateRequest) {
         RentCarReqRes response = new RentCarReqRes();
         try {
@@ -261,7 +271,6 @@ public class RentCarManagementService {
             if (carOptional.isPresent()) {
                 RentCar existingCar = carOptional.get();
                 existingCar.setStatus(updateRequest.getStatus());
-
 
                 RentCar updatedCar = rentCarRepository.save(existingCar);
                 response.setRentCar(updatedCar);
@@ -277,10 +286,6 @@ public class RentCarManagementService {
         }
         return response;
     }
-
-    // Add these methods to CarManagementService
-    @Autowired
-    private AssignmentHistoryRepository assignmentHistoryRepository;
 
     public RentCarReqRes getApprovedCars() {
         RentCarReqRes response = new RentCarReqRes();
@@ -339,7 +344,6 @@ public class RentCarManagementService {
             history.setGender(request.getGender());
             history.setTotalPercentage(request.getTotalPercentage());
             history.setStatus(request.getStatus());
-
 
             if ("Level 1".equals(request.getPosition())) {
                 history.setModel(request.getModel());

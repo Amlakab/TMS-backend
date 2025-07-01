@@ -20,16 +20,16 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final OrganizationCarRepository organizationCarRepository;
-    private final EmailSentService emailSentService; // Inject EmailSentService
+    private final EmailSentService emailSentService;
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository,
                            OrganizationCarRepository organizationCarRepository,
-                           EmailSentService emailSentService) { // Add EmailSentService to constructor
+                           EmailSentService emailSentService) {
         this.employeeRepository = employeeRepository;
         this.organizationCarRepository = organizationCarRepository;
-        this.emailSentService = emailSentService; // Initialize EmailSentService
+        this.emailSentService = emailSentService;
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +65,6 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-
     private EmployeeResponseDTO convertToResponseDTO(Employee employee) {
         if (employee == null) {
             return null;
@@ -86,6 +85,7 @@ public class EmployeeService {
                 carId
         );
     }
+
     @Transactional
     public EmployeeResponseDTO assignCarAndVillageToEmployee(AssignCarToEmployeeRequestDTO request) {
         log.info("Received assignment request for employee ID '{}' to car plate '{}'", request.getEmployeeId(), request.getCarPlateNumber());
@@ -109,7 +109,56 @@ public class EmployeeService {
                 });
         log.info("Retrieved car for assignment: {}", car.getPlateNumber());
 
+        // --- NEW LOGIC START: Car Capacity Check ---
+
+        // Check if the employee is already assigned to this car.
+        // If so, we don't need to check capacity for *this* specific assignment,
+        // as they are already counted as occupying a seat. This prevents blocking
+        // a "re-confirmation" or update of other employee details if the car is full.
+        boolean isAlreadyAssignedToThisCar = employee.getAssignedCar() != null && employee.getAssignedCar().equals(car);
+
+        if (!isAlreadyAssignedToThisCar) {
+            // 1. Get the car's capacity using the correct getter.
+            // This now returns an Integer (or int) directly, which is type-safe.
+            Integer carCapacity = car.getLoadCapacity(); // Corrected: using getLoadCapacity()
+
+            // It's good practice to handle the case where capacity might be null or zero.
+            if (carCapacity == null || carCapacity <= 0) {
+                log.error("Car {} has an invalid capacity of {}. Cannot assign.", car.getPlateNumber(), carCapacity);
+                throw new IllegalStateException("Car " + car.getPlateNumber() + " has an invalid capacity configured.");
+            }
+
+            // 2. Count current employees assigned to this car.
+            // This now works because the method exists in the repository.
+            long currentOccupancy = employeeRepository.countByAssignedCar(car);
+
+            log.info("Car {} (Plate: {}) has capacity {} and current occupancy {}. Attempting to assign employee {}.",
+                    car.getId(), car.getPlateNumber(), carCapacity, currentOccupancy, employee.getEmployeeId());
+
+            // 3. Check if the car is already full.
+            if (currentOccupancy >= carCapacity) {
+                log.warn("Attempt to assign employee {} to car {} failed. Car is already full ({} / {}).",
+                        employee.getEmployeeId(), car.getPlateNumber(), currentOccupancy, carCapacity);
+                throw new IllegalArgumentException("Car " + car.getPlateNumber() + " is already full. Cannot assign more employees.");
+            }
+        } else {
+            log.info("Employee {} is already assigned to car {}. Skipping capacity check for this re-confirmation.",
+                    employee.getEmployeeId(), car.getPlateNumber());
+        }
+        // --- NEW LOGIC END ---
+
         try {
+            // If the employee is already assigned to this exact car, and we've passed the capacity check (or skipped it),
+            // we can log and return early if no other changes are needed.
+            // This check is now placed after the capacity check to ensure new assignments are always validated.
+            if (employee.getAssignedCar() != null && employee.getAssignedCar().equals(car)) {
+                log.info("Employee {} is already assigned to car {}. No change needed for car assignment.", employee.getEmployeeId(), car.getPlateNumber());
+                // If only village is being updated, proceed. Otherwise, if no change, just return.
+                if (employee.getVillage() != null && employee.getVillage().equals(request.getVillageName())) {
+                    return convertToResponseDTO(employee); // No change at all
+                }
+            }
+
             employee.setVillage(request.getVillageName());
             employee.setAssignedCar(car);
             Employee updatedEmployee = employeeRepository.save(employee);
@@ -124,9 +173,7 @@ public class EmployeeService {
                         updatedEmployee.getName(),
                         car.getPlateNumber()
                 );
-                // Call the injected emailSentService
                 emailSentService.sendSimpleMessage(updatedEmployee.getEmail(), subject, text);
-                // EmailSentService logs success/failure of sending
             } else {
                 log.warn("Cannot send assignment email: Employee {} (ID: {}) has no email address or email is empty.", updatedEmployee.getName(), updatedEmployee.getEmployeeId());
             }
@@ -134,7 +181,7 @@ public class EmployeeService {
             return convertToResponseDTO(updatedEmployee);
         } catch (IllegalArgumentException | EntityNotFoundException e) {
             log.error("Validation or entity not found error during assignment for employee ID {}: {}", request.getEmployeeId(), e.getMessage());
-            throw e; // Re-throw to be handled by controller advice or default error handling
+            throw e;
         }
         catch (Exception e) {
             log.error("Unexpected error during assignment for employee ID {}: ", request.getEmployeeId(), e);

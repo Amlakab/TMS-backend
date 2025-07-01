@@ -33,6 +33,7 @@ public class FuelOilGreaseRequest {
     @Column(nullable = false)
     private String shortExplanation;
 
+    // This list will hold all the individual items (fuel, motor oil, etc.)
     @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequestItem> items;
 
@@ -42,17 +43,16 @@ public class FuelOilGreaseRequest {
     private String headMechanicName;
 
     @Enumerated(EnumType.STRING)
-    private ApprovalStatus headMechanicApproval;
+    private ApprovalStatus headMechanicApproval; // Enum for approval status
 
     private String nezekOfficialName;
 
     @Enumerated(EnumType.STRING)
-    private NezekStatus nezekStatus;
+    private NezekStatus nezekStatus; // Enum for Nezek status
 
     @Column(nullable = false)
     private Boolean isFulfilled;
 
     @Enumerated(EnumType.STRING)
-    private RequestStatus status;
+    private RequestStatus status; // Enum for request lifecycle status
 }
-

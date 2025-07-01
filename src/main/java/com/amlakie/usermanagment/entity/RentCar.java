@@ -113,7 +113,7 @@ public class RentCar {
     @Column(nullable = false)
     private LocalDate dateOfIn;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDate dateOfOut;
 
     @Column(nullable = false)
@@ -131,8 +131,8 @@ public class RentCar {
     @Column(nullable = false)
     private String transmission;
 
-    @Column(nullable = false)
-    private String dataAntollerNatue;
+//    @Column(nullable = false)
+//    private String dataAntollerNatue;
 
     @Column(nullable = false)
     private String km;

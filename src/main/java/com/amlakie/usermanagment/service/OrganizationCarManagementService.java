@@ -45,7 +45,7 @@ public class OrganizationCarManagementService {
             organizationCar.setDriverName(registrationRequest.getDriverName());
             organizationCar.setDriverAttributes(registrationRequest.getDriverAttributes());
             organizationCar.setDriverAddress(registrationRequest.getDriverAddress());
-            organizationCar.setLoadCapacity(registrationRequest.getLoadCapacity());
+            organizationCar.setLoadCapacity(Integer.valueOf(registrationRequest.getLoadCapacity()));
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             organizationCar.setCreatedBy(authentication.getName());
@@ -116,7 +116,7 @@ public class OrganizationCarManagementService {
                 existingCar.setDriverName(updateRequest.getDriverName());
                 existingCar.setDriverAttributes(updateRequest.getDriverAttributes());
                 existingCar.setDriverAddress(updateRequest.getDriverAddress());
-                existingCar.setLoadCapacity(updateRequest.getLoadCapacity());
+                existingCar.setLoadCapacity(Integer.valueOf(updateRequest.getLoadCapacity()));
 
                 OrganizationCar updatedCar = organizationCarRepository.save(existingCar);
                 response.setOrganizationCar(updatedCar);

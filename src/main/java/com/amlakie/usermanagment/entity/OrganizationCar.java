@@ -75,7 +75,7 @@ public class OrganizationCar implements Vehicle{
     private String driverAddress;
 
     @Column(nullable = false)
-    private String loadCapacity;
+    private Integer loadCapacity;
 
     @Column(nullable = false)
     private String createdBy;
