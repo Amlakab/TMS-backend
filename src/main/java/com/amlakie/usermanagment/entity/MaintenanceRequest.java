@@ -1,4 +1,3 @@
-// MaintenanceRequest.java - Updated
 package com.amlakie.usermanagment.entity;
 
 import jakarta.persistence.*;
@@ -13,7 +12,7 @@ import java.util.List;
 public class MaintenanceRequest {
 
     public enum RequestStatus {
-        PENDING, CHECKED, REJECTED, INSPECTION, COMPLETED, APPROVED
+        PENDING, CHECKED, REJECTED, INSPECTION, COMPLETED, APPROVED,FINISHED
     }
 
     @Id
@@ -46,6 +45,9 @@ public class MaintenanceRequest {
 
     @Column
     private String authorizingPersonnel;
+
+    @Column
+    private Double fuelAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -87,7 +89,25 @@ public class MaintenanceRequest {
     @CollectionTable(name = "maintenance_request_signatures", joinColumns = @JoinColumn(name = "request_id"))
     private List<Signature> signatures;
 
-    // Embedded signature class
+    // Return fields
+    @ElementCollection
+    @CollectionTable(name = "maintenance_request_return_files", joinColumns = @JoinColumn(name = "request_id"))
+    @Column(name = "file_url")
+    private List<String> returnFiles;
+
+    @Column
+    private Double returnKilometerReading;
+
+    @Column(length = 500)
+    private String returnNotes;
+
+    @Column
+    private Double returnFuelAmount;
+
+    @ElementCollection
+    @CollectionTable(name = "maintenance_request_return_signatures", joinColumns = @JoinColumn(name = "request_id"))
+    private List<Signature> returnSignatures;
+
     @Embeddable
     @Data
     public static class Signature {

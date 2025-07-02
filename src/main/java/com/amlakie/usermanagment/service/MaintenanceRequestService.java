@@ -5,8 +5,6 @@ import com.amlakie.usermanagment.entity.MaintenanceRequest;
 import com.amlakie.usermanagment.exception.InvalidRequestException;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.MaintenanceRequestRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,6 @@ import java.util.stream.Collectors;
 public class MaintenanceRequestService {
 
     private final MaintenanceRequestRepository maintenanceRequestRepository;
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceService.class);
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -35,12 +32,7 @@ public class MaintenanceRequestService {
     public MaintenanceRequestService(MaintenanceRequestRepository maintenanceRequestRepository) {
         this.maintenanceRequestRepository = maintenanceRequestRepository;
     }
-    @Transactional(readOnly = true)
-    public Optional<MaintenanceRequest> getLatestMaintenanceRequestByPlateNumber(String plateNumber) {
-        log.debug("Fetching latest maintenance request for plate number: {}", plateNumber);
-        // This now calls the new, more efficient repository method
-        return maintenanceRequestRepository.findFirstByPlateNumberOrderByCreatedAtDesc(plateNumber);
-    }
+
     @Transactional
     public MaintenanceRequest createRequest(MaintenanceRequestDTO requestDTO) throws InvalidRequestException {
         validateRequest(requestDTO);
@@ -63,6 +55,19 @@ public class MaintenanceRequestService {
 
     public List<MaintenanceRequest> getRequestsForMaintenance() {
         return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.CHECKED);
+    }
+
+    public List<MaintenanceRequest> getRequestsForInspector() {
+        return maintenanceRequestRepository.findByStatusIn(
+                List.of(
+                        MaintenanceRequest.RequestStatus.APPROVED,
+                        MaintenanceRequest.RequestStatus.COMPLETED
+                )
+        );
+    }
+
+    public List<MaintenanceRequest> getRequestsForInspectorToReturn() {
+        return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.COMPLETED);
     }
 
     public MaintenanceRequest getRequestById(Long id) throws ResourceNotFoundException {
@@ -97,12 +102,6 @@ public class MaintenanceRequestService {
 
         return maintenanceRequestRepository.save(request);
     }
-    @Transactional(readOnly = true)
-    public List<MaintenanceRequest> getApprovedRequests() {
-        final Logger log = LoggerFactory.getLogger(MaintenanceRequestService.class); // Added logger
-        log.debug("Fetching all APPROVED maintenance requests");
-        return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.APPROVED);
-    }
 
     @Transactional
     public MaintenanceRequest submitAcceptance(Long id, MaintenanceRequestDTO acceptanceData)
@@ -110,7 +109,7 @@ public class MaintenanceRequestService {
         MaintenanceRequest request = getRequestById(id);
 
         if (request.getStatus() != MaintenanceRequest.RequestStatus.APPROVED) {
-            throw new InvalidRequestException("Cannot submit acceptance for request that is not in CHECKED status");
+            throw new InvalidRequestException("Cannot submit acceptance for request that is not in APPROVED status");
         }
 
         request.setAttachments(acceptanceData.getAttachments());
@@ -118,6 +117,7 @@ public class MaintenanceRequestService {
         request.setNotes(acceptanceData.getNotes());
         request.setRequestingPersonnel(acceptanceData.getRequestingPersonnel());
         request.setAuthorizingPersonnel(acceptanceData.getAuthorizingPersonnel());
+        request.setFuelAmount(acceptanceData.getFuelAmount());
 
         if (acceptanceData.getSignatures() != null) {
             List<MaintenanceRequest.Signature> signatures = acceptanceData.getSignatures().stream()
@@ -135,13 +135,132 @@ public class MaintenanceRequestService {
 
         request.setStatus(MaintenanceRequest.RequestStatus.INSPECTION);
         request.setUpdatedAt(LocalDateTime.now());
-        request.setUpdatedBy("driver");
+        request.setUpdatedBy("inspector");
 
         return maintenanceRequestRepository.save(request);
     }
 
     @Transactional
-    public MaintenanceRequest uploadFiles(Long id, MultipartFile[] files)
+    public MaintenanceRequest completeReturnProcess(Long id, MaintenanceRequestDTO returnData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        MaintenanceRequest request = getRequestById(id);
+
+        if (request.getStatus() != MaintenanceRequest.RequestStatus.COMPLETED) {
+            throw new InvalidRequestException(
+                    "Cannot complete return for request that is not in INSPECTION or COMPLETED status"
+            );
+        }
+
+        // Update return-specific fields
+        if (returnData.getReturnKilometerReading() != null) {
+            request.setReturnKilometerReading(returnData.getReturnKilometerReading());
+        }
+        if (returnData.getReturnNotes() != null) {
+            request.setReturnNotes(returnData.getReturnNotes());
+        }
+        if (returnData.getReturnFuelAmount() != null) {
+            request.setReturnFuelAmount(returnData.getReturnFuelAmount());
+        }
+
+        // Update return signatures
+        if (returnData.getReturnSignatures() != null) {
+            List<MaintenanceRequest.Signature> returnSignatures = returnData.getReturnSignatures().stream()
+                    .map(sig -> {
+                        MaintenanceRequest.Signature signature = new MaintenanceRequest.Signature();
+                        signature.setRole(sig.getRole());
+                        signature.setName(sig.getName());
+                        signature.setSignature(sig.getSignature());
+                        signature.setDate(sig.getDate());
+                        return signature;
+                    })
+                    .collect(Collectors.toList());
+            request.setReturnSignatures(returnSignatures);
+        }
+
+        request.setStatus(MaintenanceRequest.RequestStatus.FINISHED);
+        request.setUpdatedAt(LocalDateTime.now());
+        request.setUpdatedBy("inspector");
+
+        return maintenanceRequestRepository.save(request);
+    }
+
+    // MaintenanceRequestService.java - Add this method
+    @Transactional
+    public MaintenanceRequest completeRequest(Long id) throws ResourceNotFoundException, InvalidRequestException {
+        MaintenanceRequest request = getRequestById(id);
+
+        if (request.getStatus() != MaintenanceRequest.RequestStatus.COMPLETED) {
+            throw new InvalidRequestException("Cannot complete request that is not in COMPLETED status");
+        }
+
+        request.setStatus(MaintenanceRequest.RequestStatus.FINISHED);
+        request.setUpdatedAt(LocalDateTime.now());
+        request.setUpdatedBy("inspector");
+
+        return maintenanceRequestRepository.save(request);
+    }
+
+    @Transactional
+    public MaintenanceRequest submitReturn(Long id, MaintenanceRequestDTO returnData)
+            throws ResourceNotFoundException, InvalidRequestException {
+        MaintenanceRequest request = getRequestById(id);
+
+        if (request.getStatus() != MaintenanceRequest.RequestStatus.INSPECTION) {
+            throw new InvalidRequestException("Cannot submit return for request that is not in INSPECTION status");
+        }
+
+        // Update existing fields from acceptance
+        if (returnData.getAttachments() != null) {
+            request.setAttachments(returnData.getAttachments());
+        }
+        if (returnData.getPhysicalContent() != null) {
+            request.setPhysicalContent(returnData.getPhysicalContent());
+        }
+        if (returnData.getNotes() != null) {
+            request.setNotes(returnData.getNotes());
+        }
+        if (returnData.getSignatures() != null) {
+            List<MaintenanceRequest.Signature> signatures = returnData.getSignatures().stream()
+                    .map(sig -> {
+                        MaintenanceRequest.Signature signature = new MaintenanceRequest.Signature();
+                        signature.setRole(sig.getRole());
+                        signature.setName(sig.getName());
+                        signature.setSignature(sig.getSignature());
+                        signature.setDate(sig.getDate());
+                        return signature;
+                    })
+                    .collect(Collectors.toList());
+            request.setSignatures(signatures);
+        }
+
+        // Set return-specific fields
+        request.setReturnKilometerReading(returnData.getReturnKilometerReading());
+        request.setReturnNotes(returnData.getReturnNotes());
+        request.setReturnFuelAmount(returnData.getReturnFuelAmount());
+
+        if (returnData.getReturnSignatures() != null) {
+            List<MaintenanceRequest.Signature> returnSignatures = returnData.getReturnSignatures().stream()
+                    .map(sig -> {
+                        MaintenanceRequest.Signature signature = new MaintenanceRequest.Signature();
+                        signature.setRole(sig.getRole());
+                        signature.setName(sig.getName());
+                        signature.setSignature(sig.getSignature());
+                        signature.setDate(sig.getDate());
+                        return signature;
+                    })
+                    .collect(Collectors.toList());
+            request.setReturnSignatures(returnSignatures);
+        }
+
+        request.setStatus(MaintenanceRequest.RequestStatus.COMPLETED);
+        request.setUpdatedAt(LocalDateTime.now());
+        request.setUpdatedBy("inspector");
+
+        return maintenanceRequestRepository.save(request);
+    }
+
+    @Transactional
+    public MaintenanceRequest uploadFiles(Long id, MultipartFile[] files, boolean isReturnFiles)
             throws ResourceNotFoundException, InvalidRequestException, IOException {
         MaintenanceRequest request = getRequestById(id);
 
@@ -156,10 +275,9 @@ public class MaintenanceRequestService {
 
         List<String> fileUrls = new ArrayList<>();
         for (MultipartFile file : files) {
-            // Validate file type and size
             String contentType = file.getContentType();
             if (contentType == null ||
-                    (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))){
+                    (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
                 throw new InvalidRequestException("Invalid file type. Only images and PDFs are allowed");
             }
 
@@ -170,13 +288,21 @@ public class MaintenanceRequestService {
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            fileUrls.add(filename); // Store only filename
+            fileUrls.add(filename);
         }
 
-        if (request.getCarImages() == null) {
-            request.setCarImages(fileUrls);
+        if (isReturnFiles) {
+            if (request.getReturnFiles() == null) {
+                request.setReturnFiles(fileUrls);
+            } else {
+                request.getReturnFiles().addAll(fileUrls);
+            }
         } else {
-            request.getCarImages().addAll(fileUrls);
+            if (request.getCarImages() == null) {
+                request.setCarImages(fileUrls);
+            } else {
+                request.getCarImages().addAll(fileUrls);
+            }
         }
 
         request.setUpdatedAt(LocalDateTime.now());
@@ -235,9 +361,14 @@ public class MaintenanceRequestService {
         entity.setMechanicDiagnosis(dto.getMechanicDiagnosis());
         entity.setRequestingPersonnel(dto.getRequestingPersonnel());
         entity.setAuthorizingPersonnel(dto.getAuthorizingPersonnel());
+        entity.setFuelAmount(dto.getFuelAmount());
         entity.setAttachments(dto.getAttachments());
         entity.setPhysicalContent(dto.getPhysicalContent());
         entity.setNotes(dto.getNotes());
+        entity.setReturnKilometerReading(dto.getReturnKilometerReading());
+        entity.setReturnNotes(dto.getReturnNotes());
+        entity.setReturnFuelAmount(dto.getReturnFuelAmount());
+        entity.setReturnFiles(dto.getReturnFiles());
 
         if (dto.getStatus() != null) {
             entity.setStatus(MaintenanceRequest.RequestStatus.valueOf(dto.getStatus()));
@@ -255,6 +386,20 @@ public class MaintenanceRequestService {
                     })
                     .collect(Collectors.toList());
             entity.setSignatures(signatures);
+        }
+
+        if (dto.getReturnSignatures() != null) {
+            List<MaintenanceRequest.Signature> returnSignatures = dto.getReturnSignatures().stream()
+                    .map(sig -> {
+                        MaintenanceRequest.Signature signature = new MaintenanceRequest.Signature();
+                        signature.setRole(sig.getRole());
+                        signature.setName(sig.getName());
+                        signature.setSignature(sig.getSignature());
+                        signature.setDate(sig.getDate());
+                        return signature;
+                    })
+                    .collect(Collectors.toList());
+            entity.setReturnSignatures(returnSignatures);
         }
 
         return entity;
@@ -291,6 +436,9 @@ public class MaintenanceRequestService {
         if (dto.getStatus() != null) {
             entity.setStatus(MaintenanceRequest.RequestStatus.valueOf(dto.getStatus()));
         }
+        if (dto.getFuelAmount() != null) {
+            entity.setFuelAmount(dto.getFuelAmount());
+        }
         if (dto.getAttachments() != null) {
             entity.setAttachments(dto.getAttachments());
         }
@@ -299,6 +447,18 @@ public class MaintenanceRequestService {
         }
         if (dto.getNotes() != null) {
             entity.setNotes(dto.getNotes());
+        }
+        if (dto.getReturnKilometerReading() != null) {
+            entity.setReturnKilometerReading(dto.getReturnKilometerReading());
+        }
+        if (dto.getReturnNotes() != null) {
+            entity.setReturnNotes(dto.getReturnNotes());
+        }
+        if (dto.getReturnFuelAmount() != null) {
+            entity.setReturnFuelAmount(dto.getReturnFuelAmount());
+        }
+        if (dto.getReturnFiles() != null) {
+            entity.setReturnFiles(dto.getReturnFiles());
         }
         if (dto.getSignatures() != null) {
             List<MaintenanceRequest.Signature> signatures = dto.getSignatures().stream()
@@ -312,6 +472,19 @@ public class MaintenanceRequestService {
                     })
                     .collect(Collectors.toList());
             entity.setSignatures(signatures);
+        }
+        if (dto.getReturnSignatures() != null) {
+            List<MaintenanceRequest.Signature> returnSignatures = dto.getReturnSignatures().stream()
+                    .map(sig -> {
+                        MaintenanceRequest.Signature signature = new MaintenanceRequest.Signature();
+                        signature.setRole(sig.getRole());
+                        signature.setName(sig.getName());
+                        signature.setSignature(sig.getSignature());
+                        signature.setDate(sig.getDate());
+                        return signature;
+                    })
+                    .collect(Collectors.toList());
+            entity.setReturnSignatures(returnSignatures);
         }
     }
 

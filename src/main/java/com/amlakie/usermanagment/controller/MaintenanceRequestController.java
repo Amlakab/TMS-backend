@@ -56,6 +56,18 @@ public class MaintenanceRequestController {
         return ResponseEntity.ok(requests);
     }
 
+    @GetMapping("/inspector")
+    public ResponseEntity<List<MaintenanceRequest>> getRequestsForInspector() {
+        List<MaintenanceRequest> requests = maintenanceRequestService.getRequestsForInspector();
+        return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/return")
+    public ResponseEntity<List<MaintenanceRequest>> getRequestsForInspectorToReturn() {
+        List<MaintenanceRequest> requests = maintenanceRequestService.getRequestsForInspectorToReturn();
+        return ResponseEntity.ok(requests);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getRequestById(@PathVariable Long id) {
         try {
@@ -108,12 +120,26 @@ public class MaintenanceRequestController {
         }
     }
 
+    @PostMapping("/{id}/return")
+    public ResponseEntity<?> submitReturn(
+            @PathVariable Long id,
+            @RequestBody MaintenanceRequestDTO returnData) {
+        try {
+            MaintenanceRequest updatedRequest = maintenanceRequestService.submitReturn(id, returnData);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (InvalidRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/{id}/upload-files")
     public ResponseEntity<?> uploadFiles(
             @PathVariable Long id,
             @RequestParam("files") MultipartFile[] files) {
         try {
-            MaintenanceRequest updatedRequest = maintenanceRequestService.uploadFiles(id, files);
+            MaintenanceRequest updatedRequest = maintenanceRequestService.uploadFiles(id, files, false);
             return ResponseEntity.ok(updatedRequest);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -121,6 +147,50 @@ public class MaintenanceRequestController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload files");
+        }
+    }
+
+    @PostMapping("/{id}/upload-return-files")
+    public ResponseEntity<?> uploadReturnFiles(
+            @PathVariable Long id,
+            @RequestParam("files") MultipartFile[] files) {
+        try {
+            MaintenanceRequest updatedRequest = maintenanceRequestService.uploadFiles(id, files, true);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (InvalidRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload return files");
+        }
+    }
+
+    // MaintenanceRequestController.java - Add this new endpoint
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<?> completeRequest(@PathVariable Long id) {
+        try {
+            MaintenanceRequest completedRequest = maintenanceRequestService.completeRequest(id);
+            return ResponseEntity.ok(completedRequest);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (InvalidRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{id}/complete-return")
+    public ResponseEntity<?> completeReturnProcess(
+            @PathVariable Long id,
+            @RequestBody MaintenanceRequestDTO returnData) {
+        try {
+            MaintenanceRequest completedRequest = maintenanceRequestService.completeReturnProcess(id, returnData);
+            return ResponseEntity.ok(completedRequest);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (InvalidRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

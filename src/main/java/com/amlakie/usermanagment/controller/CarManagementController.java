@@ -94,6 +94,11 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getPendingRequests());
     }
 
+    @GetMapping("/auth/assignments/pending-and-semipending")
+    public ResponseEntity<CarReqRes> getPendingAndSemiPendingCars() {
+        return ResponseEntity.ok(carManagementService.getPendingAndSemiPendingRequests());
+    }
+
     @PutMapping("/auth/car/assignments/update/{id}")
     public ResponseEntity<CarReqRes> updateAssignmentHistory(@PathVariable Long id, @RequestBody AssignmentRequest updateRequest) {
         return ResponseEntity.ok(carManagementService.updateAssignmentHistory(id, updateRequest));

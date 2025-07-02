@@ -1,4 +1,3 @@
-// MaintenanceRequestDTO.java - Updated
 package com.amlakie.usermanagment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,6 +32,7 @@ public class MaintenanceRequestDTO {
     private String mechanicDiagnosis;
     private String requestingPersonnel;
     private String authorizingPersonnel;
+    private Double fuelAmount;
     private String status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -43,13 +43,19 @@ public class MaintenanceRequestDTO {
     private LocalDateTime updatedAt;
     private String updatedBy;
 
-    // New fields for acceptance form
+    // Fields for acceptance form
     private List<String> attachments;
     private List<String> carImages;
     private List<String> physicalContent;
     private List<String> notes;
-
     private List<SignatureDTO> signatures;
+
+    // Fields for return form
+    private List<String> returnFiles;
+    private Double returnKilometerReading;
+    private String returnNotes;
+    private Double returnFuelAmount;
+    private List<SignatureDTO> returnSignatures;
 
     @Data
     public static class SignatureDTO {

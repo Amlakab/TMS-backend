@@ -472,6 +472,22 @@ public class CarManagementService {
         return response;
     }
 
+    public CarReqRes getPendingAndSemiPendingRequests() {
+        CarReqRes response = new CarReqRes();
+        try {
+            List<String> statuses = Arrays.asList("Pending", "In_transfer","SemiAssigned");
+            List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatusIn(statuses);
+
+            response.setAssignmentHistoryList(histories);
+            response.setCodStatus(200);
+            response.setMessage("Pending and in-transfer requests retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
 
     public CarReqRes getAssignmentHistoryById(Long id) {
         CarReqRes response = new CarReqRes();
