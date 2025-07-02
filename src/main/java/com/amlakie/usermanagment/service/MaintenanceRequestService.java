@@ -70,6 +70,13 @@ public class MaintenanceRequestService {
         return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.COMPLETED);
     }
 
+    public List<MaintenanceRequest> getInspectionRequest() {
+        return maintenanceRequestRepository.findByStatus(MaintenanceRequest.RequestStatus.INSPECTION);
+    }
+    public Optional<MaintenanceRequest> getLatestMaintenanceRequestByPlateNumber(String plateNumber) {
+        return maintenanceRequestRepository.findByPlateNumber(plateNumber);
+    }
+
     public MaintenanceRequest getRequestById(Long id) throws ResourceNotFoundException {
         return maintenanceRequestRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Maintenance request not found with id: " + id));

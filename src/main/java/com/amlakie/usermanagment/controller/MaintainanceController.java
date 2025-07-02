@@ -26,7 +26,7 @@ public class MaintainanceController {
     @GetMapping("/approved")
     public ResponseEntity<List<MaintenanceRequest>> getApprovedMaintenanceRequests() {
         log.info("REST request to get all APPROVED maintenance requests");
-        List<MaintenanceRequest> approvedRequests = maintenanceRequestService.getApprovedRequests();
+        List<MaintenanceRequest> approvedRequests = maintenanceRequestService.getInspectionRequest();
         return ResponseEntity.ok(approvedRequests);
     }
     // Endpoint to match frontend's handleSubmit
