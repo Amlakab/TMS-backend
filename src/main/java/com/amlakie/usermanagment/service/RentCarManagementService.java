@@ -1,7 +1,6 @@
 package com.amlakie.usermanagment.service;
 
 import com.amlakie.usermanagment.dto.AssignmentRequest;
-import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.RentCarReqRes;
 import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
@@ -32,7 +31,6 @@ public class RentCarManagementService {
     @Autowired
     private AssignmentHistoryRepository assignmentHistoryRepository;
 
-    // Helper method to handle null/empty string checks and return "No" if empty
     private String getValueOrDefault(String value) {
         return (value != null && !value.trim().isEmpty()) ? value.trim() : "No";
     }
@@ -84,7 +82,7 @@ public class RentCarManagementService {
             rentCar.setLibre(registrationRequest.getLibre());
             rentCar.setTransmission(registrationRequest.getTransmission());
             rentCar.setKm(registrationRequest.getKm());
-            rentCar.setStatus("NOT_INSPECTED");
+            rentCar.setStatus("InspectedAndReady");
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             rentCar.setCreatedBy(authentication.getName());
@@ -99,7 +97,22 @@ public class RentCarManagementService {
         }
         return response;
     }
+    // In RentCarManagementService.java
+    public RentCarReqRes getBusAndMinibusRentCars() {
+        RentCarReqRes response = new RentCarReqRes();
+        List<String> typesToFind = Arrays.asList("bus", "mini bus", "minibus");
 
+        try {
+            List<RentCar> cars = rentCarRepository.findByBodyTypeInIgnoreCase(typesToFind);
+            response.setRentCarList(cars);
+            response.setCodStatus(200);
+            response.setMessage("Bus and minibus rent cars retrieved successfully");
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response; // Return the object you built
+    }
     public RentCarReqRes getAllRentCars() {
         RentCarReqRes response = new RentCarReqRes();
         try {
@@ -158,7 +171,6 @@ public class RentCarManagementService {
                 existingCar.setStatus(updateRequest.getVehiclesStatus());
                 existingCar.setOtherDescription(updateRequest.getOtherDescription());
 
-                // Use helper method for fields that should default to "No"
                 existingCar.setRadio(getValueOrDefault(updateRequest.getRadio()));
                 existingCar.setAntena(getValueOrDefault(updateRequest.getAntena()));
                 existingCar.setKrik(getValueOrDefault(updateRequest.getKrik()));

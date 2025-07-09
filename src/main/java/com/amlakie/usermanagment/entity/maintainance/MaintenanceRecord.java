@@ -1,5 +1,6 @@
 package com.amlakie.usermanagment.entity.maintainance;
 
+import com.amlakie.usermanagment.entity.MaintenanceRequest;
 import com.amlakie.usermanagment.entity.maintainance.RepairInfo; // Adjust package
 import jakarta.persistence.*;
 import lombok.Data;
@@ -51,4 +52,7 @@ public class MaintenanceRecord {
             @AttributeOverride(name = "worksDoneDescription", column = @Column(name = "electrical_works_description"))
     })
     private RepairInfo electricalRepair;
+    @ManyToOne
+    @JoinColumn(name = "maintenance_request_id")
+    private MaintenanceRequest maintenanceRequest;
 }

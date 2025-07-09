@@ -13,7 +13,6 @@ public class FuelEntryRequestDTO {
     @NotBlank(message = "Plate number is required")
     private String vehiclePlateNumber;
 
-
     @NotBlank(message = "Vehicle type is required")
     private String vehicleType; // e.g., "ORGANIZATION_CAR", "CAR"
 

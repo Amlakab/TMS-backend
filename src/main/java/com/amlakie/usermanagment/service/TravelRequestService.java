@@ -59,9 +59,6 @@ public class TravelRequestService {
             throws ResourceNotFoundException, InvalidRequestException {
         TravelRequest request = getRequestById(id);
 
-        if (request.getStatus() == TravelRequest.RequestStatus.COMPLETED) {
-            throw new InvalidRequestException("Cannot change status of a completed request");
-        }
 
         request.setStatus(status);
         return travelRequestRepository.save(request);
@@ -73,8 +70,8 @@ public class TravelRequestService {
         TravelRequest request = getRequestById(id);
 
         // Change this validation to check for COMPLETED status
-        if (request.getStatus() != TravelRequest.RequestStatus.COMPLETED) {
-            throw new InvalidRequestException("Only COMPLETED requests can be finished");
+        if (request.getStatus() != TravelRequest.RequestStatus.ACCEPTED) {
+            throw new InvalidRequestException("Only ACCEPTED requests can be finished");
         }
 
         validateServiceData(serviceData);
@@ -186,10 +183,10 @@ public class TravelRequestService {
         if (driverName != null && !driverName.isEmpty()) {
             return travelRequestRepository.findByAssignedDriverAndStatus(
                     driverName,
-                    TravelRequest.RequestStatus.COMPLETED
+                    TravelRequest.RequestStatus.ACCEPTED
             );
         }
-        return travelRequestRepository.findByStatus(TravelRequest.RequestStatus.COMPLETED);
+        return travelRequestRepository.findByStatus(TravelRequest.RequestStatus.ACCEPTED);
     }
 
     private void validateTripCompletionData(TravelRequestDTO dto) throws InvalidRequestException {

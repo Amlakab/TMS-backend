@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleDetailsDTO {
+    private Long id;
     private String type;
     private String km;
     private String chassisNumber;

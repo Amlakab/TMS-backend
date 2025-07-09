@@ -113,7 +113,7 @@ public class RentCar {
     @Column(nullable = false)
     private LocalDate dateOfIn;
 
-    @Column(nullable = true)
+    @Column
     private LocalDate dateOfOut;
 
     @Column(nullable = false)

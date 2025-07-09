@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Embeddable // This class will be embedded directly into RequestItem
+@Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -18,9 +18,6 @@ public class AssignedRoute {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Assuming OrganizationCar entity exists and has an 'id' and 'plateNumber'
-    // This creates a unique foreign key to organization_cars table.
-    // A car can have only one active assigned route.
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_car_id", referencedColumnName = "id", unique = true)
     private OrganizationCar organizationCar;
@@ -33,7 +30,6 @@ public class AssignedRoute {
     @OrderBy("sequenceOrder ASC") // Ensure waypoints are always ordered
     private List<RouteWaypoint> waypoints = new ArrayList<>();
 
-    // Helper method to manage bidirectional relationship and ordering
     public void addWaypoint(RouteWaypoint waypoint) {
         waypoints.add(waypoint);
         waypoint.setAssignedRoute(this);

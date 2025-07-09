@@ -40,10 +40,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/auth/**", "/public/**").permitAll()
-
+                        .requestMatchers(
+                                "/favicon.ico", // Allow favicon requests
+                                "/error"        // Allow access to the default error page
+                        ).permitAll()
                         // Fuel Oil Grease Requests endpoints
                         .requestMatchers("/api/requests/**").permitAll() // Changed to permitAll
-                        .requestMatchers("/api/**").permitAll() // Changed to permitAll
+                        .requestMatchers("/api/**").permitAll() //
+                        .requestMatchers("/uploads/**").permitAll() //// Changed to permitAll
 
                         // Other endpoints (keep your existing configuration)
                         .requestMatchers("/api/travel-requests/**").permitAll()
@@ -68,7 +72,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","http://172.20.137.176:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
 

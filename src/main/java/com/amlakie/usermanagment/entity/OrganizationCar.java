@@ -62,7 +62,7 @@ public class OrganizationCar implements Vehicle{
     @Column
     private Double destinationLng;
 
-    @Column(nullable = false)
+    @Column
     private String parkingLocation;
 
     @Column(nullable = false)
@@ -122,7 +122,5 @@ public class OrganizationCar implements Vehicle{
     public float getKmPerLiter() {
         return  this.kmPerLiter;
     }
-
-
 
 }

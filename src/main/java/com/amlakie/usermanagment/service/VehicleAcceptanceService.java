@@ -10,15 +10,17 @@ import com.amlakie.usermanagment.entity.VehicleAcceptance;
 import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.repository.VehicleAcceptanceRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +49,57 @@ public class VehicleAcceptanceService {
         }
         return saveVehicleAcceptance(id, request, images);
     }
+
+    // VehicleAcceptanceService.java  (inside the same class you posted)
+
+    @Transactional
+    public VehicleAcceptanceResponse updateAssignmentHistoryByPlate(
+            String plateNumber,
+            VehicleAcceptanceRequest request) {
+
+        VehicleAcceptanceResponse response = new VehicleAcceptanceResponse();
+
+        try {
+            // 1. Get newest VehicleAcceptance for this plate
+            VehicleAcceptance acceptance = vehicleRepo
+                    .findTopByPlateNumberOrderByCreatedAtDesc(plateNumber)
+                    .orElse(null);
+
+            if (acceptance == null) {
+                response.setStatusCode(404);
+                response.setMessage("Vehicle acceptance not found for plate number: " + plateNumber);
+                return response;
+            }
+
+            // 2. Validate incoming ID
+            Long newHistoryId = request.getAssignmentHistoryId();
+            if (newHistoryId == null) {
+                response.setStatusCode(400);
+                response.setMessage("assignmentHistoryId must not be null");
+                return response;
+            }
+
+            // 3. Load the AssignmentHistory entity
+            AssignmentHistory history = assignmentRepo.findById(newHistoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Assignment history not found with id: " + newHistoryId));
+
+            // 4. Update relationship
+            acceptance.setAssignmentHistory(history);
+
+            // 5. Persist & map to DTO
+            VehicleAcceptance saved = vehicleRepo.save(acceptance);
+            response = toResponse(saved, "assignmentHistoryId updated successfully", 200);
+            return response;
+
+        } catch (Exception ex) {
+            response.setStatusCode(500);
+            response.setMessage("Internal server error");
+            response.setStatus(ex.getMessage());
+            return response;
+        }
+    }
+
 
     public Page<VehicleAcceptanceResponse> getAllVehicleAcceptances(Pageable pageable) {
         Page<VehicleAcceptance> acceptances = vehicleRepo.findAllByOrderByCreatedAtDesc(pageable);

@@ -1,8 +1,7 @@
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.AssignmentRequest;
-import com.amlakie.usermanagment.dto.CarReqRes;
-import com.amlakie.usermanagment.dto.OrganizationCarReqRes;
+
 import com.amlakie.usermanagment.dto.RentCarReqRes;
 import com.amlakie.usermanagment.service.RentCarManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +75,8 @@ public class RentCarManagementController {
     public ResponseEntity<RentCarReqRes> updateStatus(@PathVariable Long id, @RequestBody RentCarReqRes updateRequest) {
         return ResponseEntity.ok(rentCarManagementService.updateRentCar(id, updateRequest));
     }
-
+    @GetMapping("/bus-minibus")
+    public ResponseEntity<RentCarReqRes> getBusAndMinibusRentCars() {
+        return ResponseEntity.ok(rentCarManagementService.getBusAndMinibusRentCars());
+    }
 }

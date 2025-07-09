@@ -1,13 +1,13 @@
-package com.amlakie.usermanagment.service; // Adjust package
-
+package com.amlakie.usermanagment.service;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.entity.MaintenanceRequest;
-import com.amlakie.usermanagment.entity.maintainance.RepairInfo; // Adjust package
-import com.amlakie.usermanagment.entity.maintainance.WorksDoneLevel; // Adjust package
+import com.amlakie.usermanagment.entity.maintainance.RepairInfo;
+import com.amlakie.usermanagment.entity.maintainance.WorksDoneLevel;
 import com.amlakie.usermanagment.dto.maintainance.MaintenanceRecordDTO;
 import com.amlakie.usermanagment.dto.maintainance.RepairDetailsDTO;
 import com.amlakie.usermanagment.dto.maintainance.VehicleDetailsDTO;
-import com.amlakie.usermanagment.entity.maintainance.MaintenanceRecord; // Adjust package
-import com.amlakie.usermanagment.repository.MaintenanceRecordRepository; // Adjust package
+import com.amlakie.usermanagment.entity.maintainance.MaintenanceRecord;
+import com.amlakie.usermanagment.repository.MaintenanceRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,57 @@ public class MaintenanceService {
 
     private static final Logger log = LoggerFactory.getLogger(MaintenanceService.class);
     private final MaintenanceRecordRepository maintenanceRecordRepository;
-    // 1. Inject the MaintenanceRequestService
     private final MaintenanceRequestService maintenanceRequestService;
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; // Expects "YYYY-MM-DD"
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     @Transactional
     public MaintenanceRecordDTO createMaintenanceRecord(MaintenanceRecordDTO dto) {
+        MaintenanceRecord record = convertToEntity(dto);
+        MaintenanceRecord savedRecord = maintenanceRecordRepository.save(record);
+        log.info("Created maintenance record with ID: {}", savedRecord.getId());
+        return convertToDTO(savedRecord);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<MaintenanceRecordDTO> getMaintenanceRecordById(Long id) {
+        return maintenanceRecordRepository.findById(id)
+                .map(this::convertToDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<VehicleDetailsDTO> getVehicleDetailsByPlateNumber(String plateNumber) {
+        log.debug("Attempting to fetch vehicle details for plate: {} from MaintenanceRequest table", plateNumber);
+
+        Optional<MaintenanceRequest> latestRequestOpt = maintenanceRequestService.getLatestMaintenanceRequestByPlateNumber(plateNumber);
+
+        return latestRequestOpt.map(request -> {
+            VehicleDetailsDTO vehicleDetails = new VehicleDetailsDTO();
+            vehicleDetails.setId(request.getId()); // Set the maintenance_request id
+            vehicleDetails.setType(request.getVehicleType());
+            vehicleDetails.setKm(request.getKilometerReading() != null ? String.valueOf(request.getKilometerReading()) : null);
+            log.info("Found vehicle details in MaintenanceRequest for plate {}: Type={}, KM={}",
+                    plateNumber, vehicleDetails.getType(), vehicleDetails.getKm());
+            return vehicleDetails;
+        });
+    }
+    private MaintenanceRecord convertToEntity(MaintenanceRecordDTO dto) {
+        // Try to get maintenanceRequestId from DTO or from VehicleDetailsDTO
+        Long maintenanceRequestId = dto.getMaintenanceRequestId();
+        if (maintenanceRequestId == null && dto.getVehicleDetails() != null) {
+            maintenanceRequestId = dto.getVehicleDetails().getId();
+        }
+        if (maintenanceRequestId == null) {
+            throw new IllegalArgumentException("maintenanceRequestId must not be null");
+        }
+
         MaintenanceRecord record = new MaintenanceRecord();
+
+        MaintenanceRequest req = maintenanceRequestService.getRequestById(maintenanceRequestId);
+        if (req == null) {
+            throw new ResourceNotFoundException("MaintenanceRequest not found for ID: " + maintenanceRequestId);
+        }
+        record.setMaintenanceRequest(req);
+
         record.setPlateNumber(dto.getPlateNumber());
 
         if (dto.getVehicleDetails() != null) {
@@ -44,38 +88,8 @@ public class MaintenanceService {
         record.setMechanicalRepair(convertToRepairInfo(dto.getMechanicalRepair()));
         record.setElectricalRepair(convertToRepairInfo(dto.getElectricalRepair()));
 
-        MaintenanceRecord savedRecord = maintenanceRecordRepository.save(record);
-        log.info("Created maintenance record with ID: {}", savedRecord.getId());
-        return convertToDTO(savedRecord);
+        return record;
     }
-
-    /**
-     * Fetches vehicle details by looking up the latest MaintenanceRequest for the given plate number.
-     *
-     * @param plateNumber The plate number of the vehicle.
-     * @return An Optional containing the vehicle details if a corresponding request is found.
-     */
-    @Transactional(readOnly = true)
-    public Optional<VehicleDetailsDTO> getVehicleDetailsByPlateNumber(String plateNumber) {
-        log.debug("Attempting to fetch vehicle details for plate: {} from MaintenanceRequest table", plateNumber);
-
-        // 2. Fetch the latest maintenance request for the given plate number
-        Optional<MaintenanceRequest> latestRequestOpt = maintenanceRequestService.getLatestMaintenanceRequestByPlateNumber(plateNumber);
-
-        // 3. If a request is found, map its details to the VehicleDetailsDTO
-        return latestRequestOpt.map(request -> {
-            VehicleDetailsDTO vehicleDetails = new VehicleDetailsDTO();
-            vehicleDetails.setType(request.getVehicleType());
-            // Map the kilometerReading from the entity to the 'km' field in the DTO
-            vehicleDetails.setKm(request.getKilometerReading() != null ? String.valueOf(request.getKilometerReading()) : null);
-            // MaintenanceRequest might not have a chassis number. If it does, map it here.
-            // vehicleDetails.setChassisNumber(request.getChassisNumber());
-            log.info("Found vehicle details in MaintenanceRequest for plate {}: Type={}, KM={}",
-                    plateNumber, vehicleDetails.getType(), vehicleDetails.getKm());
-            return vehicleDetails;
-        });
-    }
-
     private RepairInfo convertToRepairInfo(RepairDetailsDTO dto) {
         if (dto == null) {
             return null;
@@ -93,7 +107,7 @@ public class MaintenanceService {
                 info.setWorksDoneLevel(WorksDoneLevel.valueOf(dto.getWorksDoneLevel().toUpperCase()));
             } catch (IllegalArgumentException e) {
                 log.warn("Invalid worksDoneLevel string from DTO: '{}'. Setting to null.", dto.getWorksDoneLevel(), e);
-                info.setWorksDoneLevel(null); // Or handle as an error
+                info.setWorksDoneLevel(null);
             }
         } else {
             info.setWorksDoneLevel(null);
@@ -110,7 +124,7 @@ public class MaintenanceService {
             return LocalDate.parse(dateString, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
             log.warn("Invalid date format for string: '{}'. Expected YYYY-MM-DD. Returning null.", dateString, e);
-            return null; // Or throw a custom exception
+            return null;
         }
     }
 
@@ -120,6 +134,7 @@ public class MaintenanceService {
         dto.setId(entity.getId());
         dto.setPlateNumber(entity.getPlateNumber());
         dto.setVehicleDetails(new VehicleDetailsDTO(
+                entity.getMaintenanceRequest() != null ? entity.getMaintenanceRequest().getId() : null,
                 entity.getVehicleType(),
                 entity.getVehicleKm(),
                 entity.getVehicleChassisNumber()
@@ -127,6 +142,13 @@ public class MaintenanceService {
         dto.setDriverDescription(entity.getDriverDescription());
         dto.setMechanicalRepair(convertToRepairDetailsDTO(entity.getMechanicalRepair()));
         dto.setElectricalRepair(convertToRepairDetailsDTO(entity.getElectricalRepair()));
+
+        // --- Add this block to include maintenanceRequestId ---
+        if (entity.getMaintenanceRequest() != null) {
+            dto.setMaintenanceRequestId(entity.getMaintenanceRequest().getId());
+        }
+        // ------------------------------------------------------
+
         return dto;
     }
 

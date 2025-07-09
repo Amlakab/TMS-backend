@@ -106,5 +106,17 @@ public class VehicleAcceptanceController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping(value = "/plate/{plateNumber}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VehicleAcceptanceResponse> updateAssignmentByPlate(
+           @PathVariable String plateNumber,
+           @RequestBody VehicleAcceptanceRequest request) {
 
+       VehicleAcceptanceResponse response =
+               vehicleAcceptanceService.updateAssignmentHistoryByPlate(plateNumber, request);
+
+       return ResponseEntity.status(response.getStatusCode()).body(response);
+   }
 }
+
+
+

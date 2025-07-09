@@ -56,7 +56,7 @@ public class Car implements Vehicle{
     @Column(nullable = false)
     private LocalDateTime registeredDate = LocalDateTime.now();
 
-    @Column(nullable = false)
+    @Column
     private String parkingLocation;
 
     @Column(nullable = false)
