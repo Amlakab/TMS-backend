@@ -137,6 +137,21 @@ public class RentCar {
     @Column(nullable = false)
     private String km;
 
+    @Column
+    private String DriverName;
+
+    @Column
+    private String DriverPhone;
+
+    @Column
+    private String DriverAddress;
+
+    @Column
+    private String DriverExperience;
+
+    @Column
+    private String NumberOfSeats;
+
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

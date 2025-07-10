@@ -46,7 +46,8 @@ public class SecurityConfig {
                         ).permitAll()
                         // Fuel Oil Grease Requests endpoints
                         .requestMatchers("/api/requests/**").permitAll() // Changed to permitAll
-                        .requestMatchers("/api/**").permitAll() //
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/all/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll() //// Changed to permitAll
 
                         // Other endpoints (keep your existing configuration)

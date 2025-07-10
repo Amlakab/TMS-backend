@@ -63,6 +63,12 @@ public class RentCarReqRes {
     private String km;
     private String status;
 
+    private String NumberOfSeats;
+    private String DriverName;
+    private String DriverPhone;
+    private String DriverAddress;
+    private String DriverExperience;
+
     private AssignmentHistory assignmentHistory;
     private List<AssignmentHistory> assignmentHistoryList;
 }

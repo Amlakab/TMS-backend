@@ -57,6 +57,11 @@ public class RentCarManagementService {
             rentCar.setFuelType(registrationRequest.getFuelType());
             rentCar.setStatus(registrationRequest.getVehiclesStatus());
             rentCar.setOtherDescription(registrationRequest.getOtherDescription());
+            rentCar.setDriverName(registrationRequest.getDriverName());
+            rentCar.setDriverPhone(registrationRequest.getDriverPhone());
+            rentCar.setDriverAddress(registrationRequest.getDriverAddress());
+            rentCar.setDriverExperience(registrationRequest.getDriverExperience());
+            rentCar.setNumberOfSeats(registrationRequest.getNumberOfSeats());
 
             // Use helper method for fields that should default to "No"
             rentCar.setRadio(getValueOrDefault(registrationRequest.getRadio()));
@@ -170,6 +175,11 @@ public class RentCarManagementService {
                 existingCar.setFuelType(updateRequest.getFuelType());
                 existingCar.setStatus(updateRequest.getVehiclesStatus());
                 existingCar.setOtherDescription(updateRequest.getOtherDescription());
+                if (updateRequest.getDriverName() != null) existingCar.setDriverName(updateRequest.getDriverName());
+                if (updateRequest.getDriverPhone() != null) existingCar.setDriverPhone(updateRequest.getDriverPhone());
+                if (updateRequest.getDriverAddress() != null) existingCar.setDriverAddress(updateRequest.getDriverAddress());
+                if (updateRequest.getDriverExperience() != null) existingCar.setDriverExperience(updateRequest.getDriverExperience());
+                if (updateRequest.getNumberOfSeats() != null) existingCar.setNumberOfSeats(updateRequest.getNumberOfSeats());
 
                 existingCar.setRadio(getValueOrDefault(updateRequest.getRadio()));
                 existingCar.setAntena(getValueOrDefault(updateRequest.getAntena()));
