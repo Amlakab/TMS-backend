@@ -1,4 +1,4 @@
-package com.amlakie.usermanagment.config; // Or wherever this filter resides
+package com.amlakie.usermanagment.config;
 
 import com.amlakie.usermanagment.security.TravelRequestJWTUtils; // Assuming this is the util class
 // Other necessary imports...

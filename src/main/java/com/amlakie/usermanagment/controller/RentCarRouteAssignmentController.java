@@ -1,4 +1,3 @@
-// Create this new file: D:/my git projects/TMS-backend/src/main/java/com/amlakie/usermanagment/controller/RentCarRouteAssignmentController.java
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.route.AssignRouteRequestDTO;

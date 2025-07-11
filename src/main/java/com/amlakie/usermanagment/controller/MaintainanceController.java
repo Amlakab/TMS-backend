@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/maintenance") // Base path for maintenance related APIs
+@RequestMapping("/api/maintenance") // Adjust base path as needed
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Configure for your specific frontend origin in production
+@CrossOrigin(origins = "*")
 public class MaintainanceController {
 
     private static final Logger log = LoggerFactory.getLogger(MaintainanceController.class);
