@@ -4,14 +4,17 @@ import com.amlakie.usermanagment.dto.employee.AssignCarToEmployeeRequestDTO;
 import com.amlakie.usermanagment.dto.employee.EmployeeResponseDTO;
 import com.amlakie.usermanagment.entity.Employee;
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import com.amlakie.usermanagment.entity.RentCar; // Import RentCar
 import com.amlakie.usermanagment.repository.EmployeeRepository;
 import com.amlakie.usermanagment.repository.OrganizationCarRepository;
+import com.amlakie.usermanagment.repository.RentCarRepository; // Import RentCarRepository
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,31 +23,33 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final OrganizationCarRepository organizationCarRepository;
+    private final RentCarRepository rentCarRepository; // INJECT RENT CAR REPO
     private final EmailSentService emailSentService;
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository,
                            OrganizationCarRepository organizationCarRepository,
+                           RentCarRepository rentCarRepository, // ADD TO CONSTRUCTOR
                            EmailSentService emailSentService) {
         this.employeeRepository = employeeRepository;
         this.organizationCarRepository = organizationCarRepository;
+        this.rentCarRepository = rentCarRepository; // INITIALIZE
         this.emailSentService = emailSentService;
     }
 
     @Transactional(readOnly = true)
     public EmployeeResponseDTO getEmployeeById(String employeeId) {
-        Employee employee = employeeRepository.findByEmployeeIdWithAssignedCar(employeeId)
-                .orElseThrow(() -> {
-                    log.error("Employee not found with ID: {}", employeeId);
-                    return new EntityNotFoundException("Employee not found with ID: " + employeeId);
-                });
+        // This method might need adjustment based on how you fetch assigned rent cars
+        // For simplicity, we assume the DTO converter handles it.
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + employeeId));
         return convertToResponseDTO(employee);
     }
 
     @Transactional
     public EmployeeResponseDTO createEmployee(EmployeeResponseDTO employeeDTO) {
-        if(employeeRepository.findByEmployeeId(employeeDTO.getEmployeeId()).isPresent()){
+        if (employeeRepository.findByEmployeeId(employeeDTO.getEmployeeId()).isPresent()) {
             log.warn("Attempt to create employee with existing ID: {}", employeeDTO.getEmployeeId());
             throw new IllegalArgumentException("Employee with ID " + employeeDTO.getEmployeeId() + " already exists.");
         }
@@ -65,16 +70,27 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Converts an Employee entity to a response DTO.
+     * This now checks which type of car is assigned and gets the plate number accordingly.
+     * Assumes Employee entity has fields: getAssignedCar(), getAssignedRentCar(), and getAssignedCarType().
+     */
     private EmployeeResponseDTO convertToResponseDTO(Employee employee) {
         if (employee == null) {
             return null;
         }
         String carPlateNumber = null;
         Long carId = null;
-        if (employee.getAssignedCar() != null) {
+        String carType = employee.getAssignedCarType();
+
+        if ("ORGANIZATION".equals(carType) && employee.getAssignedCar() != null) {
             carPlateNumber = employee.getAssignedCar().getPlateNumber();
             carId = employee.getAssignedCar().getId();
+        } else if ("RENT".equals(carType) && employee.getAssignedRentCar() != null) {
+            carPlateNumber = employee.getAssignedRentCar().getPlateNumber();
+            carId = employee.getAssignedRentCar().getId();
         }
+
         return new EmployeeResponseDTO(
                 employee.getEmployeeId(),
                 employee.getName(),
@@ -86,106 +102,109 @@ public class EmployeeService {
         );
     }
 
+    /**
+     * Assigns a car (of any type) and village to an employee.
+     * This method acts as a dispatcher, calling the appropriate helper based on carType.
+     */
     @Transactional
     public EmployeeResponseDTO assignCarAndVillageToEmployee(AssignCarToEmployeeRequestDTO request) {
-        log.info("Received assignment request for employee ID '{}' to car plate '{}'", request.getEmployeeId(), request.getCarPlateNumber());
+        log.info("Assignment request for employee ID '{}' to car plate '{}' of type '{}'",
+                request.getEmployeeId(), request.getCarPlateNumber(), request.getCarType());
 
-        Employee employee = employeeRepository.findByEmployeeId(request.getEmployeeId())
-                .orElseThrow(() -> {
-                    log.error("Employee not found for assignment: {}", request.getEmployeeId());
-                    return new EntityNotFoundException("Employee not found with ID: " + request.getEmployeeId());
-                });
-        log.info("Retrieved employee for assignment: {} with email: {}", employee.getName(), employee.getEmail());
-
+        if (request.getCarType() == null || request.getCarType().trim().isEmpty()) {
+            throw new IllegalArgumentException("carType must be specified ('ORGANIZATION' or 'RENT').");
+        }
         if (request.getCarPlateNumber() == null || request.getCarPlateNumber().trim().isEmpty()) {
-            log.error("Car plate number is null or empty in the assignment request for employee ID: {}", request.getEmployeeId());
             throw new IllegalArgumentException("Car plate number cannot be null or empty.");
         }
 
-        OrganizationCar car = organizationCarRepository.findByPlateNumber(request.getCarPlateNumber())
-                .orElseThrow(() -> {
-                    log.error("Car not found for assignment with plate number: {}", request.getCarPlateNumber());
-                    return new EntityNotFoundException("OrganizationCar not found with plate number: " + request.getCarPlateNumber());
-                });
-        log.info("Retrieved car for assignment: {}", car.getPlateNumber());
+        // Step 1: Find the employee
+        Employee employee = employeeRepository.findByEmployeeId(request.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + request.getEmployeeId()));
+        log.info("Retrieved employee for assignment: {}", employee.getName());
 
-        // --- NEW LOGIC START: Car Capacity Check ---
-
-        // Check if the employee is already assigned to this car.
-        // If so, we don't need to check capacity for *this* specific assignment,
-        // as they are already counted as occupying a seat. This prevents blocking
-        // a "re-confirmation" or update of other employee details if the car is full.
-        boolean isAlreadyAssignedToThisCar = employee.getAssignedCar() != null && employee.getAssignedCar().equals(car);
-
-        if (!isAlreadyAssignedToThisCar) {
-            // 1. Get the car's capacity using the correct getter.
-            // This now returns an Integer (or int) directly, which is type-safe.
-            Integer carCapacity = car.getLoadCapacity(); // Corrected: using getLoadCapacity()
-
-            // It's good practice to handle the case where capacity might be null or zero.
-            if (carCapacity == null || carCapacity <= 0) {
-                log.error("Car {} has an invalid capacity of {}. Cannot assign.", car.getPlateNumber(), carCapacity);
-                throw new IllegalStateException("Car " + car.getPlateNumber() + " has an invalid capacity configured.");
-            }
-
-            // 2. Count current employees assigned to this car.
-            // This now works because the method exists in the repository.
-            long currentOccupancy = employeeRepository.countByAssignedCar(car);
-
-            log.info("Car {} (Plate: {}) has capacity {} and current occupancy {}. Attempting to assign employee {}.",
-                    car.getId(), car.getPlateNumber(), carCapacity, currentOccupancy, employee.getEmployeeId());
-
-            // 3. Check if the car is already full.
-            if (currentOccupancy >= carCapacity) {
-                log.warn("Attempt to assign employee {} to car {} failed. Car is already full ({} / {}).",
-                        employee.getEmployeeId(), car.getPlateNumber(), currentOccupancy, carCapacity);
-                throw new IllegalArgumentException("Car " + car.getPlateNumber() + " is already full. Cannot assign more employees.");
-            }
+        // Step 2: Branch logic based on carType
+        String carType = request.getCarType().toUpperCase();
+        if ("ORGANIZATION".equals(carType)) {
+            assignOrganizationCar(employee, request);
+        } else if ("RENT".equals(carType)) {
+            assignRentCar(employee, request);
         } else {
-            log.info("Employee {} is already assigned to car {}. Skipping capacity check for this re-confirmation.",
-                    employee.getEmployeeId(), car.getPlateNumber());
+            throw new IllegalArgumentException("Invalid carType specified: " + request.getCarType());
         }
-        // --- NEW LOGIC END ---
 
-        try {
-            // If the employee is already assigned to this exact car, and we've passed the capacity check (or skipped it),
-            // we can log and return early if no other changes are needed.
-            // This check is now placed after the capacity check to ensure new assignments are always validated.
-            if (employee.getAssignedCar() != null && employee.getAssignedCar().equals(car)) {
-                log.info("Employee {} is already assigned to car {}. No change needed for car assignment.", employee.getEmployeeId(), car.getPlateNumber());
-                // If only village is being updated, proceed. Otherwise, if no change, just return.
-                if (employee.getVillage() != null && employee.getVillage().equals(request.getVillageName())) {
-                    return convertToResponseDTO(employee); // No change at all
-                }
+        // Step 3: Save and send notification
+        Employee updatedEmployee = employeeRepository.save(employee);
+        log.info("Successfully assigned car {} to employee {}", request.getCarPlateNumber(), updatedEmployee.getName());
+
+        sendAssignmentNotification(updatedEmployee, request.getCarPlateNumber());
+
+        return convertToResponseDTO(updatedEmployee);
+    }
+
+    /**
+     * Handles the specific logic for assigning an OrganizationCar.
+     */
+    private void assignOrganizationCar(Employee employee, AssignCarToEmployeeRequestDTO request) {
+        OrganizationCar car = organizationCarRepository.findByPlateNumber(request.getCarPlateNumber())
+                .orElseThrow(() -> new EntityNotFoundException("OrganizationCar not found with plate number: " + request.getCarPlateNumber()));
+        log.info("Retrieved OrganizationCar for assignment: {}", car.getPlateNumber());
+
+        boolean isAlreadyAssigned = car.equals(employee.getAssignedCar());
+
+        if (!isAlreadyAssigned) {
+            long currentOccupancy = employeeRepository.countByAssignedCar(car);
+            if (currentOccupancy >= car.getLoadCapacity()) {
+                throw new IllegalStateException("Organization Car " + car.getPlateNumber() + " is already full.");
             }
-
-            employee.setVillage(request.getVillageName());
+            // Ensure other assignment is cleared before setting the new one
+            employee.setAssignedRentCar(null);
             employee.setAssignedCar(car);
-            Employee updatedEmployee = employeeRepository.save(employee);
-            log.info("Successfully assigned car {} to employee {}", car.getPlateNumber(), updatedEmployee.getName());
-
-            // Send email notification
-            if (updatedEmployee.getEmail() != null && !updatedEmployee.getEmail().isEmpty()) {
-                String subject = "Service Car Assignment Update";
-                String text = String.format(
-                        "Dear %s,\n\nThis is to inform you that you have been assigned a service car." +
-                                "\nCar Plate Number: %s\n\nRegards,\nINSA TMS Administration",
-                        updatedEmployee.getName(),
-                        car.getPlateNumber()
-                );
-                emailSentService.sendSimpleMessage(updatedEmployee.getEmail(), subject, text);
-            } else {
-                log.warn("Cannot send assignment email: Employee {} (ID: {}) has no email address or email is empty.", updatedEmployee.getName(), updatedEmployee.getEmployeeId());
-            }
-
-            return convertToResponseDTO(updatedEmployee);
-        } catch (IllegalArgumentException | EntityNotFoundException e) {
-            log.error("Validation or entity not found error during assignment for employee ID {}: {}", request.getEmployeeId(), e.getMessage());
-            throw e;
+            employee.setAssignedCarType("ORGANIZATION");
         }
-        catch (Exception e) {
-            log.error("Unexpected error during assignment for employee ID {}: ", request.getEmployeeId(), e);
-            throw new RuntimeException("Assignment failed due to an unexpected error.", e);
+        employee.setVillage(request.getVillageName());
+    }
+
+    /**
+     * Handles the specific logic for assigning a RentCar.
+     * Assumes RentCar entity has a getLoadCapacity() or similar method.
+     */
+    private void assignRentCar(Employee employee, AssignCarToEmployeeRequestDTO request) {
+        RentCar car = rentCarRepository.findByPlateNumber(request.getCarPlateNumber())
+                .orElseThrow(() -> new EntityNotFoundException("RentCar not found with plate number: " + request.getCarPlateNumber()));
+        log.info("Retrieved RentCar for assignment: {}", car.getPlateNumber());
+
+        boolean isAlreadyAssigned = car.equals(employee.getAssignedRentCar());
+
+        if (!isAlreadyAssigned) {
+            // Assumes RentCar has a compatible method for getting capacity
+            long currentOccupancy = employeeRepository.countByAssignedRentCar(car);
+            if (currentOccupancy >= car.getNumberOfSeats()) { // Using getNumberOfSeats() as an example for RentCar
+                throw new IllegalStateException("Rent Car " + car.getPlateNumber() + " is already full.");
+            }
+            // Ensure other assignment is cleared before setting the new one
+            employee.setAssignedCar(null);
+            employee.setAssignedRentCar(car);
+            employee.setAssignedCarType("RENT");
+        }
+        employee.setVillage(request.getVillageName());
+    }
+
+    /**
+     * Helper method to send email notification after a successful assignment.
+     */
+    private void sendAssignmentNotification(Employee employee, String plateNumber) {
+        if (employee.getEmail() != null && !employee.getEmail().isEmpty()) {
+            String subject = "Service Car Assignment Update";
+            String text = String.format(
+                    "Dear %s,\n\nThis is to inform you that you have been assigned a service car." +
+                            "\nCar Plate Number: %s\n\nRegards,\nINSA TMS Administration",
+                    employee.getName(),
+                    plateNumber
+            );
+            emailSentService.sendSimpleMessage(employee.getEmail(), subject, text);
+        } else {
+            log.warn("Cannot send assignment email: Employee {} (ID: {}) has no email address.", employee.getName(), employee.getEmployeeId());
         }
     }
 }

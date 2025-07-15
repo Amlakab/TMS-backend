@@ -9,4 +9,5 @@ public class AssignCarToEmployeeRequestDTO {
     private String employeeId;
     private String carPlateNumber; // Or Long carId, depending on how you identify the car
     private String villageName;
+    private String carType;
 }

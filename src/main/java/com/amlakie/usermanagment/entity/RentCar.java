@@ -131,9 +131,6 @@ public class RentCar {
     @Column(nullable = false)
     private String transmission;
 
-//    @Column(nullable = false)
-//    private String dataAntollerNatue;
-
     @Column(nullable = false)
     private String km;
 
@@ -150,7 +147,7 @@ public class RentCar {
     private String DriverExperience;
 
     @Column
-    private String NumberOfSeats;
+    private Integer NumberOfSeats;
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -190,6 +187,4 @@ public class RentCar {
     public void setModel(String model) {
         this.model = model;
     }
-
-
 }

@@ -31,10 +31,20 @@ public class Employee {
     @Column(name = "village") // This will be updated
     private String village;
 
+    // Existing relationship for OrganizationCar
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_car_id") // Foreign key to OrganizationCar
+    @JoinColumn(name = "assigned_org_car_id")
     private OrganizationCar assignedCar;
 
+    // --- ADD THESE NEW FIELDS ---
+    // This creates the relationship to the RentCar entity
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_rent_car_id")
+    private RentCar assignedRentCar;
+
+    // This field will store "ORGANIZATION" or "RENT"
+    @Column(name = "assigned_car_type")
+    private String assignedCarType;
     // Optional: Store plate number directly if frequently needed without joining
     // @Column(name = "assigned_car_plate_number")
     // private String assignedCarPlateNumber;

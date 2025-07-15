@@ -2,6 +2,7 @@ package com.amlakie.usermanagment.repository;
 
 import com.amlakie.usermanagment.entity.Employee;
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import com.amlakie.usermanagment.entity.RentCar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> { //
     Optional<Employee> findByEmail(String email);
     List<Employee> findByVillage(String village);
     long countByAssignedCar(OrganizationCar car);
+    long countByAssignedRentCar(RentCar assignedRentCar);
 }
