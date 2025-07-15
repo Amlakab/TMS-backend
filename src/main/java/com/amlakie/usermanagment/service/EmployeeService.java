@@ -2,6 +2,7 @@ package com.amlakie.usermanagment.service;
 
 import com.amlakie.usermanagment.dto.employee.AssignCarToEmployeeRequestDTO;
 import com.amlakie.usermanagment.dto.employee.EmployeeResponseDTO;
+import com.amlakie.usermanagment.dto.employee.TransferEmployeesRequestDTO;
 import com.amlakie.usermanagment.entity.Employee;
 import com.amlakie.usermanagment.entity.OrganizationCar;
 import com.amlakie.usermanagment.entity.RentCar; // Import RentCar
@@ -101,7 +102,85 @@ public class EmployeeService {
                 carId
         );
     }
+// In C:/TMS-backenddd/src/main/java/com/amlakie/usermanagment/service/EmployeeService.java
 
+    /**
+     * Transfers all employees from one car to another.
+     * This operation is transactional; it will only succeed if all employees can be transferred.
+     *
+     * @param request DTO containing from/to car plate numbers and types.
+     */
+    @Transactional
+    public void transferAllEmployees(TransferEmployeesRequestDTO request) {
+        log.info("Initiating transfer of all employees from car {} to car {}",
+                request.getFromCarPlateNumber(), request.getToCarPlateNumber());
+
+        // Step 1: Find all employees assigned to the 'from' car.
+        // Note: You will need to add the 'findByAssignedCar' and 'findByAssignedRentCar'
+        // methods to your EmployeeRepository interface.
+        List<Employee> employeesToTransfer;
+        if ("ORGANIZATION".equalsIgnoreCase(request.getFromCarType())) {
+            OrganizationCar fromCar = organizationCarRepository.findByPlateNumber(request.getFromCarPlateNumber())
+                    .orElseThrow(() -> new EntityNotFoundException("Origin car with plate " + request.getFromCarPlateNumber() + " not found."));
+            employeesToTransfer = employeeRepository.findByAssignedCar(fromCar);
+        } else if ("RENT".equalsIgnoreCase(request.getFromCarType())) {
+            RentCar fromCar = rentCarRepository.findByPlateNumber(request.getFromCarPlateNumber())
+                    .orElseThrow(() -> new EntityNotFoundException("Origin car with plate " + request.getFromCarPlateNumber() + " not found."));
+            employeesToTransfer = employeeRepository.findByAssignedRentCar(fromCar);
+        } else {
+            throw new IllegalArgumentException("Invalid 'fromCarType' specified.");
+        }
+
+        if (employeesToTransfer.isEmpty()) {
+            log.info("No employees assigned to car {}, no transfer needed.", request.getFromCarPlateNumber());
+            return; // Exit gracefully if there's nothing to do.
+        }
+
+        // Step 2: Check capacity of the 'to' car and perform the transfer.
+        if ("ORGANIZATION".equalsIgnoreCase(request.getToCarType())) {
+            OrganizationCar toCar = organizationCarRepository.findByPlateNumber(request.getToCarPlateNumber())
+                    .orElseThrow(() -> new EntityNotFoundException("Destination car with plate " + request.getToCarPlateNumber() + " not found."));
+
+            long currentOccupancy = employeeRepository.countByAssignedCar(toCar);
+            if (currentOccupancy + employeesToTransfer.size() > toCar.getLoadCapacity()) {
+                throw new IllegalStateException("Not enough seats in destination car " + toCar.getPlateNumber() +
+                        ". Requires " + employeesToTransfer.size() + " seats, but only " +
+                        (toCar.getLoadCapacity() - currentOccupancy) + " are available.");
+            }
+
+            // Re-assign each employee
+            employeesToTransfer.forEach(employee -> {
+                employee.setAssignedRentCar(null); // Clear other assignment
+                employee.setAssignedCar(toCar);
+                employee.setAssignedCarType("ORGANIZATION");
+            });
+
+        } else if ("RENT".equalsIgnoreCase(request.getToCarType())) {
+            RentCar toCar = rentCarRepository.findByPlateNumber(request.getToCarPlateNumber())
+                    .orElseThrow(() -> new EntityNotFoundException("Destination car with plate " + request.getToCarPlateNumber() + " not found."));
+
+            long currentOccupancy = employeeRepository.countByAssignedRentCar(toCar);
+            if (currentOccupancy + employeesToTransfer.size() > toCar.getNumberOfSeats()) {
+                throw new IllegalStateException("Not enough seats in destination car " + toCar.getPlateNumber() +
+                        ". Requires " + employeesToTransfer.size() + " seats, but only " +
+                        (toCar.getNumberOfSeats() - currentOccupancy) + " are available.");
+            }
+
+            // Re-assign each employee
+            employeesToTransfer.forEach(employee -> {
+                employee.setAssignedCar(null); // Clear other assignment
+                employee.setAssignedRentCar(toCar);
+                employee.setAssignedCarType("RENT");
+            });
+        } else {
+            throw new IllegalArgumentException("Invalid 'toCarType' specified.");
+        }
+
+        // Step 3: Save all updated employees in a single database operation.
+        employeeRepository.saveAll(employeesToTransfer);
+        log.info("Successfully transferred {} employees from car {} to car {}.",
+                employeesToTransfer.size(), request.getFromCarPlateNumber(), request.getToCarPlateNumber());
+    }
     /**
      * Assigns a car (of any type) and village to an employee.
      * This method acts as a dispatcher, calling the appropriate helper based on carType.
