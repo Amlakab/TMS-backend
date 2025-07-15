@@ -4,6 +4,7 @@ import com.amlakie.usermanagment.dto.ReqRes;
 import com.amlakie.usermanagment.entity.OurUsers;
 import com.amlakie.usermanagment.repository.UsersRepo;
 import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;

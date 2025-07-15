@@ -19,7 +19,7 @@ public class ReqRes {
     private String refreshedToken;
     private String expirationTime;
     private String name;
-    private String city;
+    private String myUsername;
     private String role;
     private String email;
     private String password;

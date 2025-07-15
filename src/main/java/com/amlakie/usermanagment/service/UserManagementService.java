@@ -32,7 +32,7 @@ public class UserManagementService {
         try {
             OurUsers ourUser = new OurUsers();
             ourUser.setEmail(registrationRequest.getEmail());
-            ourUser.setCity(registrationRequest.getCity());
+            ourUser.setMyUsername(registrationRequest.getMyUsername());
             ourUser.setRole(registrationRequest.getRole());
             ourUser.setName(registrationRequest.getName());
             ourUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword())); // Encode the password
@@ -58,6 +58,7 @@ public class UserManagementService {
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
 
             response.setStatus(200);
+            response.setOurUser(user);
             response.setToken(jwt);
             response.setRole(user.getRole());
             response.setExpirationTime("24hrs");
@@ -155,7 +156,7 @@ public class UserManagementService {
                 //Add uapdated valus to database
                 OurUsers user = userOptional.get();
                 user.setEmail(updateRequest.getEmail());
-                user.setCity(updateRequest.getCity());
+                user.setMyUsername(updateRequest.getMyUsername());
                 user.setRole(updateRequest.getRole());
                 user.setName(updateRequest.getName());
                 user.setPassword(passwordEncoder.encode(updateRequest.getPassword())); // Encode the new password
@@ -200,7 +201,7 @@ public class UserManagementService {
                 //Add uapdated valus to database
                 OurUsers user = userOptional.get();
                 user.setEmail(updateRequest.getEmail());
-                user.setCity(updateRequest.getCity());
+                user.setMyUsername(updateRequest.getMyUsername());
                 user.setName(updateRequest.getName());
                 //Add Updated Responses
                 OurUsers updatedUser = usersRepo.save(user);

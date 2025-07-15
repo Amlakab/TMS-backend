@@ -21,7 +21,7 @@ public class OurUsers implements UserDetails {
     private String name;
     private String password;
     private String role;
-    private String city;
+    private String myUsername;
     private String otp;
     private LocalDateTime otpGeneratedTime;
 

@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -142,6 +141,8 @@ public class UserManagementController {
 
                    response.setMessage("OTP has been verified");
                    response.setStatus(200);
+                   response.setOurUser(user);
+
 
                } else {
                    response.setMessage("invalid otp");
