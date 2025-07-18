@@ -28,4 +28,25 @@ public class ReqRes {
     private OurUsers ourUser;
     private List<OurUsers> ourUserLists;
 
+    // Add these fields to your existing ReqRes class
+    private List<NotificationDto> notifications;
+    private Long count;
+
+    // Add getters and setters
+    public List<NotificationDto> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<NotificationDto> notifications) {
+        this.notifications = notifications;
+    }
+
+    public Long getCount() {
+        return count;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
+
 }

@@ -30,7 +30,7 @@ public class VehicleAcceptanceService {
     private final VehicleAcceptanceRepository vehicleRepo;
     private final AssignmentHistoryRepository assignmentRepo;
 
-    @Autowired
+     @Autowired
     public VehicleAcceptanceService(FileStorageService fileStorageService,
                                     VehicleAcceptanceRepository vehicleRepo,
                                     AssignmentHistoryRepository assignmentRepo) {
