@@ -63,7 +63,7 @@ public class RentCarReqRes {
     private String km;
     private String status;
 
-    private String NumberOfSeats;
+    private Integer NumberOfSeats;
     private String DriverName;
     private String DriverPhone;
     private String DriverAddress;

@@ -25,4 +25,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> { //
     List<Employee> findByVillage(String village);
     long countByAssignedCar(OrganizationCar car);
     long countByAssignedRentCar(RentCar assignedRentCar);
+    List<Employee> findByAssignedCar(OrganizationCar assignedCar);
+    List<Employee> findByAssignedRentCar(RentCar assignedRentCar);
 }
