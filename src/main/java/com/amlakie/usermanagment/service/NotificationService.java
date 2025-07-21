@@ -45,7 +45,7 @@ public class NotificationService {
         notificationRepo.markAllAsRead();
     }
 
-    public long getUnreadCount() {
+    public Long getUnreadCount() {
         return notificationRepo.countByReadFalse();
     }
 

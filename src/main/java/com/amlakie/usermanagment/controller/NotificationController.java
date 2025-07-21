@@ -51,7 +51,7 @@ public class NotificationController {
     public ResponseEntity<ReqRes> getUnreadCount() {
         ReqRes response = new ReqRes();
         try {
-            long count = notificationService.getUnreadCount();
+            Long count = notificationService.getUnreadCount();
             response.setStatus(200);
             response.setMessage("Unread count retrieved successfully");
             response.setCount(count);

@@ -70,6 +70,9 @@ public class TravelRequest {
     private String assignedDriver;
 
     @Column
+    private String driverPhone;
+
+    @Column
     private String vehicleDetails;
 
     @Column

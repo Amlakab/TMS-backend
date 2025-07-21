@@ -173,6 +173,7 @@ public class TravelRequestService {
         request.setServiceProviderName(serviceData.getServiceProviderName());
         request.setAssignedCarType(serviceData.getAssignedCarType());
         request.setAssignedDriver(serviceData.getAssignedDriver());
+        request.setDriverPhone(serviceData.getDriverPhone());
         request.setVehicleDetails(serviceData.getVehicleDetails());
         request.setStatus(TravelRequest.RequestStatus.APPROVED);
 
@@ -278,6 +279,7 @@ public class TravelRequestService {
         request.setServiceProviderName(dto.getServiceProviderName());
         request.setAssignedCarType(dto.getAssignedCarType());
         request.setAssignedDriver(dto.getAssignedDriver());
+        request.setDriverPhone(dto.getDriverPhone());
         request.setVehicleDetails(dto.getVehicleDetails());
         request.setActualStartingDate(dto.getActualStartingDate());
         request.setActualReturnDate(dto.getActualReturnDate());

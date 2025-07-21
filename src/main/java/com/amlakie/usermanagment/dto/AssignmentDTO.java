@@ -1,4 +1,3 @@
-// AssignmentDTO.java (for PATCH /assign)
 package com.amlakie.usermanagment.dto;
 
 import jakarta.validation.constraints.NotBlank;
@@ -14,4 +13,8 @@ public class AssignmentDTO {
 
     @NotBlank(message = "Plate number is required")
     private String plateNumber;
+
+    @NotBlank(message = "estimated kilometer is required")
+    private String estimatedKilometers;
+
 }

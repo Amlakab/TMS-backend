@@ -36,6 +36,7 @@ public class TravelRequestDTO {
     private String serviceProviderName;
     private String assignedCarType;
     private String assignedDriver;
+    private String driverPhone;
     private String vehicleDetails;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")

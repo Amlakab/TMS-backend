@@ -3,11 +3,12 @@ package com.amlakie.usermanagment.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// DailyServiceRequest.java (Entity)
 @Entity
 @Table(name = "daily_service_requests")
 @Data
@@ -17,10 +18,13 @@ public class DailyServiceRequest {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDate requestDate;
 
     @Column(nullable = false)
-    private LocalDateTime returnDateTime;
+    private LocalTime startTime;
+
+    @Column
+    private LocalTime returnTime;
 
     @ElementCollection
     @CollectionTable(name = "daily_service_travelers", joinColumns = @JoinColumn(name = "request_id"))
@@ -36,12 +40,14 @@ public class DailyServiceRequest {
     private String claimantName;
 
     private String driverName;
-    private String reason;
+    private Double estimatedKilometers;
     private Double startKm;
     private Double endKm;
     private Double kmDifference;
     private String carType;
     private String plateNumber;
+    private String reason;
+    private String kmReason;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
