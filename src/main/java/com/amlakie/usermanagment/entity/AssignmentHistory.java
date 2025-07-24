@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "assignment_history")
@@ -65,13 +62,25 @@ public class AssignmentHistory {
     @Column(nullable = true)
     private String model;
 
+    @Column(nullable = false)
+    private String licenseExpiryDate;
+
+    @Column(nullable = true)
+    private String driverLicenseFilename;
+
+    @Column(nullable = true)
+    private String driverLicenseFilepath;
+
+    @Column(nullable = true)
+    private String driverLicenseFileType;
+
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = true)
     private Car car;
 
     @ManyToOne
     @JoinColumn(name = "rent_car_id", nullable = true)
-    private RentCar rentCar;  // Changed from 'cars' to 'rentCar' for clarity
+    private RentCar rentCar;
 
     @Column(nullable = false)
     private LocalDateTime assignedDate;
@@ -93,10 +102,8 @@ public class AssignmentHistory {
     private Set<RentCar> multipleRentCars = new HashSet<>();
 
     @Column(nullable = true, length = 1000)
-    private String allPlateNumbers;  // Simple string field, not a collection
+    private String allPlateNumbers;
 
     @Column(nullable = true, length = 1000)
-    private String allCarModels;  // Simple string field, not a collection
-
-
+    private String allCarModels;
 }

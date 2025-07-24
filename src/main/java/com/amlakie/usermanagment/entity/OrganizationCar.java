@@ -65,6 +65,9 @@ public class OrganizationCar implements Vehicle{
     @Column
     private String parkingLocation;
 
+    @Column(unique = true)
+    private String deviceImei;
+
     @Column(nullable = false)
     private String driverName;
 

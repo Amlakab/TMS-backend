@@ -1,6 +1,7 @@
 package com.amlakie.usermanagment.dto;
 
 import com.amlakie.usermanagment.entity.OrganizationCar;
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +39,9 @@ public class OrganizationCarReqRes {
     private String driverAttributes;
     private String driverAddress;
     private String loadCapacity;
+    private String deviceImei;
     public double latitude;
     public double longitude;
+
 
 }

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -68,8 +71,39 @@ public class CarManagementController {
 
     // Add these new endpoints to CarManagementController
     @PostMapping("/auth/car/assign")
-    public ResponseEntity<CarReqRes> createAssignment(@Valid @RequestBody AssignmentRequest request) {
+    public ResponseEntity<CarReqRes> createAssignment(
+            @Valid @ModelAttribute AssignmentRequest request,
+            @RequestParam(value = "driverLicenseFile", required = false) MultipartFile driverLicenseFile) {
+
+        request.setDriverLicenseFile(driverLicenseFile);
         return ResponseEntity.ok(carManagementService.createAssignment(request));
+    }
+
+    // Add this new endpoint for checking expiring licenses
+    @GetMapping("/auth/licenses/expiring")
+    public ResponseEntity<CarReqRes> getExpiringLicenses() {
+        return ResponseEntity.ok(carManagementService.getExpiringLicenses());
+    }
+
+    // Add this endpoint to serve license files
+    @GetMapping("/auth/licenses/file/{filename}")
+    public ResponseEntity<byte[]> getLicenseFile(@PathVariable String filename) {
+        try {
+            Path filePath = Paths.get(carManagementService.getUploadDir()).resolve(filename).normalize();
+            byte[] fileContent = Files.readAllBytes(filePath);
+
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", contentType)
+                    .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+                    .body(fileContent);
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/auth/car/approved")

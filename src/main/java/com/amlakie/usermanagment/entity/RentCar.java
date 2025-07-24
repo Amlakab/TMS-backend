@@ -149,6 +149,9 @@ public class RentCar {
     @Column
     private Integer NumberOfSeats;
 
+    @Column(unique = true)
+    private String deviceImei;
+
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

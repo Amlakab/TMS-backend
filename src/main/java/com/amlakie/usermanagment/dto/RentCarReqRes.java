@@ -3,6 +3,7 @@ package com.amlakie.usermanagment.dto;
 import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.RentCar;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -68,6 +69,7 @@ public class RentCarReqRes {
     private String DriverPhone;
     private String DriverAddress;
     private String DriverExperience;
+    private String deviceImei;
 
     private AssignmentHistory assignmentHistory;
     private List<AssignmentHistory> assignmentHistoryList;

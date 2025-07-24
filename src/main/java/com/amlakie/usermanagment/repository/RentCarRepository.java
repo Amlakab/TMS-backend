@@ -18,4 +18,6 @@ public interface RentCarRepository extends JpaRepository<RentCar, Long> {
     boolean existsByFrameNo(String frameNo);
     List<RentCar> findByStatus(String requestStatus);
     List<RentCar> findByBodyTypeInIgnoreCase(List<String> bodyTypes);
+
+    Optional<RentCar> findByDeviceImei(String deviceImei);
 }

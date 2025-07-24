@@ -1,16 +1,14 @@
 package com.amlakie.usermanagment.dto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
-import java.time.LocalDateTime;
-
-// src/main/java/com/amlakie/usermanagment/dto/AssignmentRequest.java
 @Data
-// AssignmentRequest.java
 public class AssignmentRequest {
     private String requestLetterNo;
-    private String requestDate; // As string from frontend
+    private String requestDate;
     private String requesterName;
     private String rentalType;
     private String position;
@@ -24,13 +22,12 @@ public class AssignmentRequest {
     private int totalPercentage;
     private String status;
     private String model;
-    private Long carId; // Only ID instead of full object
+    private Long carId;
     private Long rentCarId;
     private String assignedDate;
     private String numberOfCar;
-
-    private List<Long> carIds; // For multiple regular cars
-    private List<Long> rentCarIds; // For multiple rent cars
-
-    // Getters and setters
+    private String licenseExpiryDate;
+    private MultipartFile driverLicenseFile;
+    private List<Long> carIds;
+    private List<Long> rentCarIds;
 }

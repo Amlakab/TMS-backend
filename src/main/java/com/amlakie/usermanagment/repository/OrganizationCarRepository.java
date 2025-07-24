@@ -15,4 +15,6 @@ public interface OrganizationCarRepository extends JpaRepository<OrganizationCar
     boolean existsByPlateNumber(String plateNumber);
     List<OrganizationCar> findByPlateNumberContainingIgnoreCase(String plateNumber);
 
+    Optional<OrganizationCar> findByDeviceImei(String deviceImei);
+
 }
