@@ -1,20 +1,29 @@
 package com.amlakie.usermanagment.service;
 
 import com.amlakie.usermanagment.dto.AssignmentRequest;
+import com.amlakie.usermanagment.dto.CarReqRes;
 import com.amlakie.usermanagment.dto.RentCarReqRes;
 import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.RentCar;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.repository.CarRepository;
 import com.amlakie.usermanagment.repository.RentCarRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,6 +39,9 @@ public class RentCarManagementService {
 
     @Autowired
     private AssignmentHistoryRepository assignmentHistoryRepository;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     private String getValueOrDefault(String value) {
         return (value != null && !value.trim().isEmpty()) ? value.trim() : "No";
@@ -254,31 +266,88 @@ public class RentCarManagementService {
         return response;
     }
 
+    @Transactional
     public RentCarReqRes updateAssignmentHistory(Long id, AssignmentRequest updateRequest) {
         RentCarReqRes response = new RentCarReqRes();
         try {
             AssignmentHistory history = assignmentHistoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
 
-            // Update history fields
             history.setAssignedDate(LocalDateTime.now());
-            history.setRentalType(updateRequest.getRentalType());
-            history.setPlateNumber(updateRequest.getPlateNumber());
             history.setStatus(updateRequest.getStatus());
 
-            // Update car if changed
-            RentCar cars = rentCarRepository.findById(updateRequest.getCarId())
-                    .orElseThrow(() -> new RuntimeException("Car not found"));
-            history.setRentCar(cars);
+            if (updateRequest.getCarId() != null || updateRequest.getCarIds() != null) {
+                history.setCar(null);
+                history.setMultipleCars(new HashSet<>());
+            }
+            if (updateRequest.getRentCarId() != null || updateRequest.getRentCarIds() != null) {
+                history.setRentCar(null);
+                history.setMultipleRentCars(new HashSet<>());
+            }
+
+            List<String> allPlateNumbers = new ArrayList<>();
+            List<String> allCarModels = new ArrayList<>();
+
+            if (updateRequest.getCarId() != null) {
+                Car car = carRepository.findById(updateRequest.getCarId())
+                        .orElseThrow(() -> new RuntimeException("Regular car not found"));
+                history.setCar(car);
+                allPlateNumbers.add(car.getPlateNumber());
+                allCarModels.add(car.getModel());
+            }
+
+            if (updateRequest.getCarIds() != null && !updateRequest.getCarIds().isEmpty()) {
+                Set<Car> cars = new HashSet<>(carRepository.findAllById(updateRequest.getCarIds()));
+                if (cars.size() != updateRequest.getCarIds().size()) {
+                    throw new RuntimeException("One or more regular cars not found");
+                }
+                history.setMultipleCars(cars);
+                cars.forEach(car -> {
+                    allPlateNumbers.add(car.getPlateNumber());
+                    allCarModels.add(car.getModel());
+                });
+            }
+
+            if (updateRequest.getRentCarId() != null) {
+                RentCar rentCar = rentCarRepository.findById(updateRequest.getRentCarId())
+                        .orElseThrow(() -> new RuntimeException("Rent car not found"));
+                history.setRentCar(rentCar);
+                allPlateNumbers.add(rentCar.getPlateNumber());
+                allCarModels.add(rentCar.getModel());
+            }
+
+            if (updateRequest.getRentCarIds() != null && !updateRequest.getRentCarIds().isEmpty()) {
+                Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(updateRequest.getRentCarIds()));
+                if (rentCars.size() != updateRequest.getRentCarIds().size()) {
+                    throw new RuntimeException("One or more rent cars not found");
+                }
+                history.setMultipleRentCars(rentCars);
+                rentCars.forEach(rentCar -> {
+                    allPlateNumbers.add(rentCar.getPlateNumber());
+                    allCarModels.add(rentCar.getModel());
+                });
+            }
+
+            if (!allPlateNumbers.isEmpty()) {
+                history.setPlateNumber(String.join(", ", allPlateNumbers));
+                history.setAllPlateNumbers(String.join(", ", allPlateNumbers));
+                history.setAllCarModels(String.join(", ", allCarModels));
+
+                if ("Level 1".equals(history.getPosition())) {
+                    int totalCars = (history.getCar() != null ? 1 : 0) +
+                            (history.getMultipleCars() != null ? history.getMultipleCars().size() : 0) +
+                            (history.getRentCar() != null ? 1 : 0) +
+                            (history.getMultipleRentCars() != null ? history.getMultipleRentCars().size() : 0);
+                    history.setNumberOfCar(String.valueOf(totalCars));
+                }
+            }
 
             assignmentHistoryRepository.save(history);
 
-            // Update car status
-            cars.setStatus("Assigned");
-            rentCarRepository.save(cars);
-
             response.setCodStatus(200);
-            response.setMessage("Assignment created successfully");
+            response.setMessage("Assignment updated successfully");
+            response.setAssignmentHistory(history);
+
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
@@ -337,20 +406,23 @@ public class RentCarManagementService {
         return response;
     }
 
+
+
+
+
     @Transactional
     public RentCarReqRes createAssignment(AssignmentRequest request) {
         RentCarReqRes response = new RentCarReqRes();
         try {
-            // Validate required fields
             if (request.getRequestLetterNo() == null || request.getRequestLetterNo().isEmpty()) {
                 throw new IllegalArgumentException("Request letter number is required");
             }
+            if (request.getLicenseExpiryDate() == null || request.getLicenseExpiryDate().isEmpty()) {
+                throw new IllegalArgumentException("License expiry date is required");
+            }
 
-            // Convert string date to LocalDateTime
-            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate())
-                    .atStartOfDay();
+            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate()).atStartOfDay();
 
-            // Create new assignment history
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
             history.setRequestDate(requestDateTime);
@@ -366,6 +438,15 @@ public class RentCarManagementService {
             history.setGender(request.getGender());
             history.setTotalPercentage(request.getTotalPercentage());
             history.setStatus(request.getStatus());
+            history.setLicenseExpiryDate(request.getLicenseExpiryDate());
+            history.setDriverLicenseNumber(request.getDriverLicenseNumber());
+
+            if (request.getDriverLicenseFile() != null && !request.getDriverLicenseFile().isEmpty()) {
+                String filePath = storeFile(request.getDriverLicenseFile());
+                history.setDriverLicenseFiles(List.of(filePath));
+                history.setDriverLicenseFileTypes(List.of(request.getDriverLicenseFile().getContentType()));
+                history.setDriverLicenseFileNames(List.of(request.getDriverLicenseFile().getOriginalFilename()));
+            }
 
             if ("Level 1".equals(request.getPosition())) {
                 history.setModel(request.getModel());
@@ -374,12 +455,10 @@ public class RentCarManagementService {
                 history.setNumberOfCar("1");
             }
 
-            // Process all vehicle assignments
             List<String> allPlateNumbers = new ArrayList<>();
             List<String> allCarModels = new ArrayList<>();
 
             try {
-                // Handle single regular car assignment
                 if (request.getCarId() != null) {
                     Car car = carRepository.findById(request.getCarId())
                             .orElseThrow(() -> new RuntimeException("Regular car not found with ID: " + request.getCarId()));
@@ -388,7 +467,6 @@ public class RentCarManagementService {
                     allCarModels.add(car.getModel());
                 }
 
-                // Handle multiple regular cars
                 if (request.getCarIds() != null && !request.getCarIds().isEmpty()) {
                     Set<Car> cars = new HashSet<>(carRepository.findAllById(request.getCarIds()));
                     if (cars.size() != request.getCarIds().size()) {
@@ -401,7 +479,6 @@ public class RentCarManagementService {
                     });
                 }
 
-                // Handle single rent car assignment
                 if (request.getRentCarId() != null) {
                     RentCar rentCar = rentCarRepository.findById(request.getRentCarId())
                             .orElseThrow(() -> new RuntimeException("Rent car not found with ID: " + request.getRentCarId()));
@@ -410,7 +487,6 @@ public class RentCarManagementService {
                     allCarModels.add(rentCar.getModel());
                 }
 
-                // Handle multiple rent cars
                 if (request.getRentCarIds() != null && !request.getRentCarIds().isEmpty()) {
                     Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(request.getRentCarIds()));
                     if (rentCars.size() != request.getRentCarIds().size()) {
@@ -423,22 +499,25 @@ public class RentCarManagementService {
                     });
                 }
 
-                // Set combined vehicle information
                 if (!allPlateNumbers.isEmpty()) {
                     history.setAllPlateNumbers(String.join(", ", allPlateNumbers));
                     history.setAllCarModels(String.join(", ", allCarModels));
                 }
 
-                // Save the assignment
                 assignmentHistoryRepository.save(history);
 
             } catch (Exception e) {
-                // Explicitly set rollback-only if needed
+                if (history.getDriverLicenseFiles() != null && !history.getDriverLicenseFiles().isEmpty()) {
+                    try {
+                        Files.deleteIfExists(Paths.get(history.getDriverLicenseFiles().get(0)));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                throw e; // Re-throw the exception
+                throw e;
             }
 
-            // Prepare success response
             response.setCodStatus(200);
             response.setMessage("Assignment created successfully");
             Map<String, Object> responseData = new HashMap<>();
@@ -446,6 +525,110 @@ public class RentCarManagementService {
             responseData.put("totalVehiclesAssigned", allPlateNumbers.size());
             responseData.put("plateNumbers", history.getAllPlateNumbers());
             responseData.put("carModels", history.getAllCarModels());
+            responseData.put("licenseExpiryDate", history.getLicenseExpiryDate());
+            responseData.put("driverLicenseFiles", history.getDriverLicenseFiles());
+            response.setResponseData(responseData);
+
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    private String storeFile(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
+            throw new IllegalArgumentException("Invalid file type. Only images and PDFs are allowed");
+        }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds 5MB limit");
+        }
+
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String uniqueFilename = "license_" + UUID.randomUUID() + fileExtension;
+
+        Path targetLocation = uploadPath.resolve(uniqueFilename);
+        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+        return targetLocation.toString();
+    }
+
+    public byte[] getFile(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new IOException("File not found");
+        }
+        return Files.readAllBytes(path);
+    }
+
+    public String getFileContentType(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        String contentType = Files.probeContentType(path);
+        return contentType != null ? contentType : "application/octet-stream";
+    }
+
+    @Transactional
+    public CarReqRes uploadDriverLicense(Long id, MultipartFile file) {
+        CarReqRes response = new CarReqRes();
+        try {
+            AssignmentHistory assignment = assignmentHistoryRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
+
+            String filePath = storeFile(file);
+
+            if (assignment.getDriverLicenseFiles() == null) {
+                assignment.setDriverLicenseFiles(new ArrayList<>());
+                assignment.setDriverLicenseFileTypes(new ArrayList<>());
+                assignment.setDriverLicenseFileNames(new ArrayList<>());
+            }
+
+            assignment.getDriverLicenseFiles().add(filePath);
+            assignment.getDriverLicenseFileTypes().add(file.getContentType());
+            assignment.getDriverLicenseFileNames().add(file.getOriginalFilename());
+
+            assignmentHistoryRepository.save(assignment);
+
+            response.setCodStatus(200);
+            response.setMessage("Driver license uploaded successfully");
+            response.setAssignmentHistory(assignment);
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
+    public CarReqRes getExpiringLicenses() {
+        CarReqRes response = new CarReqRes();
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate warningDate = today.plusDays(5);
+
+            List<AssignmentHistory> expiringSoon = assignmentHistoryRepository
+                    .findByLicenseExpiryDateBetween(today.toString(), warningDate.toString());
+
+            List<AssignmentHistory> expired = assignmentHistoryRepository
+                    .findByLicenseExpiryDateBefore(today.toString());
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("expiringSoon", expiringSoon);
+            result.put("expired", expired);
+
+            response.setCodStatus(200);
+            response.setMessage("License expiry check completed");
+            response.setResponseData(result);
 
         } catch (Exception e) {
             response.setCodStatus(500);

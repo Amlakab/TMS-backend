@@ -6,7 +6,7 @@ import com.amlakie.usermanagment.dto.RentCarReqRes;
 import com.amlakie.usermanagment.entity.AssignmentHistory;
 import com.amlakie.usermanagment.entity.Car;
 import com.amlakie.usermanagment.entity.RentCar;
-import com.amlakie.usermanagment.entity.TravelRequest;
+import com.amlakie.usermanagment.exception.ResourceNotFoundException;
 import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.repository.CarRepository;
 import com.amlakie.usermanagment.repository.RentCarRepository;
@@ -17,11 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,10 +35,13 @@ public class CarManagementService {
     private CarRepository carRepository;
 
     @Autowired
-    RentCarRepository rentCarRepository;
+    private RentCarRepository rentCarRepository;
+
+    @Autowired
+    private AssignmentHistoryRepository assignmentHistoryRepository;
+
     @Value("${file.upload-dir}")
     private String uploadDir;
-
 
     public CarReqRes registerCar(CarReqRes registrationRequest) {
         CarReqRes response = new CarReqRes();
@@ -142,7 +147,7 @@ public class CarManagementService {
             if (carRepository.existsById(id)) {
                 carRepository.deleteById(id);
                 response.setCodStatus(200);
-                response.setMessage("Car deleteddddd successfully");
+                response.setMessage("Car deleted successfully");
             } else {
                 response.setCodStatus(404);
                 response.setMessage("Car not found");
@@ -177,7 +182,6 @@ public class CarManagementService {
                 Car existingCar = carOptional.get();
                 existingCar.setStatus(updateRequest.getStatus());
 
-
                 Car updatedCar = carRepository.save(existingCar);
                 response.setCar(updatedCar);
                 response.setCodStatus(200);
@@ -192,10 +196,6 @@ public class CarManagementService {
         }
         return response;
     }
-
-    // Add these methods to CarManagementService
-    @Autowired
-    private AssignmentHistoryRepository assignmentHistoryRepository;
 
     public CarReqRes getApprovedCars() {
         CarReqRes response = new CarReqRes();
@@ -219,7 +219,7 @@ public class CarManagementService {
             List<Car> cars = carRepository.findByStatusIn(statuses);
             response.setCarList(cars);
             response.setCodStatus(200);
-            response.setMessage("Approved and in-transfer cars retrieved successfully");
+            response.setMessage("In-transfer cars retrieved successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
@@ -227,15 +227,10 @@ public class CarManagementService {
         return response;
     }
 
-    public String getUploadDir() {
-        return uploadDir;
-    }
-
     @Transactional
     public CarReqRes createAssignment(AssignmentRequest request) {
         CarReqRes response = new CarReqRes();
         try {
-            // Validate required fields
             if (request.getRequestLetterNo() == null || request.getRequestLetterNo().isEmpty()) {
                 throw new IllegalArgumentException("Request letter number is required");
             }
@@ -243,11 +238,8 @@ public class CarManagementService {
                 throw new IllegalArgumentException("License expiry date is required");
             }
 
-            // Convert string date to LocalDateTime
-            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate())
-                    .atStartOfDay();
+            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate()).atStartOfDay();
 
-            // Create new assignment history
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
             history.setRequestDate(requestDateTime);
@@ -264,27 +256,15 @@ public class CarManagementService {
             history.setTotalPercentage(request.getTotalPercentage());
             history.setStatus(request.getStatus());
             history.setLicenseExpiryDate(request.getLicenseExpiryDate());
+            history.setDriverLicenseNumber(request.getDriverLicenseNumber());
 
-            // Handle file upload
             if (request.getDriverLicenseFile() != null && !request.getDriverLicenseFile().isEmpty()) {
-                String originalFilename = request.getDriverLicenseFile().getOriginalFilename();
-                String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String uniqueFilename = "licenses_" + UUID.randomUUID().toString() + fileExtension;
-
-                Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                Path filePath = uploadPath.resolve(uniqueFilename);
-                Files.copy(request.getDriverLicenseFile().getInputStream(), filePath);
-
-                history.setDriverLicenseFilename(originalFilename);
-                history.setDriverLicenseFilepath(filePath.toString());
-                history.setDriverLicenseFileType(request.getDriverLicenseFile().getContentType());
+                String filePath = storeFile(request.getDriverLicenseFile());
+                history.setDriverLicenseFiles(List.of(filePath));
+                history.setDriverLicenseFileTypes(List.of(request.getDriverLicenseFile().getContentType()));
+                history.setDriverLicenseFileNames(List.of(request.getDriverLicenseFile().getOriginalFilename()));
             }
 
-            // Set number of cars based on position
             if ("Level 1".equals(request.getPosition())) {
                 history.setModel(request.getModel());
                 history.setNumberOfCar(request.getNumberOfCar());
@@ -292,12 +272,10 @@ public class CarManagementService {
                 history.setNumberOfCar("1");
             }
 
-            // Process all vehicle assignments
             List<String> allPlateNumbers = new ArrayList<>();
             List<String> allCarModels = new ArrayList<>();
 
             try {
-                // Handle single regular car assignment
                 if (request.getCarId() != null) {
                     Car car = carRepository.findById(request.getCarId())
                             .orElseThrow(() -> new RuntimeException("Regular car not found with ID: " + request.getCarId()));
@@ -306,7 +284,6 @@ public class CarManagementService {
                     allCarModels.add(car.getModel());
                 }
 
-                // Handle multiple regular cars
                 if (request.getCarIds() != null && !request.getCarIds().isEmpty()) {
                     Set<Car> cars = new HashSet<>(carRepository.findAllById(request.getCarIds()));
                     if (cars.size() != request.getCarIds().size()) {
@@ -319,7 +296,6 @@ public class CarManagementService {
                     });
                 }
 
-                // Handle single rent car assignment
                 if (request.getRentCarId() != null) {
                     RentCar rentCar = rentCarRepository.findById(request.getRentCarId())
                             .orElseThrow(() -> new RuntimeException("Rent car not found with ID: " + request.getRentCarId()));
@@ -328,7 +304,6 @@ public class CarManagementService {
                     allCarModels.add(rentCar.getModel());
                 }
 
-                // Handle multiple rent cars
                 if (request.getRentCarIds() != null && !request.getRentCarIds().isEmpty()) {
                     Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(request.getRentCarIds()));
                     if (rentCars.size() != request.getRentCarIds().size()) {
@@ -341,20 +316,17 @@ public class CarManagementService {
                     });
                 }
 
-                // Set combined vehicle information
                 if (!allPlateNumbers.isEmpty()) {
                     history.setAllPlateNumbers(String.join(", ", allPlateNumbers));
                     history.setAllCarModels(String.join(", ", allCarModels));
                 }
 
-                // Save the assignment
                 assignmentHistoryRepository.save(history);
 
             } catch (Exception e) {
-                // Clean up uploaded file if transaction fails
-                if (history.getDriverLicenseFilepath() != null) {
+                if (history.getDriverLicenseFiles() != null && !history.getDriverLicenseFiles().isEmpty()) {
                     try {
-                        Files.deleteIfExists(Paths.get(history.getDriverLicenseFilepath()));
+                        Files.deleteIfExists(Paths.get(history.getDriverLicenseFiles().get(0)));
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -363,7 +335,6 @@ public class CarManagementService {
                 throw e;
             }
 
-            // Prepare success response
             response.setCodStatus(200);
             response.setMessage("Assignment created successfully");
             Map<String, Object> responseData = new HashMap<>();
@@ -372,7 +343,8 @@ public class CarManagementService {
             responseData.put("plateNumbers", history.getAllPlateNumbers());
             responseData.put("carModels", history.getAllCarModels());
             responseData.put("licenseExpiryDate", history.getLicenseExpiryDate());
-            responseData.put("driverLicenseFilename", history.getDriverLicenseFilename());
+            responseData.put("driverLicenseFiles", history.getDriverLicenseFiles());
+            response.setResponseData(responseData);
 
         } catch (Exception e) {
             response.setCodStatus(500);
@@ -381,18 +353,89 @@ public class CarManagementService {
         return response;
     }
 
-    // Add this new method to check expiring licenses
+    private String storeFile(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
+            throw new IllegalArgumentException("Invalid file type. Only images and PDFs are allowed");
+        }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds 5MB limit");
+        }
+
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String uniqueFilename = "license_" + UUID.randomUUID() + fileExtension;
+
+        Path targetLocation = uploadPath.resolve(uniqueFilename);
+        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+        return targetLocation.toString();
+    }
+
+    public byte[] getFile(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new IOException("File not found");
+        }
+        return Files.readAllBytes(path);
+    }
+
+    public String getFileContentType(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        String contentType = Files.probeContentType(path);
+        return contentType != null ? contentType : "application/octet-stream";
+    }
+
+    @Transactional
+    public CarReqRes uploadDriverLicense(Long id, MultipartFile file) {
+        CarReqRes response = new CarReqRes();
+        try {
+            AssignmentHistory assignment = assignmentHistoryRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignment not found"));
+
+            String filePath = storeFile(file);
+
+            if (assignment.getDriverLicenseFiles() == null) {
+                assignment.setDriverLicenseFiles(new ArrayList<>());
+                assignment.setDriverLicenseFileTypes(new ArrayList<>());
+                assignment.setDriverLicenseFileNames(new ArrayList<>());
+            }
+
+            assignment.getDriverLicenseFiles().add(filePath);
+            assignment.getDriverLicenseFileTypes().add(file.getContentType());
+            assignment.getDriverLicenseFileNames().add(file.getOriginalFilename());
+
+            assignmentHistoryRepository.save(assignment);
+
+            response.setCodStatus(200);
+            response.setMessage("Driver license uploaded successfully");
+            response.setAssignmentHistory(assignment);
+        } catch (Exception e) {
+            response.setCodStatus(500);
+            response.setError(e.getMessage());
+        }
+        return response;
+    }
+
     public CarReqRes getExpiringLicenses() {
         CarReqRes response = new CarReqRes();
         try {
             LocalDate today = LocalDate.now();
-            LocalDate warningDate = today.plusDays(5); // 5 days from now
+            LocalDate warningDate = today.plusDays(5);
 
-            // Find licenses expiring soon
             List<AssignmentHistory> expiringSoon = assignmentHistoryRepository
                     .findByLicenseExpiryDateBetween(today.toString(), warningDate.toString());
 
-            // Find expired licenses
             List<AssignmentHistory> expired = assignmentHistoryRepository
                     .findByLicenseExpiryDateBefore(today.toString());
 
@@ -402,7 +445,7 @@ public class CarManagementService {
 
             response.setCodStatus(200);
             response.setMessage("License expiry check completed");
-            response.setAssignmentHistoryList(expired);
+            response.setResponseData(result);
 
         } catch (Exception e) {
             response.setCodStatus(500);
@@ -411,8 +454,6 @@ public class CarManagementService {
         return response;
     }
 
-
-
     @Transactional
     public CarReqRes updateAssignmentHistory(Long id, AssignmentRequest updateRequest) {
         CarReqRes response = new CarReqRes();
@@ -420,11 +461,9 @@ public class CarManagementService {
             AssignmentHistory history = assignmentHistoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
 
-            // Update basic information
             history.setAssignedDate(LocalDateTime.now());
             history.setStatus(updateRequest.getStatus());
 
-            // Clear existing vehicle assignments if new ones are provided
             if (updateRequest.getCarId() != null || updateRequest.getCarIds() != null) {
                 history.setCar(null);
                 history.setMultipleCars(new HashSet<>());
@@ -434,11 +473,9 @@ public class CarManagementService {
                 history.setMultipleRentCars(new HashSet<>());
             }
 
-            // Process vehicle assignments
             List<String> allPlateNumbers = new ArrayList<>();
             List<String> allCarModels = new ArrayList<>();
 
-            // Handle single regular car assignment
             if (updateRequest.getCarId() != null) {
                 Car car = carRepository.findById(updateRequest.getCarId())
                         .orElseThrow(() -> new RuntimeException("Regular car not found"));
@@ -447,7 +484,6 @@ public class CarManagementService {
                 allCarModels.add(car.getModel());
             }
 
-            // Handle multiple regular cars
             if (updateRequest.getCarIds() != null && !updateRequest.getCarIds().isEmpty()) {
                 Set<Car> cars = new HashSet<>(carRepository.findAllById(updateRequest.getCarIds()));
                 if (cars.size() != updateRequest.getCarIds().size()) {
@@ -460,7 +496,6 @@ public class CarManagementService {
                 });
             }
 
-            // Handle single rent car assignment
             if (updateRequest.getRentCarId() != null) {
                 RentCar rentCar = rentCarRepository.findById(updateRequest.getRentCarId())
                         .orElseThrow(() -> new RuntimeException("Rent car not found"));
@@ -469,7 +504,6 @@ public class CarManagementService {
                 allCarModels.add(rentCar.getModel());
             }
 
-            // Handle multiple rent cars
             if (updateRequest.getRentCarIds() != null && !updateRequest.getRentCarIds().isEmpty()) {
                 Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(updateRequest.getRentCarIds()));
                 if (rentCars.size() != updateRequest.getRentCarIds().size()) {
@@ -482,13 +516,11 @@ public class CarManagementService {
                 });
             }
 
-            // Update combined vehicle information if any vehicles were assigned
             if (!allPlateNumbers.isEmpty()) {
                 history.setPlateNumber(String.join(", ", allPlateNumbers));
                 history.setAllPlateNumbers(String.join(", ", allPlateNumbers));
                 history.setAllCarModels(String.join(", ", allCarModels));
 
-                // Update number of cars for Level 1 positions
                 if ("Level 1".equals(history.getPosition())) {
                     int totalCars = (history.getCar() != null ? 1 : 0) +
                             (history.getMultipleCars() != null ? history.getMultipleCars().size() : 0) +
@@ -530,7 +562,6 @@ public class CarManagementService {
         try {
             List<String> statuses = Arrays.asList("Pending", "In_transfer");
             List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatusIn(statuses);
-
             response.setAssignmentHistoryList(histories);
             response.setCodStatus(200);
             response.setMessage("Pending and in-transfer requests retrieved successfully");
@@ -544,12 +575,11 @@ public class CarManagementService {
     public CarReqRes getPendingAndSemiPendingRequests() {
         CarReqRes response = new CarReqRes();
         try {
-            List<String> statuses = Arrays.asList("Pending", "In_transfer","SemiAssigned");
+            List<String> statuses = Arrays.asList("Pending", "In_transfer", "SemiAssigned");
             List<AssignmentHistory> histories = assignmentHistoryRepository.findByStatusIn(statuses);
-
             response.setAssignmentHistoryList(histories);
             response.setCodStatus(200);
-            response.setMessage("Pending and in-transfer requests retrieved successfully");
+            response.setMessage("Pending and semi-pending requests retrieved successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
@@ -557,13 +587,11 @@ public class CarManagementService {
         return response;
     }
 
-
     public CarReqRes getAssignmentHistoryById(Long id) {
         CarReqRes response = new CarReqRes();
         try {
             AssignmentHistory history = assignmentHistoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
-
             response.setAssignmentHistory(history);
             response.setCodStatus(200);
             response.setMessage("Assignment history retrieved successfully");
@@ -580,12 +608,22 @@ public class CarManagementService {
             AssignmentHistory history = assignmentHistoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Assignment history not found"));
 
-            // Release the associated car
-            Car car = history.getCar();
-            car.setStatus("Approved");
-            carRepository.save(car);
+            if (history.getCar() != null) {
+                Car car = history.getCar();
+                car.setStatus("Approved");
+                carRepository.save(car);
+            }
 
-            // Delete the history
+            if (history.getDriverLicenseFiles() != null) {
+                for (String filePath : history.getDriverLicenseFiles()) {
+                    try {
+                        Files.deleteIfExists(Paths.get(filePath));
+                    } catch (IOException e) {
+                        // Log warning but continue with deletion
+                    }
+                }
+            }
+
             assignmentHistoryRepository.delete(history);
 
             response.setCodStatus(200);
@@ -600,26 +638,19 @@ public class CarManagementService {
     public CarReqRes updateAssignmentStatus(Long id, AssignmentRequest updateRequest) {
         CarReqRes response = new CarReqRes();
         try {
-            Optional<AssignmentHistory> carOptional = assignmentHistoryRepository.findById(id);
-            if (carOptional.isPresent()) {
-                AssignmentHistory existingAssignment = carOptional.get();
-                existingAssignment.setStatus(updateRequest.getStatus());
+            AssignmentHistory existingAssignment = assignmentHistoryRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Assignment not found"));
 
+            existingAssignment.setStatus(updateRequest.getStatus());
+            AssignmentHistory updatedAssignment = assignmentHistoryRepository.save(existingAssignment);
 
-                AssignmentHistory updatedAssignment = assignmentHistoryRepository.save(existingAssignment);
-                response.setAssignmentHistory(updatedAssignment);
-                response.setCodStatus(200);
-                response.setMessage("Assignment status updated successfully");
-            } else {
-                response.setCodStatus(404);
-                response.setMessage("Car not found");
-            }
+            response.setAssignmentHistory(updatedAssignment);
+            response.setCodStatus(200);
+            response.setMessage("Assignment status updated successfully");
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
         }
         return response;
     }
-
-
 }

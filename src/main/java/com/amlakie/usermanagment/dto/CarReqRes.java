@@ -6,6 +6,7 @@ import com.amlakie.usermanagment.entity.Car;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class CarReqRes {
@@ -34,6 +35,8 @@ public class CarReqRes {
 
     private AssignmentHistory assignmentHistory;
     private List<AssignmentHistory> assignmentHistoryList;
+    private Map<String, Object> responseData;
+
 
 }
 

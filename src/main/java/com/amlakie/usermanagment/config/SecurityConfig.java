@@ -1,4 +1,5 @@
 package com.amlakie.usermanagment.config;
+
 import com.amlakie.usermanagment.service.OurUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,21 +9,21 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-// Import CORS classes
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
- // This is essential for @PreAuthorize to work
 @EnableMethodSecurity
 public class SecurityConfig {
 
@@ -36,29 +37,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/auth/**", "/public/**").permitAll()
                         .requestMatchers(
-                                "/favicon.ico", // Allow favicon requests
-                                "/error"        // Allow access to the default error page
+                                "/auth/**",
+                                "/public/**",
+                                "/ws-vehicle-updates/**",  // WebSocket endpoint
+                                "/topic/**",              // WebSocket topics
+                                "/app/**",                // WebSocket app prefix
+                                "/favicon.ico",
+                                "/error",
+                                "/api/requests/**",
+                                "/api/**",
+                                "/all/**",
+                                "/uploads/**",
+                                "/api/travel-requests/**",
+                                "/api/inspections/**",
+                                "/api/foc-forms"
                         ).permitAll()
-                        // Fuel Oil Grease Requests endpoints
-                        .requestMatchers("/api/requests/**").permitAll() // Changed to permitAll
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/all/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll() //// Changed to permitAll
-
-                        // Other endpoints (keep your existing configuration)
-                        .requestMatchers("/api/travel-requests/**").permitAll()
-                        .requestMatchers("/api/inspections/**").permitAll()
-                        .requestMatchers("/api/foc-forms").authenticated()
-                        // ... rest of your existing permitAll endpoints ...
-
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-
                         // Secure all other requests
                         .anyRequest().authenticated()
                 )
@@ -73,9 +72,22 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000","http://172.20.137.176:3000"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://172.20.137.176:3000",
+                "http://localhost:8080"  // For development
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "Cache-Control",
+                "X-Requested-With",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials"
+        ));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -97,4 +109,3 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 }
-

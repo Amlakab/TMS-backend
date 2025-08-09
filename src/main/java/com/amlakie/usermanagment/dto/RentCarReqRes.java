@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class RentCarReqRes {
@@ -73,4 +74,6 @@ public class RentCarReqRes {
 
     private AssignmentHistory assignmentHistory;
     private List<AssignmentHistory> assignmentHistoryList;
+    private Map<String, Object> responseData;
+
 }
