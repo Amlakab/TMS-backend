@@ -27,7 +27,6 @@ public class AssignmentRequest {
     private String assignedDate;
     private String numberOfCar;
     private String licenseExpiryDate;
-    private String driverLicenseNumber;
     private MultipartFile driverLicenseFile;
     private List<Long> carIds;
     private List<Long> rentCarIds;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +15,6 @@ public class OrganizationCar implements Vehicle{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
 
     @Column(unique = true, nullable = false)
     private String plateNumber;
@@ -29,7 +28,18 @@ public class OrganizationCar implements Vehicle{
     private String ownerPhone;
 
     @Column(nullable = false)
+    private String agentName;
+
+    @Column(nullable = false)
+    private String agentPhone;
+    @Column
+    private Double LastServiceKm;
+
+    @Column(nullable = false)
     private String model;
+
+    @Column(unique = true )
+    private String deviceImei;
 
     @Column(nullable = false)
     private String carType;
@@ -44,10 +54,16 @@ public class OrganizationCar implements Vehicle{
     private float kmPerLiter;
 
     @Column(nullable = false)
-    private String totalKm;
+    private Double totalKm;
 
     @Column(nullable = false)
     private String fuelType;
+
+    @Column
+    private String ownerEmail;
+
+    @Column
+    private LocalDate lastServiceDate;//last date of that car serviced
 
     @Column(nullable = false)
     private String status = "Pending";
@@ -65,14 +81,11 @@ public class OrganizationCar implements Vehicle{
     @Column
     private String parkingLocation;
 
-    @Column(unique = true)
-    private String deviceImei;
-
     @Column(nullable = false)
     private String driverName;
 
     @Column(nullable = false)
-    private String driverAttributes;
+    private String driverAttributes;//phone number
 
     @Column(nullable = false)
     private String driverAddress;
@@ -97,7 +110,7 @@ public class OrganizationCar implements Vehicle{
     @Override
     public Double getCurrentKm() {
         try {
-            return Double.parseDouble(this.totalKm);
+            return totalKm;
         } catch (NumberFormatException e) {
             // Handle cases where totalKm might not be a valid double
             // Or ensure totalKm is stored as Double in the first place
@@ -108,7 +121,7 @@ public class OrganizationCar implements Vehicle{
     @Override
     public void setCurrentKm(Double currentKm) {
         if (currentKm != null) {
-            this.totalKm = String.valueOf(currentKm);
+            this.totalKm = currentKm;
         } else {
             this.totalKm = null; // Or "0.0" or handle as appropriate
         }

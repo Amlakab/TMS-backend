@@ -106,7 +106,7 @@ public class OrganizationCarInspectionService {
         newCar.setCreatedBy("SYSTEM_AUTO_CREATE");
         newCar.setParkingLocation("UNKNOWN");
         newCar.setMotorCapacity("0"); // Assuming String, adjust if number
-        newCar.setTotalKm("0"); // Assuming String, adjust if number
+        newCar.setTotalKm(0.0); // Assuming String, adjust if number
         newCar.setRegisteredDate(LocalDateTime.now());
         newCar.setStatus(CAR_STATUS_PENDING_INSPECTION); // If Status is an enum, this needs proper mapping
         newCar.setManufactureYear("0"); // Assuming String, adjust if number

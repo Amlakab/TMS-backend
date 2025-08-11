@@ -1,7 +1,6 @@
 package com.amlakie.usermanagment.dto;
 
 import com.amlakie.usermanagment.entity.OrganizationCar;
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +14,12 @@ public class OrganizationCarReqRes {
     private int codStatus;
     private String message;
     private String error;
+    private String ownerEmail;
+    private Double LastServiceKm;
     private String token;
     private String refreshedToken;
+    private String agentName;
+    private String agentPhone;
 
     private String expirationTime;
     private OrganizationCar organizationCar;
@@ -31,7 +34,7 @@ public class OrganizationCarReqRes {
     private String manufactureYear;
     private String motorCapacity;
     private String kmPerLiter;
-    private String totalKm;
+    private Double totalKm;
     private String fuelType;
     private String status;
     private String parkingLocation;
@@ -39,9 +42,8 @@ public class OrganizationCarReqRes {
     private String driverAttributes;
     private String driverAddress;
     private String loadCapacity;
-    private String deviceImei;
     public double latitude;
     public double longitude;
-
+    private String deviceImei;
 
 }

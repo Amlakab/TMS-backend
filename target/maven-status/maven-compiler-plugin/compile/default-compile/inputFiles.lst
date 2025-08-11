@@ -1,198 +1,223 @@
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\TransferInfoRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\DailyServiceRequestController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\AssignmentHistory.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\Signature.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\ItemCondition.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\BodyInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\CarInspectionReqRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\route\WaypointOutputDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\exception\GlobalExceptionHandler.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\RouteAssignmentService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\OurUsers.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\FileStorageService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\FOCRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\MaintenanceService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\Car.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\TravelRequestRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\TransferInfoService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\ApprovalStatus.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\CarJwtAuthFilter.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\VehicleAcceptanceRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\OurUserDetailsService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\InteriorInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationItemCondition.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\AssignedRoute.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\SecurityConfig.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\OrganizationCar.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\RouteAssignmentController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\CarInspectionListResponse.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\MaintenanceRecordRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\route\WaypointInputDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\TravelRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\UserManagementApplication.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\OrganizationCarInspectionController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\EmailSentService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\UserManagementService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\TransferInfoController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\attendance\FuelEntryRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\maintainance\RepairDetailsDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\Traveler.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\EmployeeService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\VehicleAcceptanceResponse.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\AssignedRouteRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationMechanicalInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\JWTUtils.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\TravelRequestController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\route\AssignRouteRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyCondition.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\CarRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\IllegalRequestStatusException.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\focform\FOCRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\CarAttendanceRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\MechanicalInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\enums\InspectionStatusType.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\OrganizationCarListRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\CarAttendanceController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\TransferInfo.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\VehicleAcceptanceController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\exception\InvalidRequestException.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\VehicleDataService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RouteHistoryWaypoint.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationMechanicalInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\CarReqRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\OrganizationCarReqRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\InteriorInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\RentCarRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\UserRole.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\vehicle\BackendVehicleDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\BodyInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\attendance\CarAttendanceResponseDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\fogrequest\RequestItemDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\FileUploadController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\CompletionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\CarInspectionService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\NezekStatus.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\AssignRouteRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\CarJwtUtils.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\RequestItem.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\focform\OilUsed.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RouteWaypoint.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\Employee.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\BodyCondition.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RentCarRoute.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\CarManagementService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\maintainance\WorksDoneLevel.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\RentCarRouteRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\FillDetails.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyProblem.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\JWTAuthFilter.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\FOCController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\WebConfig.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\CarInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\EmployeeRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\maintainance\VehicleDetailsDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\EmailService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\maintainance\MaintenanceRecordDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\MaintenanceRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\CarDto.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\FuelOilGreaseRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\FuelOilGreaseRequestService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\UsersRepo.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\TravelerRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\CarManagementController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\attendance\EveningDepartureRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\RentCarRouteAssignmentController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\AssignedRouteDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\InspectionStatusUpdateRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\employee\AssignCarToEmployeeRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\OrganizationCarInspectionRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\TransferInfoServiceImpl.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\route\AssignedRouteDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\TravelRequestJWTAuthFilter.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\DailyServiceRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\focform\OilUsedDto.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\BodyProblemDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\RentCarReqRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\RentCarManagementService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\FOCService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\fogrequest\FillDetailsDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\MaintainanceController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationInteriorInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\VehicleDataController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\RentCarRouteAssignmentService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationItemConditionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\maintainance\RepairInfo.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RentCar.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\TravelRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\VehicleAcceptanceRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\BodyProblemDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\AssignmentRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\SignatureResponse.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\vehicle\BackendPlateSuggestionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\TravelRequestJWTUtils.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\TransferInfoResponseDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\attendance\FuelEntryResponseDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\FuelOilGreaseRequestController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\exception\ResourceNotFoundException.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\InspectionStatusUpdateRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\DailyServiceRequestService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\employee\EmployeeResponseDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\TransferInfoRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\MechanicalInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\RouteHistoryRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\EmployeeController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\RentCarRouteDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\OTPService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\OrganizationCarManagementController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\UserManagementController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RentCarRouteWaypoint.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\BodyConditionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\RouteHistory.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\AppConfig.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\MaintenanceRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\RouteHistoryWaypointRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\RouteWaypointRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\MaintenanceRequestService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\attendance\CarAttendance.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\AssignmentDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\VehicleAcceptance.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\util\FuelRequestConverter.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\OrganizationCarInspectionService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\enums\ServiceStatusType.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\VehicleAcceptanceService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\FuelOilGreaseRequestRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\attendance\MorningArrivalRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\route\AssignedRouteResponseDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\fogrequest\RequestStatus.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\MaintenanceRequestRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\config\JacksonConfig.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarInspectionListResponse.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\CarAttendanceService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarDto.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\CarInspectionController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\maintainance\MaintenanceRecord.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\ItemConditionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationBodyInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\BodyConditionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\SignatureRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\RentCarManagementController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\Vehicle.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\fogrequest\FuelOilGreaseRequestDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationInteriorInspectionDTO.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\focform\FOC.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\CarInspectionRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\TravelRequestService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\SignatureRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarInspectionReqRes.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\DailyServiceRequest.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\BodyProblem.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\CarDetailsService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\controller\MaintenanceRequestController.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\AssignmentHistoryRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\exception\ValidationException.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\service\OrganizationCarManagementService.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationCarInspection.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\OrganizationCarRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\repository\DailyServiceRequestRepository.java
-D:\my git projects\TMS-backend\src\main\java\com\amlakie\usermanagment\dto\ReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\attendance\FuelEntryResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\BodyCondition.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\VehicleLocationResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\TravelerRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\CarInspectionController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\MaintenanceRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\AppConfig.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\FOCService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\FileUploadController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\RentCarReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\EmployeeRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\NotificationController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\CarInspectionRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\ItemCondition.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\TransferInfoController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\route\AssignRouteRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\CarAttendanceService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\VehicleWebSocketController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\RequestStatus.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RouteWaypointRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\VehicleAcceptanceRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\FillDetails.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\MaintenanceRequestService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Employee.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\FuelOilGreaseRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\TravelRequestRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\VehicleLocation.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\RentCarRouteAssignmentService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\BodyConditionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\CarManagementController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\OrganizationCarListRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\route\AssignedRouteDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\OTPService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\route\WaypointInputDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\maintainance\RepairInfo.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RouteWaypoint.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Vehicle.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\UserManagementController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\CarJwtAuthFilter.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\rentalMaintenance\UserDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\RentCarRouteAssignmentController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\focform\FOCRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\AssignedRouteDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\NotificationRepo.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\UsersRepo.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\focform\OilUsed.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\exception\GlobalExceptionHandler.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\BodyConditionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Notification.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\VehicleTrackingService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\fogrequest\FillDetailsDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\TravelRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\OrganizationCarInspectionService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\maintainance\WorksDoneLevel.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\employee\TransferEmployeesRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\attendance\EveningDepartureRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\ItemConditionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\vehicle\BackendPlateSuggestionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\RentCarRouteDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\SignatureResponse.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\InspectionStatusUpdateRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyCondition.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\OrganizationCarReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\InteriorInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationInteriorInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\maintainance\RepairDetailsDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\exception\ResourceNotFoundException.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\ApprovalStatus.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\AssignmentRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\route\WaypointOutputDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\JacksonConfig.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\rentalMaintenance\RentalMaintenanceRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\SecurityConfig.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\CompletionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\SignatureRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\TravelRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\FOCController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\DailyServiceRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationCarInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\vehicle\BackendVehicleDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RouteHistory.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\FileStorageService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\MaintenanceRequestRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarInspectionReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\OrganizationCar.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\InspectionStatusUpdateRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarDto.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\MaintenanceRequestController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\focform\FOC.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\MaintainanceController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\RentalMaintenanceController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\AssignmentHistoryRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\RouteAssignmentService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\UserManagementApplication.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\BodyInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\enums\ServiceStatusType.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\DailyServiceRequestService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\DailyServiceRequestController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\maintainance\VehicleDetailsDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\AssignmentHistory.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\GpsDataDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\CarInspectionListResponse.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\DailyServiceRequestRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\util\FuelRequestConverter.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\MaintenanceRecordRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\OrganizationCarManagementController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\AssignedRoute.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\TravelRequestJWTUtils.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\VehicleAcceptanceService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\FuelOilGreaseRequestService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\attendance\FuelEntryRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\OurUserDetailsService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\BodyProblem.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Signature.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\maintainance\MaintenanceRecord.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\fogrequest\RequestItemDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\CarRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\CarInspectionService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\InteriorInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\JWTAuthFilter.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\OrganizationCarInspectionController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\OrganizationCarManagementService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\VehicleLocationRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\NotificationService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RentCarRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\EmailService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\WebSocketConfig.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\MechanicalInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\VehicleTrackingController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RentCarRouteWaypoint.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\BodyProblemDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\VehicleAcceptanceResponse.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\CarInspectionReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationMechanicalInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationBodyInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\fogrequest\FuelOilGreaseRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationBodyProblem.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\OurUsers.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\CarAttendanceRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\WebConfig.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationItemConditionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\ReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\BodyInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\RentCarManagementController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\VehicleAcceptanceRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\CarAttendanceController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\NezekStatus.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\IllegalRequestStatusException.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\attendance\MorningArrivalRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\VehicleDataController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\RequestItem.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\OrganizationCarRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\RentCarManagementService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\UserManagementService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\AssignRouteRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\focform\OilUsedDto.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\KmEmailService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RentCar.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\employee\AssignCarToEmployeeRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationMechanicalInspectionDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RouteHistoryRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\DailyServiceRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\MaintenanceService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Traveler.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationItemCondition.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\OrganizationInteriorInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RentCarRoute.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\EmployeeController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\maintainance\MaintenanceRecordDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\rentalMaintenance\UpdateRentalMaintenanceRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RentalMaintenanceRequestRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\VehicleAcceptanceController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\exception\ValidationException.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\OrganizationCarInspectionRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\FuelOilGreaseRequestController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\attendance\CarAttendance.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\CarJwtUtils.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\FOCRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\BodyProblemDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RouteHistoryWaypointRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\config\TravelRequestJWTAuthFilter.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\employee\EmployeeResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\MaintenanceRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\SignatureRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\route\AssignedRouteResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\TransferInfoRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\RouteAssignmentController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\CarDetailsService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\CarDto.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\CarReqRes.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\organization\enums\InspectionStatusType.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\EmployeeService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\RentalMaintenanceService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\VehicleAcceptance.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\NotificationDto.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\fogrequest\UserRole.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\TransferInfoResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\VehicleDataService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\exception\InvalidRequestException.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\EmailSentService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\attendance\CarAttendanceResponseDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\TransferInfoServiceImpl.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\AssignmentDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\MechanicalInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\FuelOilGreaseRequestRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\CarInspection.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\rentalMaintenance\CreateRentalMaintenanceRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RouteHistoryWaypoint.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\TransferInfoService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\CarManagementService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\TransferInfoRequestDTO.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\dto\organization\OrganizationCarInspectionListResponse.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\TransferInfo.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\AssignedRouteRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\TravelRequestService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\UserService.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\AssignmentController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\repository\RentCarRouteRepository.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\service\JWTUtils.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\controller\TravelRequestController.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\RentalMaintenanceRequest.java
+C:\Users\A\Desktop\Yeshye\src\main\java\com\amlakie\usermanagment\entity\Car.java

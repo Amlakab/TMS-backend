@@ -65,23 +65,14 @@ public class AssignmentHistory {
     @Column(nullable = false)
     private String licenseExpiryDate;
 
-    @Column(nullable = false)
-    private String driverLicenseNumber;
+    @Column(nullable = true)
+    private String driverLicenseFilename;
 
-    @ElementCollection
-    @CollectionTable(name = "assignment_license_files", joinColumns = @JoinColumn(name = "assignment_id"))
-    @Column(name = "file_path")
-    private List<String> driverLicenseFiles;
+    @Column(nullable = true)
+    private String driverLicenseFilepath;
 
-    @ElementCollection
-    @CollectionTable(name = "assignment_license_file_types", joinColumns = @JoinColumn(name = "assignment_id"))
-    @Column(name = "file_type")
-    private List<String> driverLicenseFileTypes;
-
-    @ElementCollection
-    @CollectionTable(name = "assignment_license_file_names", joinColumns = @JoinColumn(name = "assignment_id"))
-    @Column(name = "file_name")
-    private List<String> driverLicenseFileNames;
+    @Column(nullable = true)
+    private String driverLicenseFileType;
 
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = true)

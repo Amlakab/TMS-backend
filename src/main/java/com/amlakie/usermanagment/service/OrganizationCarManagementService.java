@@ -33,6 +33,10 @@ public class OrganizationCarManagementService {
             organizationCar.setPlateNumber(registrationRequest.getPlateNumber());
             organizationCar.setOwnerName(registrationRequest.getOwnerName());
             organizationCar.setOwnerPhone(registrationRequest.getOwnerPhone());
+            organizationCar.setOwnerEmail(registrationRequest.getOwnerEmail());
+            organizationCar.setAgentName(registrationRequest.getAgentName());
+            organizationCar.setAgentPhone(registrationRequest.getAgentPhone());
+            organizationCar.setLastServiceKm(registrationRequest.getLastServiceKm());
             organizationCar.setModel(registrationRequest.getModel());
             organizationCar.setCarType(registrationRequest.getCarType());
             organizationCar.setManufactureYear(registrationRequest.getManufactureYear());
@@ -104,6 +108,10 @@ public class OrganizationCarManagementService {
                 existingCar.setPlateNumber(updateRequest.getPlateNumber());
                 existingCar.setOwnerName(updateRequest.getOwnerName());
                 existingCar.setOwnerPhone(updateRequest.getOwnerPhone());
+                existingCar.setOwnerEmail(updateRequest.getOwnerEmail());
+                existingCar.setAgentName(updateRequest.getAgentName());
+                existingCar.setAgentPhone(updateRequest.getAgentPhone());
+                existingCar.setLastServiceKm(updateRequest.getLastServiceKm());
                 existingCar.setModel(updateRequest.getModel());
                 existingCar.setCarType(updateRequest.getCarType());
                 existingCar.setManufactureYear(updateRequest.getManufactureYear());
