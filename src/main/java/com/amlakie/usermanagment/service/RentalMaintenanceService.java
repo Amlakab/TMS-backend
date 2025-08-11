@@ -47,12 +47,14 @@ public class RentalMaintenanceService {
         } else {
             throw new IllegalArgumentException("Either rentalCarId or carId must be provided");
         }
-
+        if(dto.getReason()!=null){
+            request.setReason(dto.getReason());
+        }
         request.setRequesterName(dto.getRequesterName());
         request.setRequesterPhone(dto.getRequesterPhone());
         request.setRequestDate(LocalDateTime.now());
         request.setServiceDate(dto.getServiceDate());
-        request.setReason(dto.getReason());
+        request.setRequestType(dto.getRequestType());
         request.setStatus("PENDING");
         request.setCreatedBy(auth.getName());
 
@@ -79,11 +81,40 @@ public class RentalMaintenanceService {
     }
 
     @Transactional
-    public RentalMaintenanceRequestDTO completeRequest(Long id, LocalDateTime returnDate) {
+    public RentalMaintenanceRequestDTO acceptRetured(Long id) {
         RentalMaintenanceRequest request = maintenanceRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
 
         request.setStatus("COMPLETED");
+
+        // Update vehicle status
+        if (request.getRentalCar() != null) {
+            request.getRentalCar().setStatus("InspectedAndReady");
+            orgCarRepo.save(request.getRentalCar());
+        } else if (request.getCar() != null) {
+            request.getCar().setStatus("InspectedAndReady");
+            carRepo.save(request.getCar());
+        }
+
+        return convertToDTO(maintenanceRepo.save(request));
+    }
+
+    @Transactional
+    public RentalMaintenanceRequestDTO completeRequest(Long id, LocalDateTime returnDate) {
+        RentalMaintenanceRequest request = maintenanceRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found"));
+
+        // Calculate date difference (integer days) and store as String
+        if (request.getRequestDate() != null && returnDate != null) {
+            long daysBetween = java.time.Duration
+                    .between(request.getRequestDate(), returnDate)
+                    .toDays();
+
+            // Convert integer to string before saving
+            request.setDateDifference(String.valueOf((int) daysBetween));
+        }
+
+        request.setStatus("RETURNED");
         request.setReturnDate(returnDate);
 
         // Update vehicle status
@@ -97,6 +128,8 @@ public class RentalMaintenanceService {
 
         return convertToDTO(maintenanceRepo.save(request));
     }
+
+
 
     public List<RentalMaintenanceRequestDTO> getAllRequests() {
         return maintenanceRepo.findAll().stream().map(this::convertToDTO).toList();
@@ -118,6 +151,8 @@ public class RentalMaintenanceService {
         dto.setServiceDate(request.getServiceDate());
         dto.setReturnDate(request.getReturnDate());
         dto.setReason(request.getReason());
+        dto.setRequestType(request.getRequestType());
+        dto.setDateDifference(request.getDateDifference());
         dto.setStatus(request.getStatus());
         dto.setMaintenanceNotes(request.getMaintenanceNotes());
 

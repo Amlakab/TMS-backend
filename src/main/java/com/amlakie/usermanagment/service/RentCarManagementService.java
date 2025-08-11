@@ -263,7 +263,7 @@ public class RentCarManagementService {
             // Update history fields
             history.setAssignedDate(LocalDateTime.now());
             history.setRentalType(updateRequest.getRentalType());
-            history.setPlateNumber(updateRequest.getPlateNumber());
+            //history.setPlateNumber(updateRequest.getPlateNumber());
             history.setStatus(updateRequest.getStatus());
 
             // Update car if changed

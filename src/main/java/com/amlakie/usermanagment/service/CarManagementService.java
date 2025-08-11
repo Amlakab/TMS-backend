@@ -231,6 +231,8 @@ public class CarManagementService {
         return uploadDir;
     }
 
+
+
     @Transactional
     public CarReqRes createAssignment(AssignmentRequest request) {
         CarReqRes response = new CarReqRes();
@@ -243,15 +245,11 @@ public class CarManagementService {
                 throw new IllegalArgumentException("License expiry date is required");
             }
 
-            // Convert string date to LocalDateTime
-            LocalDateTime requestDateTime = LocalDate.parse(request.getRequestDate())
-                    .atStartOfDay();
-
             // Create new assignment history
             AssignmentHistory history = new AssignmentHistory();
             history.setRequestLetterNo(request.getRequestLetterNo());
-            history.setRequestDate(requestDateTime);
-            history.setAssignedDate(requestDateTime);
+            history.setRequestDate(LocalDateTime.now());
+            history.setAssignedDate(LocalDateTime.now());
             history.setRequesterName(request.getRequesterName());
             history.setRentalType(request.getRentalType());
             history.setPosition(request.getPosition());
@@ -264,12 +262,13 @@ public class CarManagementService {
             history.setTotalPercentage(request.getTotalPercentage());
             history.setStatus(request.getStatus());
             history.setLicenseExpiryDate(request.getLicenseExpiryDate());
+            history.setDriverLicenseNumber(request.getDriverLicenseNumber());
 
             // Handle file upload
             if (request.getDriverLicenseFile() != null && !request.getDriverLicenseFile().isEmpty()) {
                 String originalFilename = request.getDriverLicenseFile().getOriginalFilename();
                 String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String uniqueFilename = "licenses_" + UUID.randomUUID().toString() + fileExtension;
+                String uniqueFilename = "license_" + UUID.randomUUID() + fileExtension;
 
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) {
@@ -291,6 +290,9 @@ public class CarManagementService {
             } else {
                 history.setNumberOfCar("1");
             }
+
+
+            // Set number of cars based on positio
 
             // Process all vehicle assignments
             List<String> allPlateNumbers = new ArrayList<>();
@@ -330,11 +332,11 @@ public class CarManagementService {
 
                 // Handle multiple rent cars
                 if (request.getRentCarIds() != null && !request.getRentCarIds().isEmpty()) {
-                    Set<RentCar> rentCars = new HashSet<>(rentCarRepository.findAllById(request.getRentCarIds()));
+                    Set<Car> rentCars = new HashSet<>(carRepository.findAllById(request.getRentCarIds()));
                     if (rentCars.size() != request.getRentCarIds().size()) {
                         throw new RuntimeException("One or more rent cars not found");
                     }
-                    history.setMultipleRentCars(rentCars);
+                    history.setMultipleCars(rentCars);
                     rentCars.forEach(rentCar -> {
                         allPlateNumbers.add(rentCar.getPlateNumber());
                         allCarModels.add(rentCar.getModel());
@@ -351,16 +353,9 @@ public class CarManagementService {
                 assignmentHistoryRepository.save(history);
 
             } catch (Exception e) {
-                // Clean up uploaded file if transaction fails
-                if (history.getDriverLicenseFilepath() != null) {
-                    try {
-                        Files.deleteIfExists(Paths.get(history.getDriverLicenseFilepath()));
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-                }
+                // Explicitly set rollback-only if needed
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                throw e;
+                throw e; // Re-throw the exception
             }
 
             // Prepare success response
@@ -371,12 +366,12 @@ public class CarManagementService {
             responseData.put("totalVehiclesAssigned", allPlateNumbers.size());
             responseData.put("plateNumbers", history.getAllPlateNumbers());
             responseData.put("carModels", history.getAllCarModels());
-            responseData.put("licenseExpiryDate", history.getLicenseExpiryDate());
-            responseData.put("driverLicenseFilename", history.getDriverLicenseFilename());
+            response.setAssignmentHistory(history);
 
         } catch (Exception e) {
             response.setCodStatus(500);
             response.setError(e.getMessage());
+            //log.error("Error creating assignment", e);
         }
         return response;
     }

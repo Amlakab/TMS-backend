@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "assignment_history")
@@ -73,6 +74,9 @@ public class AssignmentHistory {
 
     @Column(nullable = true)
     private String driverLicenseFileType;
+
+    @Column(nullable = true)
+    private String driverLicenseNumber;
 
     @ManyToOne
     @JoinColumn(name = "car_id", nullable = true)

@@ -45,7 +45,13 @@ public class RentalMaintenanceRequest {
     @Column
     private LocalDateTime returnDate;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false)
+    private String requestType;
+
+    @Column
+    private String dateDifference;
+
+    @Column(columnDefinition = "TEXT")
     private String reason;
 
     @Column(nullable = false)

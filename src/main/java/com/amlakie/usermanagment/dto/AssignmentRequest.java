@@ -14,7 +14,6 @@ public class AssignmentRequest {
     private String position;
     private String department;
     private String phoneNumber;
-    private String plateNumber;
     private String travelWorkPercentage;
     private String shortNoticePercentage;
     private String mobilityIssue;
@@ -28,6 +27,7 @@ public class AssignmentRequest {
     private String numberOfCar;
     private String licenseExpiryDate;
     private MultipartFile driverLicenseFile;
+    private String driverLicenseNumber;
     private List<Long> carIds;
     private List<Long> rentCarIds;
 }

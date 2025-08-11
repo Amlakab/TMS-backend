@@ -1,6 +1,8 @@
 package com.amlakie.usermanagment.controller;
 
 import com.amlakie.usermanagment.dto.*;
+import com.amlakie.usermanagment.entity.AssignmentHistory;
+import com.amlakie.usermanagment.repository.AssignmentHistoryRepository;
 import com.amlakie.usermanagment.service.CarManagementService;
 import com.amlakie.usermanagment.service.FileStorageService;
 import com.amlakie.usermanagment.service.VehicleAcceptanceService;
@@ -24,6 +26,10 @@ public class CarManagementController {
 
     @Autowired
     private VehicleAcceptanceService vehicleAcceptanceService;
+
+    @Autowired
+    private AssignmentHistoryRepository assignmentHistoryRepository;
+
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -69,14 +75,22 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.updateStatus(plateNumber, updateRequest));
     }
 
-    // Add these new endpoints to CarManagementController
     @PostMapping("/auth/car/assign")
     public ResponseEntity<CarReqRes> createAssignment(
             @Valid @ModelAttribute AssignmentRequest request,
             @RequestParam(value = "driverLicenseFile", required = false) MultipartFile driverLicenseFile) {
 
-        request.setDriverLicenseFile(driverLicenseFile);
-        return ResponseEntity.ok(carManagementService.createAssignment(request));
+        try {
+            if (driverLicenseFile != null && !driverLicenseFile.isEmpty()) {
+                request.setDriverLicenseFile(driverLicenseFile);
+            }
+            return ResponseEntity.ok(carManagementService.createAssignment(request));
+        } catch (Exception e) {
+            CarReqRes errorResponse = new CarReqRes();
+            errorResponse.setCodStatus(500);
+            errorResponse.setError(e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
     }
 
     // Add this new endpoint for checking expiring licenses
@@ -85,24 +99,33 @@ public class CarManagementController {
         return ResponseEntity.ok(carManagementService.getExpiringLicenses());
     }
 
-    // Add this endpoint to serve license files
-    @GetMapping("/auth/licenses/file/{filename}")
-    public ResponseEntity<byte[]> getLicenseFile(@PathVariable String filename) {
+    @GetMapping("/auth/licenses/file/{assignmentId}")
+    public ResponseEntity<byte[]> getLicenseFile(@PathVariable Long assignmentId) {
         try {
-            Path filePath = Paths.get(carManagementService.getUploadDir()).resolve(filename).normalize();
-            byte[] fileContent = Files.readAllBytes(filePath);
+            AssignmentHistory assignment = assignmentHistoryRepository.findById(assignmentId)
+                    .orElseThrow(() -> new RuntimeException("Assignment not found"));
 
-            String contentType = Files.probeContentType(filePath);
+            if (assignment.getDriverLicenseFilepath() == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Path filePath = Paths.get(assignment.getDriverLicenseFilepath());
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            byte[] fileContent = Files.readAllBytes(filePath);
+            String contentType = assignment.getDriverLicenseFileType();
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }
 
             return ResponseEntity.ok()
                     .header("Content-Type", contentType)
-                    .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+                    .header("Content-Disposition", "inline; filename=\"" + assignment.getDriverLicenseFilename() + "\"")
                     .body(fileContent);
-        } catch (IOException e) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 

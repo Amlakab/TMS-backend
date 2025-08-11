@@ -25,7 +25,7 @@ public class RentalMaintenanceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('DRIVER')")
+    //@PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RentalMaintenanceRequestDTO> createRequest(
             @RequestBody CreateRentalMaintenanceRequestDTO dto) {
         return ResponseEntity.ok(maintenanceService.createRequest(dto));
@@ -43,13 +43,19 @@ public class RentalMaintenanceController {
     }
 
     @PatchMapping("/{id}/approve")
-    @PreAuthorize("hasRole('DISTRIBUTOR')")
+    //@PreAuthorize("hasRole('DISTRIBUTOR')")
     public ResponseEntity<RentalMaintenanceRequestDTO> approveRequest(@PathVariable Long id) {
         return ResponseEntity.ok(maintenanceService.approveRequest(id));
     }
 
+    @PatchMapping("/{id}/return")
+    //@PreAuthorize("hasRole('DISTRIBUTOR')")
+    public ResponseEntity<RentalMaintenanceRequestDTO> acceptReturned(@PathVariable Long id) {
+        return ResponseEntity.ok(maintenanceService.acceptRetured(id));
+    }
+
     @PatchMapping("/{id}/complete")
-    @PreAuthorize("hasRole('DRIVER')")
+    //@PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<RentalMaintenanceRequestDTO> completeRequest(
             @PathVariable Long id,
             @RequestBody LocalDateTime returnDate) {
