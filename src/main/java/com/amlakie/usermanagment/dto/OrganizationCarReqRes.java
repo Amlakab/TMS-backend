@@ -46,4 +46,5 @@ public class OrganizationCarReqRes {
     public double longitude;
     private String deviceImei;
 
+
 }

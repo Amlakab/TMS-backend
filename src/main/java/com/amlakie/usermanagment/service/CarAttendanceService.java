@@ -11,7 +11,9 @@ import com.amlakie.usermanagment.repository.CarRepository;
 import com.amlakie.usermanagment.repository.OrganizationCarRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.amlakie.usermanagment.dto.attendance.ServiceDueVehicleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,10 @@ public class CarAttendanceService {
     private final CarRepository carRepository;
     private final OrganizationCarRepository organizationCarRepository;
     private final EmailSentService emailSentService;
+
+    @Value("${vehicle.service.reminder-km-threshold:4600}") // Inject from properties with a default
+    private int serviceReminderKmThreshold;
+
     @Autowired
     public CarAttendanceService(CarAttendanceRepository carAttendanceRepository,
                                 CarRepository carRepository,
@@ -68,13 +74,55 @@ public class CarAttendanceService {
         // Save the fully populated object ONCE
         CarAttendance savedAttendance = carAttendanceRepository.save(attendance);
 
+        // Capture the previous KM value BEFORE updating the vehicle
+        Double previousTotalKm = vehicle.getCurrentKm();
+
         // Update the vehicle's main KM reading
-        if (dto.getMorningKm() != null && (vehicle.getCurrentKm() == null || dto.getMorningKm() >= vehicle.getCurrentKm())) {
+        if (dto.getMorningKm() != null && (previousTotalKm == null || dto.getMorningKm() >= previousTotalKm)) {
             vehicle.setCurrentKm(dto.getMorningKm());
             saveVehicle(vehicle);
         }
-        checkAndSendKilometerBasedReminder(savedAttendance);
+
+        // Pass the previous KM value to the reminder method for an accurate calculation
+        checkAndSendKilometerBasedReminder(savedAttendance, previousTotalKm);
         return mapToResponseDTO(savedAttendance);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ServiceDueVehicleDTO> findVehiclesDueForService() {
+        logger.info("Finding vehicles due for service with a threshold of {}", serviceReminderKmThreshold);
+
+        // Note: You must add the 'findWithServiceDue' method to your repository interface.
+        // This query efficiently finds cars where (totalKm - lastServiceKm) >= threshold.
+        List<OrganizationCar> orgCarsDue = organizationCarRepository.findWithServiceDue(serviceReminderKmThreshold);
+
+        // You can uncomment the lines below if your 'Car' entity also has service tracking.
+        // List<Car> carsDue = carRepository.findWithServiceDue(serviceReminderKmThreshold);
+
+        // Map the results to the DTO
+        List<ServiceDueVehicleDTO> serviceDueList = orgCarsDue.stream()
+                .map(this::mapOrgCarToServiceDueDTO)
+                .collect(Collectors.toList());
+
+        // carsDue.stream()
+        //     .map(this::mapCarToServiceDueDTO) // You would need to create this helper method for Car
+        //     .forEach(serviceDueList::add);
+
+        return serviceDueList;
+    }
+
+    private ServiceDueVehicleDTO mapOrgCarToServiceDueDTO(OrganizationCar car) {
+        ServiceDueVehicleDTO dto = new ServiceDueVehicleDTO();
+        dto.setPlateNumber(car.getPlateNumber());
+        dto.setVehicleType(VEHICLE_TYPE_ORGANIZATION_CAR);
+        dto.setDriverName(car.getDriverName());
+        dto.setCurrentKm(car.getTotalKm());
+        dto.setLastServiceKm(car.getLastServiceKm());
+
+        if (car.getTotalKm() != null && car.getLastServiceKm() != null) {
+            dto.setKmSinceLastService(car.getTotalKm() - car.getLastServiceKm());
+        }
+        return dto;
     }
 
     @Transactional
@@ -199,7 +247,6 @@ public class CarAttendanceService {
                 .collect(Collectors.toList());
     }
 
-    // --- Private Helper Methods ---
 
     private void calculateOvernightDifference(CarAttendance currentAttendance, Long vehicleId, String discriminator, LocalDate today) {
         LocalDate previousDate = today.minusDays(1);
@@ -212,24 +259,27 @@ public class CarAttendanceService {
                 });
     }
 
-    // ...existing code...
-    private void checkAndSendKilometerBasedReminder(CarAttendance attendance) {
+    private void checkAndSendKilometerBasedReminder(CarAttendance attendance, Double previousTotalKm) {
         Vehicle vehicle = attendance.getVehicle();
         Double morningKm = attendance.getMorningKm();
 
         if (vehicle instanceof OrganizationCar orgCar) {
-            Double lastServiceKm = orgCar.getLastServiceKm(); // Use getter for LastServiceKm
-            Double referenceKm = (lastServiceKm != null && lastServiceKm > 0) ? lastServiceKm : orgCar.getTotalKm();
+            Double lastServiceKm = orgCar.getLastServiceKm();
+            // Use the explicit previousTotalKm for a reliable calculation
+            Double referenceKm = (lastServiceKm != null && lastServiceKm > 0) ? lastServiceKm : previousTotalKm;
 
             if (referenceKm != null && morningKm != null) {
                 double diff = morningKm - referenceKm;
-                if (diff >= 4600) {
+                // Add this debug line to see the exact values being used in the calculation
+                logger.info("DEBUG: Checking service reminder for {}. morningKm={}, referenceKm={}, diff={}, threshold={}", orgCar.getPlateNumber(), morningKm, referenceKm, diff, serviceReminderKmThreshold);
+                if (diff >= serviceReminderKmThreshold) { // Check if the difference meets the configured threshold
                     logger.info("Service interval reached for {}. Sending reminder email.", orgCar.getPlateNumber());
                     emailSentService.sendSimpleMessage(
                             orgCar.getOwnerEmail(),
                             "Service Due Reminder",
-                            "Your car with plate " + orgCar.getPlateNumber() +
-                                    " has reached its service interval. Please come and take your car for service."
+                            "Your car with plate number" + orgCar.getPlateNumber() +
+                                    " has reached its service interval. Please come and take your car for service."+
+                                    "INSA TMS"
                     );
                 }
             }

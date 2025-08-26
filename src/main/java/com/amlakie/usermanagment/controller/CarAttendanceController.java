@@ -33,6 +33,12 @@ public class CarAttendanceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/service-due")
+    public ResponseEntity<List<ServiceDueVehicleDTO>> getVehiclesDueForService() {
+        List<ServiceDueVehicleDTO> vehicles = carAttendanceService.findVehiclesDueForService();
+        // Always return 200 OK, even if the list is empty, which is convenient for frontends.
+        return ResponseEntity.ok(vehicles);
+    }
 
     @PostMapping("/evening-departure/{attendanceId}")
     public ResponseEntity<CarAttendanceResponseDTO> recordEveningDeparture(

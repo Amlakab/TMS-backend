@@ -2,6 +2,8 @@ package com.amlakie.usermanagment.repository;
 
 import com.amlakie.usermanagment.entity.OrganizationCar;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +19,7 @@ public interface OrganizationCarRepository extends JpaRepository<OrganizationCar
 
     Optional<OrganizationCar> findByDeviceImei(String deviceImei);
 
+    // Add this method inside your OrganizationCarRepository interface
+    @Query("SELECT oc FROM OrganizationCar oc WHERE oc.lastServiceKm IS NOT NULL AND (oc.totalKm - oc.lastServiceKm) >= :threshold")
+    List<OrganizationCar> findWithServiceDue(@Param("threshold") double threshold);
 }

@@ -33,16 +33,16 @@ public class OrganizationCar implements Vehicle{
     @Column(nullable = false)
     private String agentPhone;
     @Column
-    private Double LastServiceKm;
+    private Double lastServiceKm;
 
     @Column(nullable = false)
     private String model;
 
-    @Column(unique = true )
-    private String deviceImei;
-
     @Column(nullable = false)
     private String carType;
+
+    @Column(unique = true )
+    private String deviceImei;
 
     @Column(nullable = false)
     private String manufactureYear;
@@ -140,3 +140,6 @@ public class OrganizationCar implements Vehicle{
     }
 
 }
+
+
+
