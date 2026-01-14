@@ -49,6 +49,10 @@ public class DailyServiceRequestService {
         return repository.findByStatus(DailyServiceRequest.RequestStatus.PENDING);
     }
 
+    public List<DailyServiceRequest> getAllRequests() {
+        return repository.findAll();
+    }
+
     public DailyServiceRequest assignRequest(Long id, AssignmentDTO dto) {
         DailyServiceRequest request = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + id));

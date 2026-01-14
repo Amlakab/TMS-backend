@@ -54,7 +54,9 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/api/travel-requests/**",
                                 "/api/inspections/**",
-                                "/api/foc-forms"
+                                "/api/foc-forms",
+                                "/driver-location/**"
+
                         ).permitAll()
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
@@ -74,6 +76,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://192.168.43.196:3000",
                 "http://172.20.137.176:3000",
                 "http://localhost:8080"  // For development
         ));

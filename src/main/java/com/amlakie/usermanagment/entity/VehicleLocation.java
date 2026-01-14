@@ -36,13 +36,22 @@ public class VehicleLocation {
     @Column(nullable = false)
     private Double longitude;
 
-    private Double speed; // in km/h
+    @Column(nullable = false)
+    private Double speed = 0.0; // in km/h, default 0
 
-    private Double heading; // degrees from north
+    @Column(nullable = false)
+    private Double heading = 0.0; // degrees from north, default 0
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
     @Column(name = "device_imei", nullable = false)
     private String deviceImei;
+
+    // Add default values in constructor
+    public VehicleLocation() {
+        this.speed = 0.0;
+        this.heading = 0.0;
+        this.timestamp = LocalDateTime.now();
+    }
 }

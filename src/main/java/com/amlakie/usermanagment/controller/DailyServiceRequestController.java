@@ -31,6 +31,11 @@ public class DailyServiceRequestController {
         return ResponseEntity.ok(service.getPendingRequests());
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<DailyServiceRequest>> getAllRequests() {
+        return ResponseEntity.ok(service.getAllRequests());
+    }
+
     @PatchMapping("/{id}/assign")
     public ResponseEntity<DailyServiceRequest> assignRequest(
             @PathVariable Long id,
